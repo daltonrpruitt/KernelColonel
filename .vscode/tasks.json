@@ -1,0 +1,43 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake Debug (Reconfigure)",
+            "type": "process",
+            "command": "cmake",
+            "args":[
+                "-DCMAKE_BUILD_TYPE=debug",
+                "-B",".",
+                "-S","${workspaceFolder}",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/debug"
+            },
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+
+        },
+        {
+            "label": "CMake Debug Build",
+            "type": "process",
+            "command": "cmake",
+            "args":[
+                "--build",
+                "."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/debug"
+            },
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+
+        }
+
+    ]
+}
