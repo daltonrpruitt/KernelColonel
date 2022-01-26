@@ -1,16 +1,14 @@
 # Root CMakeLists.txt
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.22 )
 
 
-project(foo)
+project(TEST_DRIVER CUDA CXX)
 
-message("After 'project':")
-
+include(FindCUDAToolkit)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
 
 
-add_executable(foo src/foo.cpp)
-
-message("Processing CMakeLists.txt")
+add_executable(driver src/driver.cu)
