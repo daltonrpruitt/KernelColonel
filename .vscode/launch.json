@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug debug/foo",
+            "name": "Debug debug/driver",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/foo",
+            "program": "${workspaceFolder}/build/debug/driver",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
