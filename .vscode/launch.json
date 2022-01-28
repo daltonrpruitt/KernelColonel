@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug debug/driver",
+            "name": "Debug debug/ctx_driver",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/driver",
+            "program": "${workspaceFolder}/build/debug/ctx_driver",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

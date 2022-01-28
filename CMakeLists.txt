@@ -11,4 +11,5 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
 
 
-add_executable(driver src/driver.cu)
+# add_executable(driver src/driver.cu)
+add_executable(ctx_driver src/kernel_context_driver.cu)
