@@ -20,7 +20,7 @@ using std::endl;
 #define N (32*32*32)
 
 int main() {
-  TestKernelContext<vt, int, N, 128> ctx;
+  KernelCPUContext<vt, int, N, 128> ctx;
   ctx.execute();
   bool res = ctx.check_result();
   cout << ctx.name <<  " " << (res ? "Passed" : "Failed") << "!" << endl;

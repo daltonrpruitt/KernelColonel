@@ -31,7 +31,7 @@ void compute_kernel(int N, kernel_ctx_t ctx) {
 
 
 template<typename vt, typename it, int n, int bsz>
-struct TestKernelContext {
+struct KernelCPUContext {
     public:
         string name = "Array_Copy";
         int N = n;
@@ -46,7 +46,7 @@ struct TestKernelContext {
         // host_vector<it> host_indices;
         // vector<it *> device_indices_ptrs;
         // template<typename vt, typename it>
-        struct kernel_context {
+        struct gpu_ctx {
             vt * in;
             vt * out;   
 
@@ -63,7 +63,7 @@ struct TestKernelContext {
             for(vt* ptr : device_data_ptrs) cudaFree(ptr);
         }
 
-        TestKernelContext() {
+        KernelCPUContext() {
             Gsz = (N+Bsz-1)/Bsz;
             // host_data.resize(2);
 
@@ -91,7 +91,7 @@ struct TestKernelContext {
             }
         }
 
-        ~TestKernelContext(){
+        ~KernelCPUContext(){
             free();            
         }
 
@@ -99,7 +99,7 @@ struct TestKernelContext {
         
         void execute() {
             if(!okay) return;
-            compute_kernel<vt, it, kernel_context><<<Gsz, Bsz>>>(N, ctx);
+            compute_kernel<vt, it, gpu_ctx><<<Gsz, Bsz>>>(N, ctx);
             
             bool pass = true;
             cudaErrChk(cudaMemcpy(host_data[1].data(), device_data_ptrs[1], N * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs[1] to host_data[1]", pass);
