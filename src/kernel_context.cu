@@ -1,3 +1,4 @@
+#pragma once 
 /**
  * @file kernel_context.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
@@ -15,12 +16,13 @@
 #define DEBUG
 
 using std::string;
+using std::to_string;
 using std::cout;
 using std::endl;
 using std::vector;
 
 
-template<typename vt, typename it, typename kernel_ctx_t>
+template<typename kernel_ctx_t>
 __global__
 void compute_kernel(int N, kernel_ctx_t ctx) {
     uint idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -30,100 +32,98 @@ void compute_kernel(int N, kernel_ctx_t ctx) {
 
 
 
-template<typename vt, typename it, int n, int bsz>
+template<typename vt, typename it, int in, int out, int indices, int n>
 struct KernelCPUContext {
     public:
-        string name = "Array_Copy";
+        string name;
         int N = n;
-        int Bsz = bsz;
+        int Bsz;
         int Gsz;
+        int num_in_data = in;
+        int num_out_data = out;
+        int num_total_data = num_in_data + num_out_data;
+        int num_indices = indices;
 
+        vector<vector<vt>> host_data{(unsigned long)num_total_data};
+        vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
 
-        vector<vector<vt>> host_data{2};
-        vector<vt *> device_data_ptrs{2};
         bool okay = true;
         
-        // host_vector<it> host_indices;
-        // vector<it *> device_indices_ptrs;
-        // template<typename vt, typename it>
-        struct gpu_ctx {
-            vt * in;
-            vt * out;   
+        vector<vector<it>> host_indices{(unsigned long)num_indices};
+        vector<it *> device_indices_ptrs{(unsigned long)num_indices};
 
-            // template<typename vt, typename it>
-            __device__        
-            void operator() (uint idx){
-                // vt* in = data[0];
-                // vt* out = data[1];
-                out[idx] = in[idx];
-            }
-        } ctx ;
 
         void free(){
             for(vt* ptr : device_data_ptrs) cudaFree(ptr);
+            for(it* ptr : device_indices_ptrs) cudaFree(ptr);
         }
 
-        KernelCPUContext() {
+        virtual void init_inputs() {};
+        virtual void init_indices() {};
+
+        KernelCPUContext(int bs) {
+            Bsz = bs;
             Gsz = (N+Bsz-1)/Bsz;
-            // host_data.resize(2);
+        }
 
-            for(int i=0; i<N; ++i){
-                host_data[0].push_back(i);
-                host_data[1].push_back(0);
-            }
+        void init(){
+            
+            init_inputs();
+            init_indices();
 
-            device_data_ptrs.resize(2);
-            // vt tmp = 5;
-            // device_data_ptrs[0] = &tmp;
-            // device_data_ptrs[1] = &tmp;
+            device_data_ptrs.resize(num_total_data);
 
             bool pass = true;
-            
-            cudaErrChk(cudaMalloc((void **)&device_data_ptrs[0], N * sizeof(vt)),"device_data_ptrs[0] mem allocation", pass);
-            cudaErrChk(cudaMalloc((void **)&device_data_ptrs[1], N * sizeof(vt)),"device_data_ptrs[1] mem allocation", pass);
-            
-
-            cudaErrChk(cudaMemcpy(device_data_ptrs[0], host_data[0].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data[0] to device_data_ptrs[0]", pass);
-            if(!pass) {free(); okay = false;}
-            else {
-                ctx.in = device_data_ptrs[0];
-                ctx.out = device_data_ptrs[1];
+            for(int i=0; i < num_total_data; ++i) {
+                cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], N * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
             }
+
+            for(int i=0; i < num_in_data; ++i) {
+                cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+            }
+
+            if(!pass) {free(); okay = false;}
+            else { set_dev_ptrs(); }
         }
 
         ~KernelCPUContext(){
             free();            
         }
 
+        virtual void set_dev_ptrs() {}
 
-        
+        virtual void local_execute() {}
+
         void execute() {
             if(!okay) return;
-            compute_kernel<vt, it, gpu_ctx><<<Gsz, Bsz>>>(N, ctx);
+            local_execute();
             
             bool pass = true;
-            cudaErrChk(cudaMemcpy(host_data[1].data(), device_data_ptrs[1], N * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs[1] to host_data[1]", pass);
+            for(int i=num_in_data; i < num_total_data; ++i) {
+                cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], N * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]", pass);
+            }
+            
             if(!pass) {free(); okay = false;}
         }
+
+        virtual bool local_check_result() = 0;
 
         bool check_result() {
             if(!okay){
                 cout << "Cannot check "<< name << " due to previous failure!" << endl;
                 return false;
             };
-
-            for(int i=0; i<N; ++i){
-                if(host_data[0][i] != host_data[1][i]){
-                    cout << "Validation Failed at " << i << ": in="<<host_data[0][i] << " out="<< host_data[1][i] << endl;
-                    return false;
-                }
-            }
-            return true;
+            return local_check_result();
         }
 
+        void run() {
+            init();
+            execute();
+        }
+        
+        bool run_and_check() {
+            run();
+            return check_result();     
+        }
 
 };
-
-
-
-
