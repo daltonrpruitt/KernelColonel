@@ -10,8 +10,7 @@
 // #include <local_cuda_utils.h>
 
 #include <kernel_test.cu>
-#include <kernel_context.cu>
-#include <copy.cu>
+#include <kernel_types.h>
 
 using vt = double;
 using std::string;
