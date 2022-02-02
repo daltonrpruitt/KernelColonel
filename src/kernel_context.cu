@@ -32,17 +32,17 @@ void compute_kernel(int N, kernel_ctx_t ctx) {
 
 
 
-template<typename vt, typename it, int in, int out, int indices, int n>
+template<typename vt, typename it>
 struct KernelCPUContext {
     public:
         string name;
-        int N = n;
-        int Bsz;
-        int Gsz;
-        int num_in_data = in;
-        int num_out_data = out;
-        int num_total_data = num_in_data + num_out_data;
-        int num_indices = indices;
+        int N=-1;
+        int Bsz=-1;
+        int Gsz=-1;
+        int num_in_data=-1;
+        int num_out_data=-1;
+        int num_total_data=-1;
+        int num_indices=-1;
 
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
@@ -61,10 +61,9 @@ struct KernelCPUContext {
         virtual void init_inputs() {};
         virtual void init_indices() {};
 
-        KernelCPUContext(int bs) {
-            Bsz = bs;
-            Gsz = (N+Bsz-1)/Bsz;
-        }
+        KernelCPUContext(int in, int out, int indices, int n, int bs)
+            : num_in_data(in), num_out_data(out), num_indices(indices), 
+            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs )  {}
 
         void init(){
             

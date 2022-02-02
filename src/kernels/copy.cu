@@ -21,10 +21,10 @@ using std::endl;
 using std::vector;
 
 
-template<typename vt, typename it, int n>
-struct ArrayCopyContext : public KernelCPUContext<vt, it, 1, 1, 0, n> {
+template<typename vt, typename it>
+struct ArrayCopyContext : public KernelCPUContext<vt, it> {
     public:
-        typedef KernelCPUContext<vt, it, 1, 1, 0, n> super;
+        typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
         int N = super::N;
         int Gsz = super::Gsz;
@@ -48,7 +48,8 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it, 1, 1, 0, n> {
             }
         } ctx ;
 
-        ArrayCopyContext(int bs) : super(bs) {
+        ArrayCopyContext(int n, int bs) 
+            : super(1, 1, 0, n, bs) {
             this->name = "Array_Copy";
         }
         ~ArrayCopyContext(){}
