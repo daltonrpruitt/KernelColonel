@@ -35,9 +35,10 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
         vt* & d_in = super::device_data_ptrs[0];
         vt* & d_out = super::device_data_ptrs[1];
 
-        
-
-        
+        int reads_per_element = 1;
+        int writes_per_element = 1;
+        int total_reads;
+        int total_writes;
         struct gpu_ctx {
             vt * gpu_in;
             vt * gpu_out;   
@@ -51,6 +52,10 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
         ArrayCopyContext(int n, int bs) 
             : super(1, 1, 0, n, bs) {
             this->name = "Array_Copy";
+            cout << "n=" << n << " vs N=" << N << endl;
+            cout << "This object is at " << this << endl;
+            total_reads = N * reads_per_element;
+            total_writes = N * writes_per_element;
         }
         ~ArrayCopyContext(){}
 
