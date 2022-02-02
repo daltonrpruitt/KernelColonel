@@ -10,3 +10,11 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 build
+
+
+driver.h
+
+# dated copies
+*??-??-* 
+
+extra*
