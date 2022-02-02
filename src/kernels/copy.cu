@@ -56,8 +56,8 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
         void init_inputs() override {
             for(int i=0; i<N; ++i){
-                this->in.push_back(i);
-                this->out.push_back(0);
+                in.push_back(i);
+                out.push_back(0);
             }
         }
 
