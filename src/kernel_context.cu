@@ -75,10 +75,14 @@ struct KernelCPUContext {
             bool pass = true;
             for(int i=0; i < num_total_data; ++i) {
                 cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], N * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
+                if(!pass) break;
             }
-
-            for(int i=0; i < num_in_data; ++i) {
-                cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+            
+            if(pass) {
+               for(int i=0; i < num_in_data; ++i) {
+                    cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+                    if(!pass) break;
+                }
             }
 
             if(!pass) {free(); okay = false;}
