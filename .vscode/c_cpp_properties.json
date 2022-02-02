@@ -3,13 +3,25 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${CUDA_INCLUDE_DIRS}",
+                "/usr/include/linux",
+                "/apps/cuda-11.2.1/toolkit/targets/x86_64-linux/include",
+                "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/../../../../include/c++/8.3.0",
+                "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/../../../../include/c++/8.3.0/x86_64-pc-linux-gnu",
+                "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/../../../../include/c++/8.3.0/backward",
+                "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/include",
+                "/usr/local/include",
+                "/apps/gcc-8.3.0/gcc-8.3.0/include",
+                "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/include-fixed",
+                "/usr/include"
             ],
             "defines": [],
             "compilerPath": "/apps/gcc-8.3.0/gcc-8.3.0/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4
