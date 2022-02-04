@@ -44,6 +44,8 @@ struct KernelCPUContext {
         int num_total_data=-1;
         int num_indices=-1;
 
+        bool initialized = true;
+
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
 
@@ -120,7 +122,7 @@ struct KernelCPUContext {
         }
 
         void run() {
-            init();
+            if(!initialized) { init(); }
             execute();
         }
         
