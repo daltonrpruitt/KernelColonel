@@ -11,4 +11,8 @@ void cudaErrChk(cudaError_t status, string msg, bool& pass) {
     }
 }
 
-
+void cudaPrintLastError() {
+    cudaError_t status = cudaGetLastError();
+    if (status != cudaSuccess)
+        std::cerr << "Error = " << cudaGetErrorString(status) << std::endl;
+}
