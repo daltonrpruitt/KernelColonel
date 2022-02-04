@@ -60,6 +60,11 @@ struct KernelCPUContext {
             for(it* ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
         }
         
+        void uninit() {
+            if(!initialized) {return;}
+            free();
+            for(int i=0; i<num_total_data; ++i) { host_data[i].clear(); }
+            }
 
         virtual void init_inputs() {};
         virtual void init_indices() {};
