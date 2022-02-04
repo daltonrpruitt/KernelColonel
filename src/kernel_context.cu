@@ -43,13 +43,13 @@ struct KernelCPUContext {
         int num_out_data=-1;
         int num_total_data=-1;
         int num_indices=-1;
-
+        
+        bool okay = true;
         bool initialized = true;
 
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
 
-        bool okay = true;
         
         vector<vector<it>> host_indices{(unsigned long)num_indices};
         vector<it *> device_indices_ptrs{(unsigned long)num_indices};
