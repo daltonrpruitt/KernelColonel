@@ -105,16 +105,32 @@ struct KernelCPUContext {
 
         virtual void local_execute() {}
 
-        void execute() {
-            if(!okay) return;
+        float execute() {
+            if(!okay) return -1.0;
+            cudaEvent_t start, stop;
+            cudaEventCreate(&start);
+            cudaEventCreate(&stop);
+
+            cudaEventRecord(start);
             local_execute();
-            
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+
+            cudaPrintLastError();
+
+            float time = 0;
+            cudaEventElapsedTime(&time, start, stop);
+            cudaEventDestroy(start);
+            cudaEventDestroy(stop);
+
+
             bool pass = true;
             for(int i=num_in_data; i < num_total_data; ++i) {
                 cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], N * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]", pass);
             }
             
-            if(!pass) {free(); okay = false;}
+            if(!pass) {free(); okay = false; time = -1.0;}
+            return time;
         }
 
         virtual bool local_check_result() = 0;
@@ -127,13 +143,13 @@ struct KernelCPUContext {
             return local_check_result();
         }
 
-        void run() {
+        float run() {
             if(!initialized) { init(); }
-            execute();
+            return execute();
         }
         
         bool run_and_check() {
-            run();
+            run(); // ignore time
             return check_result();     
         }
 
