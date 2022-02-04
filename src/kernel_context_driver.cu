@@ -29,7 +29,7 @@ int main() {
     typedef MicrobenchmarkDriver<kernel_t> driver_t;
 
     std::vector<int> bs_vec; for (int bs = 32; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    driver_t driver(N, bs_vec);
+    driver_t driver(N, bs_vec, "../../output/kernel_output.csv");
     driver.check_then_run_kernels();
 
     return 0;
