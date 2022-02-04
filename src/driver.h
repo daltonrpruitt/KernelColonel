@@ -7,6 +7,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <iterator>
 #include <iomanip>
 #include <string>
 #include <vector>
@@ -20,20 +22,28 @@ class MicrobenchmarkDriver {
    private:
     std::ofstream output_file;
     std::vector<kernel_ctx_t *> contexts;
+    int N=0;
+    int bs=0;
     int kernel_runs = 50;
     int kernel_checks = 2;
 
    public:
-    MicrobenchmarkDriver(int N, std::vector<int> bs_vec) {
+    MicrobenchmarkDriver(int N, std::vector<int> bs_vec, std::string output_filename) {
         for (int bs : bs_vec) {
             contexts.push_back(new kernel_ctx_t(N, bs));
         }
+        // output_file(outfilename);
+        // // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth" 
+        // //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
+        output_file.open(output_filename.c_str());
+        output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
     }
     ~MicrobenchmarkDriver() {
         for (auto ctx : contexts) {
             if (ctx)
                 delete ctx;
         }
+        output_file.close();
     }
 
     bool check_kernels() {
@@ -87,6 +97,7 @@ class MicrobenchmarkDriver {
 #endif
             // avg/std dev/ min, max, med
             // output to file
+            write_data(ctx, timing_stats);
         }
     }
 
@@ -99,4 +110,12 @@ class MicrobenchmarkDriver {
         }
     }
 
+    // output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
+    void write_data(kernel_ctx_t* ctx, std::vector<float> data) {
+        std::stringstream s;
+        copy(data.begin(),data.end()-1, std::ostream_iterator<float>(s,",")); // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
+        std::string wo_last_comma = s.str();
+        wo_last_comma.pop_back(); // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
+        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << std::endl ;
+    }
 };
