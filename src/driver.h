@@ -74,6 +74,7 @@ class MicrobenchmarkDriver {
                 times.push_back(t);
             }
             ctx->uninit();
+            // avg/std dev/ min, max, med
             std::vector<float> timing_stats = stats_from_vec(times);
 #ifdef DEBUG
             std::cout << "Actual runtimes:" << std::endl;
@@ -95,7 +96,6 @@ class MicrobenchmarkDriver {
             }
             std::cout << std::endl << std::endl;
 #endif
-            // avg/std dev/ min, max, med
             // output to file
             write_data(ctx, timing_stats);
         }
