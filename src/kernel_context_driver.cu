@@ -1,11 +1,11 @@
 // driver.cpp
 // simple driver file for kernel testing
 
-#include <iostream>
-#include <string>
-
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+
+#include <iostream>
+#include <string>
 
 // #include <local_cuda_utils.h>
 
@@ -17,9 +17,9 @@
 
 
 using vt = double;
-using std::string;
 using std::cout;
 using std::endl;
+using std::string;
 
 #define N (32*32*32)
 
@@ -32,6 +32,5 @@ int main() {
     driver_t driver(N, bs_vec);
     driver.check_then_run_kernels();
 
-  return 0;
- 
+    return 0;
 }
