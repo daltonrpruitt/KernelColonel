@@ -16,3 +16,5 @@ build
 
 extra*
 kernel_types.h
+
+output/
