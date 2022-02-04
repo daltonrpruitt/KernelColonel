@@ -56,9 +56,10 @@ struct KernelCPUContext {
 
 
         void free(){
-            for(vt* ptr : device_data_ptrs) cudaFree(ptr);
-            for(it* ptr : device_indices_ptrs) cudaFree(ptr);
+            for(vt* ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
+            for(it* ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
         }
+        
 
         virtual void init_inputs() {};
         virtual void init_indices() {};
