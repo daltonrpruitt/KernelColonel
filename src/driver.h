@@ -6,10 +6,10 @@
 #include <stats.h>
 
 #include <fstream>
-#include <iostream>
-#include <sstream>
-#include <iterator>
 #include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -21,9 +21,9 @@ template <typename kernel_ctx_t>
 class MicrobenchmarkDriver {
    private:
     std::ofstream output_file;
-    std::vector<kernel_ctx_t *> contexts;
-    int N=0;
-    int bs=0;
+    std::vector<kernel_ctx_t*> contexts;
+    int N = 0;
+    int bs = 0;
     int kernel_runs = 50;
     int kernel_checks = 2;
 
@@ -33,10 +33,10 @@ class MicrobenchmarkDriver {
             contexts.push_back(new kernel_ctx_t(N, bs));
         }
         // output_file(outfilename);
-        // // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth" 
+        // // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         // //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename.c_str());
-        output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
+        output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl;
     }
     ~MicrobenchmarkDriver() {
         for (auto ctx : contexts) {
@@ -78,11 +78,13 @@ class MicrobenchmarkDriver {
             std::vector<float> timing_stats = stats_from_vec(times);
 #ifdef DEBUG
             std::cout << "Actual runtimes:" << std::endl;
-            for (int i=0; i < times.size(); ++i) {
+            for (int i = 0; i < times.size(); ++i) {
                 std::cout << std::setw(10) << times[i];
-                if(i%10==9) {std::cout << std::endl;}
+                if (i % 10 == 9) {
+                    std::cout << std::endl;
+                }
             }
-            std::cout << std::endl ;
+            std::cout << std::endl;
 
             int w = 15;
             std::cout << "Timing stats:" << std::endl;
@@ -94,7 +96,8 @@ class MicrobenchmarkDriver {
             for (auto v : timing_stats) {
                 std::cout << std::setw(w) << v;
             }
-            std::cout << std::endl << std::endl;
+            std::cout << std::endl
+                      << std::endl;
 #endif
             // output to file
             write_data(ctx, timing_stats);
@@ -113,9 +116,9 @@ class MicrobenchmarkDriver {
     // output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
     void write_data(kernel_ctx_t* ctx, std::vector<float> data) {
         std::stringstream s;
-        copy(data.begin(),data.end()-1, std::ostream_iterator<float>(s,",")); // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
+        copy(data.begin(), data.end() - 1, std::ostream_iterator<float>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
         std::string wo_last_comma = s.str();
-        wo_last_comma.pop_back(); // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
-        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << std::endl ;
+        wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
+        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << std::endl;
     }
 };
