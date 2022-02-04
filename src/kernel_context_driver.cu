@@ -10,7 +10,7 @@
 // #include <local_cuda_utils.h>
 
 #include <kernel_test.cu>
-#include <kernel_context.cu>
+#include <kernel_types.h>
 
 using vt = double;
 using std::string;
@@ -20,9 +20,16 @@ using std::endl;
 #define N (32*32*32)
 
 int main() {
-  TestKernelContext<vt, int, N, 128> ctx;
-  ctx.execute();
-  bool res = ctx.check_result();
-  cout << ctx.name <<  " " << (res ? "Passed" : "Failed") << "!" << endl;
+  cout << "Processing " << N * sizeof(vt) / 1024 * 2 << " KB of data (1/2 reads; 1/2 writes)" << endl;
+  // typedef ArrayCopyContext<vt, int> kernel_t;
+
+// #pragma unroll
+  for(int bs = 128; bs <= 1024; bs*=2) {
+    ArrayCopyContext<vt, int> ctx(N, bs);
+    bool res = ctx.run_and_check();
+    
+    cout << ctx.name <<  " bs=" << bs << " " << (res ? "Passed" : "Failed") << "!" << endl;
+  }
+  return 0;
  
 }

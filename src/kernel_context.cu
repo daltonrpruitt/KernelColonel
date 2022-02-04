@@ -1,3 +1,4 @@
+#pragma once 
 /**
  * @file kernel_context.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
@@ -15,12 +16,13 @@
 #define DEBUG
 
 using std::string;
+using std::to_string;
 using std::cout;
 using std::endl;
 using std::vector;
 
 
-template<typename vt, typename it, typename kernel_ctx_t>
+template<typename kernel_ctx_t>
 __global__
 void compute_kernel(int N, kernel_ctx_t ctx) {
     uint idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -30,100 +32,125 @@ void compute_kernel(int N, kernel_ctx_t ctx) {
 
 
 
-template<typename vt, typename it, int n, int bsz>
-struct TestKernelContext {
+template<typename vt, typename it>
+struct KernelCPUContext {
     public:
-        string name = "Array_Copy";
-        int N = n;
-        int Bsz = bsz;
-        int Gsz;
-
-
-        vector<vector<vt>> host_data{2};
-        vector<vt *> device_data_ptrs{2};
-        bool okay = true;
+        string name;
+        int N=-1;
+        int Bsz=-1;
+        int Gsz=-1;
+        int num_in_data=-1;
+        int num_out_data=-1;
+        int num_total_data=-1;
+        int num_indices=-1;
         
-        // host_vector<it> host_indices;
-        // vector<it *> device_indices_ptrs;
-        // template<typename vt, typename it>
-        struct kernel_context {
-            vt * in;
-            vt * out;   
+        bool okay = true;
+        bool initialized = true;
 
-            // template<typename vt, typename it>
-            __device__        
-            void operator() (uint idx){
-                // vt* in = data[0];
-                // vt* out = data[1];
-                out[idx] = in[idx];
-            }
-        } ctx ;
+        vector<vector<vt>> host_data{(unsigned long)num_total_data};
+        vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
+
+        
+        vector<vector<it>> host_indices{(unsigned long)num_indices};
+        vector<it *> device_indices_ptrs{(unsigned long)num_indices};
+
 
         void free(){
-            for(vt* ptr : device_data_ptrs) cudaFree(ptr);
+            for(vt* ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
+            for(it* ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
         }
-
-        TestKernelContext() {
-            Gsz = (N+Bsz-1)/Bsz;
-            // host_data.resize(2);
-
-            for(int i=0; i<N; ++i){
-                host_data[0].push_back(i);
-                host_data[1].push_back(0);
+        
+        void uninit() {
+            if(!initialized) {return;}
+            free();
+            for(int i=0; i<num_total_data; ++i) { host_data[i].clear(); }
             }
 
-            device_data_ptrs.resize(2);
-            // vt tmp = 5;
-            // device_data_ptrs[0] = &tmp;
-            // device_data_ptrs[1] = &tmp;
+        virtual void init_inputs() {};
+        virtual void init_indices() {};
+
+        KernelCPUContext(int in, int out, int indices, int n, int bs)
+            : num_in_data(in), num_out_data(out), num_indices(indices), 
+            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs )  {}
+
+        void init(){
+            
+            init_inputs();
+            init_indices();
+
+            device_data_ptrs.resize(num_total_data);
 
             bool pass = true;
-            
-            cudaErrChk(cudaMalloc((void **)&device_data_ptrs[0], N * sizeof(vt)),"device_data_ptrs[0] mem allocation", pass);
-            cudaErrChk(cudaMalloc((void **)&device_data_ptrs[1], N * sizeof(vt)),"device_data_ptrs[1] mem allocation", pass);
-            
-
-            cudaErrChk(cudaMemcpy(device_data_ptrs[0], host_data[0].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data[0] to device_data_ptrs[0]", pass);
-            if(!pass) {free(); okay = false;}
-            else {
-                ctx.in = device_data_ptrs[0];
-                ctx.out = device_data_ptrs[1];
+            for(int i=0; i < num_total_data; ++i) {
+                cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], N * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
+                if(!pass) break;
             }
+            
+            if(pass) {
+               for(int i=0; i < num_in_data; ++i) {
+                    cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+                    if(!pass) break;
+                }
+            }
+
+            if(!pass) {free(); okay = false;}
+            else { set_dev_ptrs(); }
         }
 
-        ~TestKernelContext(){
+        ~KernelCPUContext(){
             free();            
         }
 
+        virtual void set_dev_ptrs() {}
 
-        
-        void execute() {
-            if(!okay) return;
-            compute_kernel<vt, it, kernel_context><<<Gsz, Bsz>>>(N, ctx);
-            
+        virtual void local_execute() {}
+
+        float execute() {
+            if(!okay) return -1.0;
+            cudaEvent_t start, stop;
+            cudaEventCreate(&start);
+            cudaEventCreate(&stop);
+
+            cudaEventRecord(start);
+            local_execute();
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+
+            cudaPrintLastError();
+
+            float time = 0;
+            cudaEventElapsedTime(&time, start, stop);
+            cudaEventDestroy(start);
+            cudaEventDestroy(stop);
+
+
             bool pass = true;
-            cudaErrChk(cudaMemcpy(host_data[1].data(), device_data_ptrs[1], N * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs[1] to host_data[1]", pass);
-            if(!pass) {free(); okay = false;}
+            for(int i=num_in_data; i < num_total_data; ++i) {
+                cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], N * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]", pass);
+            }
+            
+            if(!pass) {free(); okay = false; time = -1.0;}
+            return time;
         }
+
+        virtual bool local_check_result() = 0;
 
         bool check_result() {
             if(!okay){
                 cout << "Cannot check "<< name << " due to previous failure!" << endl;
                 return false;
             };
-
-            for(int i=0; i<N; ++i){
-                if(host_data[0][i] != host_data[1][i]){
-                    cout << "Validation Failed at " << i << ": in="<<host_data[0][i] << " out="<< host_data[1][i] << endl;
-                    return false;
-                }
-            }
-            return true;
+            return local_check_result();
         }
 
+        float run() {
+            if(!initialized) { init(); }
+            return execute();
+        }
+        
+        bool run_and_check() {
+            run(); // ignore time
+            return check_result();     
+        }
 
 };
-
-
-
-
