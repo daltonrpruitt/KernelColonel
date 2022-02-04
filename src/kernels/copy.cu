@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file kernel_context.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
@@ -51,9 +52,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
         ArrayCopyContext(int n, int bs) 
             : super(1, 1, 0, n, bs) {
-            this->name = "Array_Copy";
-            cout << "n=" << n << " vs N=" << N << endl;
-            cout << "This object is at " << this << endl;
+            this->name = "Array_Copy_N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
         }

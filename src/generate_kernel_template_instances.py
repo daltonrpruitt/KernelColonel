@@ -12,6 +12,7 @@ index_types = ["int", "short"]
 
 
 with open("kernel_types.h", "w") as file:
+    file.write("#pragma once\n")
     for f in files:
         file.write("#include <"+f+">\n")
 
