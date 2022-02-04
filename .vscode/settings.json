@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.cu": "cpp",
+        "cwchar": "cpp",
+        "iostream": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "ostream": "cpp"
+    }
+}
