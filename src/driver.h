@@ -38,9 +38,19 @@ class MicrobenchmarkDriver {
         for (int bs : bs_vec) {
             contexts.push_back(new kernel_ctx_t(N, bs));
         }
-        // output_file(outfilename);
-        // // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
-        // //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
+        // Guard against overwriting data
+        struct stat output_file_buffer;
+        int i = 0;
+        string original_filename = output_filename;
+        while (stat(output_filename.c_str(), &output_file_buffer) == 0)
+        {
+            cerr << "The file '" << output_filename << "' already exists in the output directory!" << endl;
+            ++i;
+            output_filename = original_filename+"("+to_string(i)+")";
+        }
+
+        // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
+        //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename.c_str());
         output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl;
     }
