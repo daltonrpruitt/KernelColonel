@@ -21,6 +21,11 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+template<typename vt, typename it>
+__global__        
+void kernel (uint idx, vt* gpu_in, vt* gpu_out){
+        gpu_out[idx] = gpu_in[idx];
+}
 
 template<typename vt, typename it>
 struct ArrayCopyContext : public KernelCPUContext<vt, it> {
@@ -86,4 +91,17 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
             }
             return true;
         }
+
+        void local_compute_register_usage() override {
+            bool pass = true;
+            
+            // Kernel Registers 
+            struct cudaFuncAttributes funcAttrib;
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel<vt,it>), "Getting function attributes (for # registers)", pass);
+            this->register_usage = funcAttrib.numRegs;
+#ifdef DEBUG
+            cout << this->name << " numRegs=" << this->register_usage << endl;
+#endif
+        }
+
 };
