@@ -1,19 +1,18 @@
 // driver.cpp
 // simple driver file for kernel testing
 
-#include <cuda.h>
-#include <cuda_runtime_api.h>
+// local files
+#include <kernel_types.h>
+#include <driver.h>
+#include <device_props.h>
 
 #include <iostream>
 #include <string>
 
-// #include <local_cuda_utils.h>
+#include <cuda.h>
+#include <cuda_runtime_api.h>
 
 #define DEBUG
-
-// local files
-#include <kernel_types.h>
-#include <driver.h>
 
 
 using vt = double;
