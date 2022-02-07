@@ -57,7 +57,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
         ArrayCopyContext(int n, int bs, device_context dev_ctx) 
             : super(1, 1, 0, n, bs, dev_ctx) {
-            this->name = "Array_Copy_N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
+            this->name = "ArrayCopy"; // _N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
         }
