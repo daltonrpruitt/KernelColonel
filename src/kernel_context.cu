@@ -8,6 +8,7 @@
  * 
  */
 
+#include <device_props.h>
 #include <vector>
 
 #include <cuda.h>
@@ -47,6 +48,12 @@ struct KernelCPUContext {
         bool okay = true;
         bool initialized = true;
 
+        size_t shared_memory_usage;
+        int register_usage=-1;
+        int max_blocks_simultaneous_per_sm;
+
+        device_context dev_props;
+
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
 
@@ -69,12 +76,13 @@ struct KernelCPUContext {
         virtual void init_inputs() {};
         virtual void init_indices() {};
 
-        KernelCPUContext(int in, int out, int indices, int n, int bs)
+        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
-            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs )  {}
+            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx)  {
+            }
 
         void init(){
-            
+            compute_max_simultaneous_blocks();
             init_inputs();
             init_indices();
 
@@ -152,5 +160,17 @@ struct KernelCPUContext {
             run(); // ignore time
             return check_result();     
         }
+
+    virtual void local_compute_register_usage() = 0;
+
+    void compute_max_simultaneous_blocks() {
+        local_compute_register_usage();
+
+        int due_to_block_size = (int) floor(dev_props.props_.maxThreadsPerMultiProcessor / Bsz); 
+        int due_to_registers =  (int) floor(dev_props.props_.regsPerMultiprocessor / (register_usage * Bsz));
+        max_blocks_simultaneous_per_sm = std::min({due_to_block_size, 
+                                            due_to_registers, dev_props.props_.maxBlocksPerMultiProcessor});
+
+    }
 
 };
