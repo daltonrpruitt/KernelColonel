@@ -1,5 +1,12 @@
-// driver.cpp
-// simple driver file for kernel testing
+#pragma once
+/**
+ * @file driver.h
+ * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
+ * @brief Class to drive testing of kernels, including verification
+ * @version 0.1
+ * @date 2022-02-04
+ * 
+ */
 
 #include <kernel_types.h>
 #include <local_cuda_utils.h>
