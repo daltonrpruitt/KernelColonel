@@ -5,6 +5,10 @@
         "iostream": "cpp",
         "array": "cpp",
         "string": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "iosfwd": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp"
     }
 }

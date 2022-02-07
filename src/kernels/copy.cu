@@ -1,8 +1,8 @@
 #pragma once
 /**
- * @file kernel_context.cu
+ * @file copy.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Provides context information for GPU kernel execution of driver
+ * @brief Derived from KernelCPUContext; actual kernel specification
  * @version 0.1
  * @date 2022-01-27
  * 
@@ -57,7 +57,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
         ArrayCopyContext(int n, int bs, device_context dev_ctx) 
             : super(1, 1, 0, n, bs, dev_ctx) {
-            this->name = "Array_Copy_N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
+            this->name = "ArrayCopy"; // _N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
         }

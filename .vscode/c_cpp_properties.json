@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/src",
                 "${CUDA_INCLUDE_DIRS}",
                 "/usr/include/linux",
                 "/apps/cuda-11.2.1/toolkit/targets/x86_64-linux/include",

@@ -8,13 +8,13 @@
  * 
  */
 
+#include <local_cuda_utils.h>
 #include <device_props.h>
+
 #include <vector>
+#include <algorithm>
 
 #include <cuda.h>
-#include <local_cuda_utils.h>
-
-#define DEBUG
 
 using std::string;
 using std::to_string;
