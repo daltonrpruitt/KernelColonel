@@ -13,22 +13,28 @@
 #include <string>
 #include <vector>
 
+using std::vector;
 using std::cout;
 using std::endl;
+using std::cerr;
 using std::string;
+using std::ofstream;
+using std::setw;
+
 
 template <typename kernel_ctx_t>
 class MicrobenchmarkDriver {
    private:
-    std::ofstream output_file;
-    std::vector<kernel_ctx_t*> contexts;
+    ofstream output_file;
+    vector<kernel_ctx_t*> contexts;
+
     int N = 0;
     int bs = 0;
     int kernel_runs = 50;
     int kernel_checks = 2;
 
    public:
-    MicrobenchmarkDriver(int N, std::vector<int> bs_vec, std::string output_filename) {
+    MicrobenchmarkDriver(int N, vector<int> bs_vec, string output_filename) {
         for (int bs : bs_vec) {
             contexts.push_back(new kernel_ctx_t(N, bs));
         }
@@ -56,7 +62,7 @@ class MicrobenchmarkDriver {
             ctx->uninit();
         }
         if (!pass) {
-            std::cerr << "One or more kernels failed check!" << std::endl;
+            cerr << "One or more kernels failed check!" << endl;
         }
         return pass;
     }
@@ -64,40 +70,40 @@ class MicrobenchmarkDriver {
     void run_kernels() {
         for (auto ctx : contexts) {
 #ifdef DEBUG
-            std::cout << "Running " << ctx->name << std::endl;
+            cout << "Running " << ctx->name << endl;
 #endif
 
             ctx->init();
-            std::vector<float> times;
+            vector<float> times;
             for (int i = 0; i < kernel_runs; ++i) {
                 float t = ctx->run();
                 times.push_back(t);
             }
             ctx->uninit();
             // avg/std dev/ min, max, med
-            std::vector<float> timing_stats = stats_from_vec(times);
+            vector<float> timing_stats = stats_from_vec(times);
 #ifdef DEBUG
-            std::cout << "Actual runtimes:" << std::endl;
+            cout << "Actual runtimes:" << endl;
             for (int i = 0; i < times.size(); ++i) {
-                std::cout << std::setw(10) << times[i];
+                cout << setw(10) << times[i];
                 if (i % 10 == 9) {
-                    std::cout << std::endl;
+                    cout << endl;
                 }
             }
-            std::cout << std::endl;
+            cout << endl;
 
             int w = 15;
-            std::cout << "Timing stats:" << std::endl;
-            std::cout << std::setw(w) << "min"
-                      << std::setw(w) << "med"
-                      << std::setw(w) << "max"
-                      << std::setw(w) << "avg"
-                      << std::setw(w) << "stddev" << std::endl;
+            cout << "Timing stats:" << endl;
+            cout << setw(w) << "min"
+                      << setw(w) << "med"
+                      << setw(w) << "max"
+                      << setw(w) << "avg"
+                      << setw(w) << "stddev" << endl;
             for (auto v : timing_stats) {
-                std::cout << std::setw(w) << v;
+                cout << setw(w) << v;
             }
-            std::cout << std::endl
-                      << std::endl;
+            cout << endl
+                      << endl;
 #endif
             // output to file
             write_data(ctx, timing_stats);
@@ -109,16 +115,16 @@ class MicrobenchmarkDriver {
         if (pass) {
             run_kernels();
         } else {
-            std::cerr << "Not running kernels!" << std::endl;
+            cerr << "Not running kernels!" << endl;
         }
     }
 
     // output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
-    void write_data(kernel_ctx_t* ctx, std::vector<float> data) {
-        std::stringstream s;
+    void write_data(kernel_ctx_t* ctx, vector<float> data) {
+        stringstream s;
         copy(data.begin(), data.end() - 1, std::ostream_iterator<float>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
-        std::string wo_last_comma = s.str();
+        string wo_last_comma = s.str();
         wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
-        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << std::endl;
+        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << endl;
     }
 };
