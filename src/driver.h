@@ -19,6 +19,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sys/stat.h>
+
 
 using std::vector;
 using std::cout;
