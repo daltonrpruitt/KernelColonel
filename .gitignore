@@ -11,11 +11,10 @@ CTestTestfile.cmake
 _deps
 build
 
-
-driver.h
-
 # dated copies
 *??-??-* 
 
 extra*
 kernel_types.h
+
+output/
