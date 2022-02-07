@@ -1,8 +1,8 @@
 #pragma once
 /**
- * @file kernel_context.cu
+ * @file copy.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Provides context information for GPU kernel execution of driver
+ * @brief Derived from KernelCPUContext; actual kernel specification
  * @version 0.1
  * @date 2022-01-27
  * 
