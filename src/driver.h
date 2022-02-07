@@ -11,6 +11,7 @@
 #include <kernel_types.h>
 #include <local_cuda_utils.h>
 #include <stats.h>
+#include <device_props.h>
 
 #include <fstream>
 #include <iomanip>
@@ -43,10 +44,12 @@ class MicrobenchmarkDriver {
     int kernel_checks = 2;
 
    public:
-    MicrobenchmarkDriver(int N, vector<int> bs_vec, string output_filename) {
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context& dev_ctx) {
         for (int bs : bs_vec) {
-            contexts.push_back(new kernel_ctx_t(N, bs));
+            contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx));
         }
+        dev_ctx.init();
+
         // Guard against overwriting data
         struct stat output_file_buffer;
         int i = 0;
