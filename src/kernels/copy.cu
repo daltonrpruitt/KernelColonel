@@ -22,9 +22,16 @@ using std::endl;
 using std::vector;
 
 template<typename vt, typename it>
-__global__        
-void kernel (uint idx, vt* gpu_in, vt* gpu_out){
+__forceinline__ __host__ __device__        
+void kernel(uint idx, vt* gpu_in, vt* gpu_out){
         gpu_out[idx] = gpu_in[idx];
+}
+
+
+template<typename vt, typename it>
+__global__        
+void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out){
+        kernel<vt, it>(idx, gpu_in, gpu_out);
 }
 
 template<typename vt, typename it>
@@ -51,7 +58,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
             __device__        
             void operator() (uint idx){
-                gpu_out[idx] = gpu_in[idx];
+                kernel<vt, it>(idx, gpu_in, gpu_out);
             }
         } ctx ;
 
@@ -97,7 +104,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
             
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel<vt,it>), "Getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it>), "getting function attributes (for # registers)", pass);
             this->register_usage = funcAttrib.numRegs;
 #ifdef DEBUG
             cout << this->name << " numRegs=" << this->register_usage << endl;
