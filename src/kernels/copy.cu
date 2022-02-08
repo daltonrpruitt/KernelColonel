@@ -70,14 +70,14 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
         }
         ~ArrayCopyContext(){}
 
-        void init_inputs() override {
+        void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
                 in.push_back(i);
                 out.push_back(0);
             }
         }
 
-        void init_indices() override {}
+        void init_indices(bool& pass) override {}
 
         void set_dev_ptrs() override {
             ctx.gpu_in = d_in;
@@ -99,12 +99,11 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
             return true;
         }
 
-        void local_compute_register_usage() override {
-            bool pass = true;
-            
+        void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
             cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it>), "getting function attributes (for # registers)", pass);
+            if(!pass) return;
             this->register_usage = funcAttrib.numRegs;
 #ifdef DEBUG
             cout << this->name << " numRegs=" << this->register_usage << endl;

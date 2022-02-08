@@ -73,22 +73,25 @@ struct KernelCPUContext {
             for(int i=0; i<num_total_data; ++i) { host_data[i].clear(); }
             }
 
-        virtual void init_inputs() {};
-        virtual void init_indices() {};
+        virtual void init_inputs(bool& pass) {};
+        virtual void init_indices(bool& pass) {};
 
         KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
             num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx)  {
             }
 
-        void init(){
-            compute_max_simultaneous_blocks();
-            init_inputs();
-            init_indices();
+        bool init(){
+            bool pass = true;
+
+            compute_max_simultaneous_blocks(pass);
+            if(pass) init_inputs(pass);
+            if(pass) init_indices(pass);
+
+            if(!pass) return pass;
 
             device_data_ptrs.resize(num_total_data);
 
-            bool pass = true;
             for(int i=0; i < num_total_data; ++i) {
                 cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], N * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
                 if(!pass) break;
@@ -103,6 +106,8 @@ struct KernelCPUContext {
 
             if(!pass) {free(); okay = false;}
             else { set_dev_ptrs(); }
+            if(!pass) {cerr<<"Error in initializing "<<this->name << "for N="<<this->N<<" Bsz="<<this->Bsz<<" !" << endl;}
+            return pass;
         }
 
         ~KernelCPUContext(){
@@ -152,7 +157,9 @@ struct KernelCPUContext {
         }
 
         float run() {
-            if(!initialized) { init(); }
+            if(!initialized) {
+                if(!init()) return -1.0;
+            }
             return execute();
         }
         
@@ -161,11 +168,11 @@ struct KernelCPUContext {
             return check_result();     
         }
 
-    virtual void local_compute_register_usage() = 0;
+    virtual void local_compute_register_usage(bool& pass) = 0;
 
-    void compute_max_simultaneous_blocks() {
-        local_compute_register_usage();
-
+    void compute_max_simultaneous_blocks(bool& pass) {
+        local_compute_register_usage(pass);
+        if(!pass) return;
         int due_to_block_size = (int) floor(dev_props.props_.maxThreadsPerMultiProcessor / Bsz); 
         int due_to_registers =  (int) floor(dev_props.props_.regsPerMultiprocessor / (register_usage * Bsz));
         max_blocks_simultaneous_per_sm = std::min({due_to_block_size, 

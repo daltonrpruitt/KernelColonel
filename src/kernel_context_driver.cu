@@ -27,6 +27,7 @@ int main() {
     typedef ArrayCopyContext<vt, int> kernel_t;
     typedef MicrobenchmarkDriver<kernel_t> driver_t;
     device_context dev_ctx;
+    if(!dev_ctx.init()) return -1;
 
     std::vector<int> bs_vec; for (int bs = 32; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
     driver_t driver(N, bs_vec, "../../output/kernel_output.csv", dev_ctx);

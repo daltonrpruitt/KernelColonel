@@ -95,7 +95,7 @@ class MicrobenchmarkDriver {
             cout << "Running " << ctx->name << endl;
 #endif
 
-            ctx->init();
+            if(!ctx->init()) {return;}
             vector<float> times;
             for (int i = 0; i < kernel_runs; ++i) {
                 float t = ctx->run();
