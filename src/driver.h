@@ -44,11 +44,24 @@ class MicrobenchmarkDriver {
     int kernel_checks = 2;
 
    public:
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context& dev_ctx) {
-        for (int bs : bs_vec) {
-            contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx));
-        }
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context& dev_ctx, bool span_occupancies=false) {
         dev_ctx.init();
+
+        for (int bs : bs_vec) {
+            curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
+            contexts.push_back(curr_ctx);
+            if(span_occupancies) {
+                vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
+#ifdef DEBUG
+                cout << "Valid ShdMem alloc amounts for "<< curr_ctx->name <<": ";
+                for(int x : shdmem_allocs)
+#endif
+                for(int i=0; i < shdmem_allocs.size()-1; ++i){ // not last one because we already have that one (max occupancy)
+                    contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx, shdmem_allocs[i]));
+                }
+            }
+        }
+
 
         // Guard against overwriting data
         struct stat output_file_buffer;
