@@ -214,4 +214,16 @@ struct KernelCPUContext {
         }
         return alloc_amounts;
     }
+
+    float get_occupancy() {
+        int max_blocks_shared_mem;
+        if(shared_memory_usage == 0) {
+            max_blocks_shared_mem = dev_props.props_.maxBlocksPerMultiProcessor;
+        } else {
+            max_blocks_shared_mem = dev_props.props_.sharedMemPerBlock / shared_memory_usage;
+        }
+        int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
+        int num_threads_simul = max_blocks_simul * Bsz; 
+        return float(num_threads_simul) / float(dev_props.props_.maxThreadsPerMultiProcessor);
+    }
 };
