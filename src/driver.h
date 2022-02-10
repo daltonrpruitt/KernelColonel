@@ -79,7 +79,7 @@ class MicrobenchmarkDriver {
         // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename.c_str());
-        output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl;
+        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl;
     }
     ~MicrobenchmarkDriver() {
         for (auto ctx : contexts) {
@@ -156,12 +156,12 @@ class MicrobenchmarkDriver {
         }
     }
 
-    // output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
+    // output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl ;
     void write_data(kernel_ctx_t* ctx, vector<float> data) {
         stringstream s;
         copy(data.begin(), data.end(), std::ostream_iterator<float>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
         string wo_last_comma = s.str();
         wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
-        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << endl;
+        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << ","  << ctx->get_occupancy() << "," << wo_last_comma << endl;
     }
 };
