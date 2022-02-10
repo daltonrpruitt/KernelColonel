@@ -189,7 +189,7 @@ struct KernelCPUContext {
 
     void compute_max_simultaneous_blocks(bool& pass) {
         local_compute_register_usage(pass);
-        if(!pass) return;
+        if(!pass) { okay = false; return;}
         int due_to_block_size = (int) floor(dev_props.props_.maxThreadsPerMultiProcessor / Bsz); 
         int due_to_registers =  (int) floor(dev_props.props_.regsPerMultiprocessor / (register_usage * Bsz));
         max_blocks_simultaneous_per_sm = std::min({due_to_block_size, 
