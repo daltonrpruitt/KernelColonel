@@ -48,9 +48,9 @@ struct KernelCPUContext {
         bool okay = true;
         bool initialized = true;
 
-        size_t shared_memory_usage;
+        size_t shared_memory_usage=0;
         int register_usage=-1;
-        int max_blocks_simultaneous_per_sm;
+        int max_blocks_simultaneous_per_sm=-1;
 
         device_context dev_props;
 
@@ -199,4 +199,21 @@ struct KernelCPUContext {
 
     }
 
+    vector<int> shared_memory_allocations() {
+        vector<int> alloc_amounts; 
+        bool pass = true;
+        if(max_blocks_simultaneous_per_sm < 0) compute_max_simultaneous_blocks(pass);
+        if(!pass) { 
+            okay = false;  
+            alloc_amounts.push_back(-1);
+            return alloc_amounts;
+        }
+        int max_shd_mem = dev_props.props_.sharedMemPerBlock;
+
+        for(int i=0; i < max_blocks_simlutaneous_per_sm; i*=2) {
+            int sm_alloc = max_shd_mem / i - 256;
+            alloc_amounts.push_back(sm_alloc);
+        }
+        return alloc_amounts;
+    }
 };
