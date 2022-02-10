@@ -55,7 +55,8 @@ class MicrobenchmarkDriver {
                 vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
 #ifdef DEBUG
                 cout << "Valid ShdMem alloc amounts for "<< curr_ctx->name <<": ";
-                for(int x : shdmem_allocs)
+                for(int x : shdmem_allocs) {cout << " " << x;}
+                cout << endl;
 #endif
                 for(int i=0; i < shdmem_allocs.size()-1; ++i){ // not last one because we already have that one (max occupancy)
                     contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx, shdmem_allocs[i]));
