@@ -44,6 +44,7 @@ void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
 template<typename vt, typename it, bool is_indirect>
 __global__        
 void kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
+    extern __shared__ int dummy[];
     if constexpr(is_indirect) {
         kernel_indirect<vt, it>(idx, in, out, indices);
     } else {
@@ -85,6 +86,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
 
             __device__        
             void operator() (uint idx){
+               extern __shared__ int dummy[];
                 if constexpr(is_indirect) {
                     kernel_indirect<vt, it>(idx, gpu_in, gpu_out, gpu_indices);
                 } else {
@@ -93,8 +95,8 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        SimpleIndirectionKernel(int n, int bs, device_context dev_ctx) 
-            : super(1, 1, 1, n, bs, dev_ctx) {
+        SimpleIndirectionKernel(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
+            : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             if(is_indirect){
                 this->name = "SimpleIndirectionTest_Indirect";
             } else {
@@ -137,7 +139,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
 
         // No change
         void local_execute() override {
-            compute_kernel<gpu_ctx><<<Gsz, Bsz>>>(N, ctx);
+            compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
         }
 
         // No change

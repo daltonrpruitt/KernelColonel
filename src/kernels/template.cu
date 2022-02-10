@@ -37,6 +37,7 @@ void kernel(uint idx, /* parameters */){
 template<typename vt, typename it>
 __global__        
 void kernel_for_regs(uint idx, /* parameters (same as kernel) */){
+        extern __shared__ int dummy[];
         kernel<vt, it>(idx, /* pass parameters from above */);
 }
 
@@ -69,12 +70,13 @@ struct TemplateKernelContext : public KernelCPUContext<vt, it> {
 
             __device__        
             void operator() (uint idx){
+                extern __shared__ int dummy[];
                 kernel<vt, it>(idx, /* pass parameters (same as before) */);
             }
         } ctx ;
 
-        TemplateKernelContext(int n, int bs, device_context dev_ctx) 
-            : super(/*#inputs, #outputs, #index arrays */, n, bs, dev_ctx) {
+        TemplateKernelContext(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
+            : super(/*#inputs, #outputs, #index arrays */, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "/* Identifying name */";
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
@@ -122,7 +124,7 @@ struct TemplateKernelContext : public KernelCPUContext<vt, it> {
 
         // No change
         void local_execute() override {
-            compute_kernel<gpu_ctx><<<Gsz, Bsz>>>(N, ctx);
+            compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
         }
 
         // No change
