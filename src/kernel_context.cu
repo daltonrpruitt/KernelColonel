@@ -88,25 +88,44 @@ struct KernelCPUContext {
             if(pass) init_inputs(pass);
             if(pass) init_indices(pass);
 
-            if(!pass) return pass;
+            if(pass){
 
-            device_data_ptrs.resize(num_total_data);
+                device_data_ptrs.resize(num_total_data);
 
-            for(int i=0; i < num_total_data; ++i) {
-                cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], N * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
-                if(!pass) break;
-            }
-            
-            if(pass) {
-               for(int i=0; i < num_in_data; ++i) {
-                    cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+                for(int i=0; i < num_total_data; ++i) {
+                    cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], N * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
                     if(!pass) break;
                 }
+                
+                if(pass) {
+                    for(int i=0; i < num_in_data; ++i) {
+                        cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+                    cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+                        cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
+                        if(!pass) break;
+                    }
+                }
+
+                for(int i=0; i < num_indices; ++i) {
+                    cudaErrChk(cudaMalloc((void **)&device_indices_ptrs[i], N * sizeof(it)),"device_indices_ptrs["+to_string(i)+"] mem allocation", pass);
+                    if(!pass) break;
+                }
+
+                if(pass) {
+                    for(int i=0; i < num_indices; ++i) {
+                        cudaErrChk(cudaMemcpy(device_indices_ptrs[i], host_indices[i].data(), N * sizeof(it), cudaMemcpyHostToDevice), "copy host_indices["+to_string(i)+"] to device_indices_ptrs["+to_string(i)+"]", pass);                
+                        if(!pass) break;
+                    }
+                }
+
+                if(pass) { set_dev_ptrs(); }
             }
 
-            if(!pass) {free(); okay = false;}
-            else { set_dev_ptrs(); }
-            if(!pass) {cerr<<"Error in initializing "<<this->name << "for N="<<this->N<<" Bsz="<<this->Bsz<<" !" << endl;}
+            if(!pass) {
+                free(); 
+                okay = false;
+                cerr<<"Error in initializing "<<this->name << "for N="<<this->N<<" Bsz="<<this->Bsz<<" !" << endl;
+            }
             return pass;
         }
 
