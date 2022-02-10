@@ -48,7 +48,7 @@ class MicrobenchmarkDriver {
         dev_ctx.init();
 
         for (int bs : bs_vec) {
-            curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
+            kernel_ctx_t* curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
             contexts.push_back(curr_ctx);
             if(span_occupancies) {
                 vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
