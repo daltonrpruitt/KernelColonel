@@ -208,7 +208,7 @@ struct KernelCPUContext {
         }
         int max_shd_mem = dev_props.props_.sharedMemPerBlock;
 
-        for(int i=0; i < max_blocks_simlutaneous_per_sm; i*=2) {
+        for(int i=0; i < max_blocks_simultaneous_per_sm; i*=2) {
             int sm_alloc = max_shd_mem / i - 256;
             alloc_amounts.push_back(sm_alloc);
         }
