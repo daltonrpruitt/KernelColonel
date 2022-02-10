@@ -14,6 +14,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
 
 # add_executable(driver src/driver.cu)
 add_executable(ctx_driver src/kernel_context_driver.cu)
+set_property(TARGET ctx_driver PROPERTY CXX_STANDARD 17)
 
 message(STATUS "python exec: ${Python_EXECUTABLE}")
 
