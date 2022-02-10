@@ -76,9 +76,9 @@ struct KernelCPUContext {
         virtual void init_inputs(bool& pass) {};
         virtual void init_indices(bool& pass) {};
 
-        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx)
+        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx, int shd_mem_alloc=0)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
-            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx)  {
+            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx), shared_memory_usage(shd_mem_alloc) {
             }
 
         bool init(){
