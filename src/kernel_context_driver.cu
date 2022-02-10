@@ -24,14 +24,24 @@ using std::string;
 
 int main() {
     cout << "Processing " << N * sizeof(vt) / 1024 * 2 << " KB of data (1/2 reads; 1/2 writes)" << endl;
-    typedef ArrayCopyContext<vt, int> kernel_t;
-    typedef MicrobenchmarkDriver<kernel_t> driver_t;
+    typedef ArrayCopyContext<vt, int> copy_kernel_t;
+    typedef MicrobenchmarkDriver<copy_kernel_t> copy_driver_t;
+
+    typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt, int, false>> indirection_driver_direct_t;
+    typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt, int, true>> indirection_driver_indirect_t;
+
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
 
     std::vector<int> bs_vec; for (int bs = 32; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    driver_t driver(N, bs_vec, "../../output/kernel_output.csv", dev_ctx);
-    driver.check_then_run_kernels();
+    
+    copy_driver_t copy_driver(N, bs_vec, "../../output/copy_kernel_output.csv", dev_ctx);
+    copy_driver.check_then_run_kernels();
+    
+    indirection_driver_direct_t direct_driver(N, bs_vec, "../../output/direct_kernel_output.csv", dev_ctx);
+    direct_driver.check_then_run_kernels();
+    indirection_driver_indirect_t indirect_driver(N, bs_vec, "../../output/indirect_kernel_output.csv", dev_ctx);
+    indirect_driver.check_then_run_kernels();
 
     return 0;
 }
