@@ -20,7 +20,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-#define N (32*32*32)
+#define N (32*32*32 * 32 * 8)
 
 int main() {
     cout << "Processing " << N * sizeof(vt) / 1024 * 2 << " KB of data (1/2 reads; 1/2 writes)" << endl;
