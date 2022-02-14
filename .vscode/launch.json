@@ -18,7 +18,7 @@
             "program": "${workspaceFolder}/build/debug/ctx_driver",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/debug",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
