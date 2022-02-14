@@ -43,7 +43,7 @@ void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
 
 template<typename vt, typename it, bool is_indirect>
 __global__        
-void kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
+void simple_indirection_kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     if constexpr(is_indirect) {
         kernel_indirect<vt, it>(idx, in, out, indices);
@@ -146,7 +146,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it, is_indirect>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *simple_indirection_kernel_for_regs<vt,it, is_indirect>), "getting function attributes (for # registers)", pass);
             if(!pass) return;
             this->register_usage = funcAttrib.numRegs;
 #ifdef DEBUG
