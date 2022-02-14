@@ -23,7 +23,7 @@ using std::string;
 #define N (32*32*32 * 32 * 8)
 
 int main() {
-    cout << "Processing " << N * sizeof(vt) / 1024 * 2 << " KB of data (1/2 reads; 1/2 writes)" << endl;
+    cout << "Processing " << N  << " elements" << endl;
     typedef ArrayCopyContext<vt, int> copy_kernel_t;
     typedef MicrobenchmarkDriver<copy_kernel_t> copy_driver_t;
 
