@@ -95,8 +95,10 @@ class MicrobenchmarkDriver {
             ctx->init();
             for (int i = 0; i < kernel_checks; ++i) {
                 pass = (pass && ctx->run_and_check());
+                if (!pass) break;
             }
             ctx->uninit();
+            if (!pass) break;
         }
         if (!pass) {
             cerr << "One or more kernels failed check!" << endl;

@@ -12,7 +12,6 @@
  */
 
 #include <vector>
-#include <type_traits>
 
 #include <cuda.h>
 #include <local_cuda_utils.h>
@@ -25,35 +24,37 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it>
-__forceinline__ __host__ __device__        
-void kernel_direct(uint idx, vt* in, vt* out, it* indices){
-    it indirect_idx = indices[idx];
-    if(indirect_idx < -1) {return;} // ensure read in indirection 
-    out[idx] = in[idx];
-}
 
-template<typename vt, typename it>
+template<typename vt, typename it, int num_idxs>
 __forceinline__ __host__ __device__        
-void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
-    it indirect_idx = indices[idx];
-    if(indirect_idx < -1) {return;}
-    out[idx] = in[indirect_idx];
-}
+void kernel(uint idx, vt* in, vt* out, it* indices){
+    uint indir_idxs[num_idxs];
+    
+    int tidx = threadIdx.x;
+    int Bidx = blockIdx.x;
 
-template<typename vt, typename it, bool is_indirect>
-__global__        
-void simple_indirection_kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
-    extern __shared__ int dummy[];
-    if constexpr(is_indirect) {
-        kernel_indirect<vt, it>(idx, in, out, indices);
-    } else {
-        kernel_direct<vt, it>(idx, in, out, indices);
+    int Bsz = blockDim.x;
+    // int Gsz = gridDim.x;
+
+    for (int i = 0; i < num_idxs; i++){
+        int indices_idx = Bidx * Bsz * num_idxs + i * Bsz + tidx;
+        indir_idxs[i] = indices[indices_idx];
+    }
+    for (int i = 0; i < num_idxs; i++){
+        int out_idx = Bidx * Bsz * num_idxs + Bsz * i + tidx;
+        out[out_idx] = in[indir_idxs[i]];
     }
 }
 
-template<typename vt, typename it, bool is_indirect>
-struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, int num_idxs>
+__global__        
+void overlapped_kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
+    extern __shared__ int dummy[];
+    kernel<vt, it, num_idxs>(idx, in, out, indices);
+}
+
+template<typename vt, typename it, int num_idxs>
+struct OverlappedIdxDataAccessKernel : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
@@ -87,26 +88,19 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                extern __shared__ int dummy[];
-                if constexpr(is_indirect) {
-                    kernel_indirect<vt, it>(idx, gpu_in, gpu_out, gpu_indices);
-                } else {
-                    kernel_direct<vt, it>(idx, gpu_in, gpu_out, gpu_indices);
-                }
+                    kernel<vt, it, num_idxs>(idx, gpu_in, gpu_out, gpu_indices);
             }
         } ctx ;
 
-        SimpleIndirectionKernel(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
+        OverlappedIdxDataAccessKernel(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
-            if(is_indirect){
-                this->name = "SimpleIndirectionTest_Indirect";
-            } else {
-                this->name = "SimpleIndirectionTest_Direct";
-            }
+            this->name = "OverlappedIdxDataAccessKernel";
+            this->Gsz /= num_idxs;
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
             total_indirect_reads = N * indirect_reads_per_element;
         }
-        ~SimpleIndirectionKernel(){}
+        ~OverlappedIdxDataAccessKernel(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -146,7 +140,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *simple_indirection_kernel_for_regs<vt,it, is_indirect>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *overlapped_kernel_for_regs<vt,it, num_idxs>), "getting function attributes (for # registers)", pass);
             if(!pass) return;
             this->register_usage = funcAttrib.numRegs;
 #ifdef DEBUG
