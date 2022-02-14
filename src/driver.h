@@ -29,6 +29,7 @@ using std::endl;
 using std::cerr;
 using std::string;
 using std::ofstream;
+using std::stringstream;
 using std::setw;
 
 
@@ -40,15 +41,29 @@ class MicrobenchmarkDriver {
 
     int N = 0;
     int bs = 0;
-    int kernel_runs = 50;
+    int kernel_runs = 15;
     int kernel_checks = 2;
 
    public:
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context& dev_ctx) {
-        for (int bs : bs_vec) {
-            contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx));
-        }
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context& dev_ctx, bool span_occupancies=false) {
         dev_ctx.init();
+
+        for (int bs : bs_vec) {
+            kernel_ctx_t* curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
+            if(span_occupancies) {
+                vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
+#ifdef DEBUG
+                cout << "Valid ShdMem alloc amounts for "<< curr_ctx->name <<": ";
+                for(int x : shdmem_allocs) {cout << " " << x;}
+                cout << endl;
+#endif
+                for(int i=0; i < shdmem_allocs.size()-1; ++i){ // not last one because we already have that one (max occupancy)
+                    contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx, shdmem_allocs[i]));
+                }
+            }
+            contexts.push_back(curr_ctx);
+        }
+
 
         // Guard against overwriting data
         struct stat output_file_buffer;
@@ -64,7 +79,7 @@ class MicrobenchmarkDriver {
         // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename.c_str());
-        output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl;
+        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl;
     }
     ~MicrobenchmarkDriver() {
         for (auto ctx : contexts) {
@@ -141,12 +156,12 @@ class MicrobenchmarkDriver {
         }
     }
 
-    // output_file << "kernel_type,array_size,tpb,min,med,max,avg,stddev" << endl ;
+    // output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl ;
     void write_data(kernel_ctx_t* ctx, vector<float> data) {
         stringstream s;
         copy(data.begin(), data.end(), std::ostream_iterator<float>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
         string wo_last_comma = s.str();
         wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
-        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << "," << wo_last_comma << endl;
+        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << ","  << ctx->get_occupancy() << "," << wo_last_comma << endl;
     }
 };

@@ -48,9 +48,9 @@ struct KernelCPUContext {
         bool okay = true;
         bool initialized = true;
 
-        size_t shared_memory_usage;
+        size_t shared_memory_usage=0;
         int register_usage=-1;
-        int max_blocks_simultaneous_per_sm;
+        int max_blocks_simultaneous_per_sm=-1;
 
         device_context dev_props;
 
@@ -76,9 +76,9 @@ struct KernelCPUContext {
         virtual void init_inputs(bool& pass) {};
         virtual void init_indices(bool& pass) {};
 
-        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx)
+        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx, int shd_mem_alloc=0)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
-            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx)  {
+            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx), shared_memory_usage(shd_mem_alloc) {
             }
 
         bool init(){
@@ -99,8 +99,6 @@ struct KernelCPUContext {
                 
                 if(pass) {
                     for(int i=0; i < num_in_data; ++i) {
-                        cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
-                    cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
                         cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), N * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
                         if(!pass) break;
                     }
@@ -191,7 +189,7 @@ struct KernelCPUContext {
 
     void compute_max_simultaneous_blocks(bool& pass) {
         local_compute_register_usage(pass);
-        if(!pass) return;
+        if(!pass) { okay = false; return;}
         int due_to_block_size = (int) floor(dev_props.props_.maxThreadsPerMultiProcessor / Bsz); 
         int due_to_registers =  (int) floor(dev_props.props_.regsPerMultiprocessor / (register_usage * Bsz));
         max_blocks_simultaneous_per_sm = std::min({due_to_block_size, 
@@ -199,4 +197,33 @@ struct KernelCPUContext {
 
     }
 
+    vector<int> shared_memory_allocations() {
+        vector<int> alloc_amounts; 
+        bool pass = true;
+        if(max_blocks_simultaneous_per_sm < 0) compute_max_simultaneous_blocks(pass);
+        if(!pass) { 
+            okay = false;  
+            alloc_amounts.push_back(-1);
+            return alloc_amounts;
+        }
+        int max_shd_mem = dev_props.props_.sharedMemPerBlock;
+
+        for(int i=1; i < max_blocks_simultaneous_per_sm ; i+=1) {
+            int sm_alloc = (max_shd_mem / i - 256) / 256 * 256;
+            alloc_amounts.push_back(sm_alloc);
+        }
+        return alloc_amounts;
+    }
+
+    float get_occupancy() {
+        int max_blocks_shared_mem;
+        if(shared_memory_usage == 0) {
+            max_blocks_shared_mem = dev_props.props_.maxBlocksPerMultiProcessor;
+        } else {
+            max_blocks_shared_mem = dev_props.props_.sharedMemPerBlock / shared_memory_usage;
+        }
+        int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
+        int num_threads_simul = max_blocks_simul * Bsz; 
+        return float(num_threads_simul) / float(dev_props.props_.maxThreadsPerMultiProcessor);
+    }
 };

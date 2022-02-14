@@ -31,6 +31,7 @@ void kernel(uint idx, vt* gpu_in, vt* gpu_out){
 template<typename vt, typename it>
 __global__        
 void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out){
+        extern __shared__ int dummy[];
         kernel<vt, it>(idx, gpu_in, gpu_out);
 }
 
@@ -58,12 +59,13 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
             __device__        
             void operator() (uint idx){
+                extern __shared__ int dummy[];
                 kernel<vt, it>(idx, gpu_in, gpu_out);
             }
         } ctx ;
 
-        ArrayCopyContext(int n, int bs, device_context dev_ctx) 
-            : super(1, 1, 0, n, bs, dev_ctx) {
+        ArrayCopyContext(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
+            : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "ArrayCopy"; // _N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
@@ -86,7 +88,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
         
         void local_execute() override {
-            compute_kernel<gpu_ctx><<<Gsz, Bsz>>>(N, ctx);
+            compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
         }
 
         bool local_check_result() override {
