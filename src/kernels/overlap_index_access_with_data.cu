@@ -94,11 +94,8 @@ struct OverlappedIdxDataAccessKernel : public KernelCPUContext<vt, it> {
 
         OverlappedIdxDataAccessKernel(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
-            if(is_indirect){
-                this->name = "SimpleIndirectionTest_Indirect";
-            } else {
-                this->name = "SimpleIndirectionTest_Direct";
-            }
+            this->name = "OverlappedIdxDataAccessKernel";
+            this->Gsz /= num_idxs;
             total_reads = N * reads_per_element;
             total_writes = N * writes_per_element;
             total_indirect_reads = N * indirect_reads_per_element;
