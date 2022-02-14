@@ -41,7 +41,7 @@ class MicrobenchmarkDriver {
 
     int N = 0;
     int bs = 0;
-    int kernel_runs = 50;
+    int kernel_runs = 15;
     int kernel_checks = 2;
 
    public:
