@@ -105,6 +105,18 @@ class Output {
     // operator fs::path const & () const noexcept { return base_dir; }
     // operator fs::path       & ()     & noexcept { return base_dir; }
 
+    string operator+(string filename) {
+        stringstream out; 
+        out << base_dir.string() << "/" << filename;
+        return out.str();
+    }
+
+    string operator+(const char * filename) {
+        stringstream out; 
+        out << base_dir.string() << "/" << filename;
+        return out.str();
+    }
+
 };
 
 ostream& operator<<(ostream& os, const Output& output){
