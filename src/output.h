@@ -67,7 +67,7 @@ class Output {
         base_dir.append(curr_time_str);
 
         if(fs::create_directories(base_dir)) {
-            cout << "Created " << base_dir <<  endl;
+            cout << "Created " << base_dir.string() <<  endl;
         } else {
             base_dir = fs::path("");
         }
@@ -108,6 +108,6 @@ class Output {
 };
 
 ostream& operator<<(ostream& os, const Output& output){
-    os << output.base_dir;
+    os << output.base_dir.string();
     return os;
 }
