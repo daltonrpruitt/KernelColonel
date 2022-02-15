@@ -7,6 +7,7 @@
 #include <device_props.h>
 #include <overlap_index_access_with_data.cu>
 #include <computation.cu>
+#include <output.h>
 
 #include <iostream>
 #include <string>
@@ -46,8 +47,16 @@ int main() {
     // for (int bs = 32; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
     bs_vec.push_back(128);
 
-
-    string output_dir = "../../output/02-14-22_12-00/";
+    Output output_dir;
+    if(output_dir.empty()) {
+        cerr << "Not continuing!" << endl;
+        return -1;
+    }
+    string filename = "new_file.csv";
+    cout << output_dir+"indirect_kernel_output.csv" << endl;
+    cout << output_dir+filename << endl;
+    exit(0);
+    // string output_dir = "../../output/02-14-22_12-00/";
     
 #if 0
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", dev_ctx, true);
