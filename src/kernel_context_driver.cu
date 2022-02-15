@@ -52,7 +52,9 @@ int main() {
         cerr << "Not continuing!" << endl;
         return -1;
     }
-    cout << "output_dir=" << output_dir << endl;
+    string filename = "new_file.csv";
+    cout << output_dir+"indirect_kernel_output.csv" << endl;
+    cout << output_dir+filename << endl;
     exit(0);
     // string output_dir = "../../output/02-14-22_12-00/";
     
