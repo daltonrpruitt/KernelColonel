@@ -6,6 +6,7 @@
 #include <driver.h>
 #include <device_props.h>
 #include <overlap_index_access_with_data.cu>
+#include <computation.cu>
 
 #include <iostream>
 #include <string>
@@ -20,6 +21,7 @@ using vt = double;
 using std::cout;
 using std::endl;
 using std::string;
+using std::to_string;
 
 #define N (32*32*32 * 32 * 8)
 
@@ -47,6 +49,7 @@ int main() {
 
     string output_dir = "../../output/02-14-22_12-00/";
     
+#if 0
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", dev_ctx, true);
     copy_driver.check_then_run_kernels();
     
@@ -67,6 +70,31 @@ int main() {
 
     overlapped_access_driver_8_t overlapped_8_driver(N, bs_vec, output_dir+"overlapped_kernel_output_8.csv", dev_ctx, true);
     overlapped_8_driver.check_then_run_kernels();
+#endif
+// #pragma GCC unroll (5)
+//     for(int i=1; i <= 5; i++) {
+//         MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, i>> comp_intens_driver(N, bs_vec, output_dir+"computational_intensity_"+to_string(i)+"kernel_output.csv", dev_ctx, false);
+//         comp_intens_driver.check_then_run_kernels();
+//     }
+// #pragma GCC unroll (9)
+//     for(int i=10; i <= 50; i+=5) {
+//         MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, i>> comp_intens_driver(N, bs_vec, output_dir+"computational_intensity_"+to_string(i)+"kernel_output.csv", dev_ctx, false);
+//         comp_intens_driver.check_then_run_kernels();
+//     }
 
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 1>> comp_intens_1_driver(N, bs_vec, output_dir+"computational_intensity_1_kernel_output.csv", dev_ctx, true);
+    comp_intens_1_driver.check_then_run_kernels();
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 2>> comp_intens_2_driver(N, bs_vec, output_dir+"computational_intensity_2_kernel_output.csv", dev_ctx, true);
+    comp_intens_2_driver.check_then_run_kernels();
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 4>> comp_intens_4_driver(N, bs_vec, output_dir+"computational_intensity_4_kernel_output.csv", dev_ctx, true);
+    comp_intens_4_driver.check_then_run_kernels();
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 8>> comp_intens_8_driver(N, bs_vec, output_dir+"computational_intensity_8_kernel_output.csv", dev_ctx, true);
+    comp_intens_8_driver.check_then_run_kernels();
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 16>> comp_intens_16_driver(N, bs_vec, output_dir+"computational_intensity_16_kernel_output.csv", dev_ctx, true);
+    comp_intens_16_driver.check_then_run_kernels();
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 32>> comp_intens_32_driver(N, bs_vec, output_dir+"computational_intensity_32_kernel_output.csv", dev_ctx, true);
+    comp_intens_32_driver.check_then_run_kernels();
+    MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 64>> comp_intens_64_driver(N, bs_vec, output_dir+"computational_intensity_64_kernel_output.csv", dev_ctx, true);
+    comp_intens_64_driver.check_then_run_kernels();
     return 0;
 }
