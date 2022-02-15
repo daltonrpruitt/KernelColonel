@@ -1,14 +1,14 @@
 #pragma once
 /**
- * @file simple_indirection.cu
+ * @file overlap_index_access_with_data.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief 
+ * @brief Frontload some number of indices accesses before accessing data
  * @version 0.1
- * @date 2022-02-08
+ * @date 2022-02-14
  * 
- * Based on copy.cu 
- * Most of what needs to be changed (or not) is listed.
- * Do not modify function signatures unless obvious (comment in signature).
+ * Test latency amortization technique of frontloading indirection accesses
+ * Exploiting ILP 
+ * 
  */
 
 #include <vector>
