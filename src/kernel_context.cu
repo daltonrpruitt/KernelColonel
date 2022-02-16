@@ -71,6 +71,7 @@ struct KernelCPUContext {
             if(!initialized) {return;}
             free();
             for(int i=0; i<num_total_data; ++i) { host_data[i].clear(); }
+            for(int i=0; i<num_indices; ++i) { host_indices[i].clear(); }
             }
 
         virtual void init_inputs(bool& pass) {};
