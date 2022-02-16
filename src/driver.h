@@ -167,4 +167,12 @@ class MicrobenchmarkDriver {
         wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
         output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << ","  << ctx->get_occupancy() << "," << wo_last_comma << endl;
     }
+
+    int get_num_contexts() {
+        return (int)contexts.size();
+    }
+
+    int get_total_runs() {
+        return get_num_contexts() * kernel_runs;
+    }
 };

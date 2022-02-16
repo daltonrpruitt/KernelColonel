@@ -30,6 +30,7 @@ using std::to_string;
 int main() {
     timespec mainStart, mainEnd;
     clock_gettime(CLOCK_MONOTONIC, &mainStart);
+    int total_runs = 0;
 
     cout << "Processing " << N  << " elements" << endl;
     typedef ArrayCopyContext<vt, int> copy_kernel_t;
@@ -65,11 +66,14 @@ int main() {
 #if 0
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", dev_ctx, true);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
+    total_runs += copy_driver.get_total_runs();
+
     
     indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", dev_ctx, true);
     if (!direct_driver.check_then_run_kernels()) {return -1;} 
     indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", dev_ctx, true);
     if (!indirect_driver.check_then_run_kernels()) {return -1;} 
+    total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
 
 
     overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_kernel_output_1.csv", dev_ctx, true);
@@ -80,6 +84,8 @@ int main() {
     if (!overlapped_4_driver.check_then_run_kernels()) {return -1;} 
     overlapped_access_driver_8_t overlapped_8_driver(N, bs_vec, output_dir+"overlapped_kernel_output_8.csv", dev_ctx, true);
     if (!overlapped_8_driver.check_then_run_kernels()) {return -1;} 
+    total_runs += overlapped_1_driver.get_total_runs() + overlapped_2_driver.get_total_runs() + 
+                            overlapped_4_driver.get_total_runs() + overlapped_8_driver.get_total_runs();
 
 
 // #pragma GCC unroll (5)
@@ -108,10 +114,17 @@ int main() {
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 64>> comp_intens_64_driver(N, bs_vec, output_dir+"computational_intensity_64_kernel_output.csv", dev_ctx, true);
     if (!comp_intens_64_driver.check_then_run_kernels()) {return -1;} 
 
+    total_runs += comp_intens_1_driver.get_total_runs() + comp_intens_2_driver.get_total_runs() + 
+                            comp_intens_4_driver.get_total_runs() + comp_intens_8_driver.get_total_runs() + 
+                            comp_intens_16_driver.get_total_runs() + comp_intens_32_driver.get_total_runs() + 
+                            comp_intens_64_driver.get_total_runs();
+
+
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
     
     cout << "#########  Finished  #########" << endl << endl;
+    cout << "Total runs performed        = " << total_runs << endl;
     cout << "Total time taken (m:ss)     = " <<(int)main_time / 1000 / 60 << ":" << (int)main_time / 1000 % 60 << endl;
 
     return 0;
