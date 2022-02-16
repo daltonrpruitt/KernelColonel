@@ -7,9 +7,11 @@
 #include <overlap_index_access_with_data.cu>
 #include <computation.cu>
 #include <output.h>
+#include <utils.h>
 
 #include <iostream>
 #include <string>
+#include <time.h>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
@@ -26,6 +28,9 @@ using std::to_string;
 #define N (32*32*32 * 32 * 8)
 
 int main() {
+    timespec mainStart, mainEnd;
+    clock_gettime(CLOCK_MONOTONIC, &mainStart);
+
     cout << "Processing " << N  << " elements" << endl;
     typedef ArrayCopyContext<vt, int> copy_kernel_t;
     typedef MicrobenchmarkDriver<copy_kernel_t> copy_driver_t;
@@ -103,6 +108,11 @@ int main() {
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 64>> comp_intens_64_driver(N, bs_vec, output_dir+"computational_intensity_64_kernel_output.csv", dev_ctx, true);
     if (!comp_intens_64_driver.check_then_run_kernels()) {return -1;} 
 
+    clock_gettime(CLOCK_MONOTONIC, &mainEnd);
+    double main_time = elapsed_time_ms(mainStart, mainEnd);
+    
+    cout << "#########  Finished  #########" << endl << endl;
+    cout << "Total time taken (m:ss)     = " <<(int)main_time / 1000 / 60 << ":" << (int)main_time / 1000 % 60 << endl;
 
     return 0;
 }
