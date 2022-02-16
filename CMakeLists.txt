@@ -20,11 +20,11 @@ target_compile_options(ctx_driver PRIVATE "--keep")
 
 message(STATUS "python exec: ${Python_EXECUTABLE}")
 
-add_custom_target(
- gen_kernels ALL
- COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/generate_kernel_template_instances.py ${CMAKE_CURRENT_SOURCE_DIR}
- BYPRODUCTS src/kernel_types.h
- COMMENT "Generating kernel template instances"
-)
+# add_custom_target(
+#  gen_kernels ALL
+#  COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/generate_kernel_template_instances.py ${CMAKE_CURRENT_SOURCE_DIR}
+#  BYPRODUCTS src/kernel_types.h
+#  COMMENT "Generating kernel template instances"
+# )
 
-add_dependencies(ctx_driver gen_kernels)
+# add_dependencies(ctx_driver gen_kernels)

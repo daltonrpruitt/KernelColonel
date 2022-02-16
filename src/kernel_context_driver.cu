@@ -2,7 +2,6 @@
 // simple driver file for kernel testing
 
 // local files
-#include <kernel_types.h>
 #include <driver.h>
 #include <device_props.h>
 #include <overlap_index_access_with_data.cu>
