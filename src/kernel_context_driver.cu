@@ -60,10 +60,7 @@ int main() {
     string filename = "new_file.csv";
     cout << output_dir+"indirect_kernel_output.csv" << endl;
     cout << output_dir+filename << endl;
-    exit(0);
-    // string output_dir = "../../output/02-14-22_12-00/";
-    
-#if 0
+
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", dev_ctx, true);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
     total_runs += copy_driver.get_total_runs();
