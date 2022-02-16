@@ -85,17 +85,6 @@ int main() {
                             overlapped_4_driver.get_total_runs() + overlapped_8_driver.get_total_runs();
 
 
-// #pragma GCC unroll (5)
-//     for(int i=1; i <= 5; i++) {
-//         MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, i>> comp_intens_driver(N, bs_vec, output_dir+"computational_intensity_"+to_string(i)+"kernel_output.csv", dev_ctx, false);
-//         comp_intens_driver.check_then_run_kernels();
-//     }
-// #pragma GCC unroll (9)
-//     for(int i=10; i <= 50; i+=5) {
-//         MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, i>> comp_intens_driver(N, bs_vec, output_dir+"computational_intensity_"+to_string(i)+"kernel_output.csv", dev_ctx, false);
-//         comp_intens_driver.check_then_run_kernels();
-//     }
-
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 1>> comp_intens_1_driver(N, bs_vec, output_dir+"computational_intensity_1_kernel_output.csv", &dev_ctx, true);
     if (!comp_intens_1_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 2>> comp_intens_2_driver(N, bs_vec, output_dir+"computational_intensity_2_kernel_output.csv", &dev_ctx, true);
