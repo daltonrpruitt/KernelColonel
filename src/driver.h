@@ -45,8 +45,8 @@ class MicrobenchmarkDriver {
     int kernel_checks = 2;
 
    public:
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context& dev_ctx, bool span_occupancies=false) {
-        dev_ctx.init();
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) {
+        dev_ctx->init();
 
         for (int bs : bs_vec) {
             kernel_ctx_t* curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);

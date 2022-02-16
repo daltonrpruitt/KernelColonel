@@ -95,7 +95,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        SimpleIndirectionKernel(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
+        SimpleIndirectionKernel(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             if(is_indirect){
                 this->name = "SimpleIndirectionTest_Indirect";

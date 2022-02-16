@@ -75,7 +75,7 @@ struct TemplateKernelContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        TemplateKernelContext(int n, int bs, device_context dev_ctx, int shd_mem_alloc=0) 
+        TemplateKernelContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(/*#inputs, #outputs, #index arrays */, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "/* Identifying name */";
             total_reads = N * reads_per_element;

@@ -52,7 +52,7 @@ struct KernelCPUContext {
         int register_usage=-1;
         int max_blocks_simultaneous_per_sm=-1;
 
-        device_context dev_props;
+        device_context* dev_props;
 
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
@@ -77,7 +77,7 @@ struct KernelCPUContext {
         virtual void init_inputs(bool& pass) {};
         virtual void init_indices(bool& pass) {};
 
-        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context d_ctx, int shd_mem_alloc=0)
+        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context* d_ctx, int shd_mem_alloc=0)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
             num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx), shared_memory_usage(shd_mem_alloc) {
             }
