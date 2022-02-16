@@ -149,13 +149,14 @@ class MicrobenchmarkDriver {
         }
     }
 
-    void check_then_run_kernels() {
+    bool check_then_run_kernels() {
         bool pass = check_kernels();
         if (pass) {
             run_kernels();
         } else {
             cerr << "Not running kernels!" << endl;
         }
+        return pass; 
     }
 
     // output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl ;

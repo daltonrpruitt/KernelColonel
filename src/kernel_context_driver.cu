@@ -59,26 +59,24 @@ int main() {
     
 #if 0
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", dev_ctx, true);
-    copy_driver.check_then_run_kernels();
+    if (!copy_driver.check_then_run_kernels()) {return -1;} 
     
     indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", dev_ctx, true);
-    direct_driver.check_then_run_kernels();
+    if (!direct_driver.check_then_run_kernels()) {return -1;} 
     indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", dev_ctx, true);
-    indirect_driver.check_then_run_kernels();
+    if (!indirect_driver.check_then_run_kernels()) {return -1;} 
 
 
     overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_kernel_output_1.csv", dev_ctx, true);
-    overlapped_1_driver.check_then_run_kernels();
-
+    if (!overlapped_1_driver.check_then_run_kernels()) {return -1;} 
     overlapped_access_driver_2_t overlapped_2_driver(N, bs_vec, output_dir+"overlapped_kernel_output_2.csv", dev_ctx, true);
-    overlapped_2_driver.check_then_run_kernels();
-
+    if (!overlapped_2_driver.check_then_run_kernels()) {return -1;} 
     overlapped_access_driver_4_t overlapped_4_driver(N, bs_vec, output_dir+"overlapped_kernel_output_4.csv", dev_ctx, true);
-    overlapped_4_driver.check_then_run_kernels();
-
+    if (!overlapped_4_driver.check_then_run_kernels()) {return -1;} 
     overlapped_access_driver_8_t overlapped_8_driver(N, bs_vec, output_dir+"overlapped_kernel_output_8.csv", dev_ctx, true);
-    overlapped_8_driver.check_then_run_kernels();
-#endif
+    if (!overlapped_8_driver.check_then_run_kernels()) {return -1;} 
+
+
 // #pragma GCC unroll (5)
 //     for(int i=1; i <= 5; i++) {
 //         MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, i>> comp_intens_driver(N, bs_vec, output_dir+"computational_intensity_"+to_string(i)+"kernel_output.csv", dev_ctx, false);
@@ -91,18 +89,20 @@ int main() {
 //     }
 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 1>> comp_intens_1_driver(N, bs_vec, output_dir+"computational_intensity_1_kernel_output.csv", dev_ctx, true);
-    comp_intens_1_driver.check_then_run_kernels();
+    if (!comp_intens_1_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 2>> comp_intens_2_driver(N, bs_vec, output_dir+"computational_intensity_2_kernel_output.csv", dev_ctx, true);
-    comp_intens_2_driver.check_then_run_kernels();
+    if (!comp_intens_2_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 4>> comp_intens_4_driver(N, bs_vec, output_dir+"computational_intensity_4_kernel_output.csv", dev_ctx, true);
-    comp_intens_4_driver.check_then_run_kernels();
+    if (!comp_intens_4_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 8>> comp_intens_8_driver(N, bs_vec, output_dir+"computational_intensity_8_kernel_output.csv", dev_ctx, true);
-    comp_intens_8_driver.check_then_run_kernels();
+    if (!comp_intens_8_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 16>> comp_intens_16_driver(N, bs_vec, output_dir+"computational_intensity_16_kernel_output.csv", dev_ctx, true);
-    comp_intens_16_driver.check_then_run_kernels();
+    if (!comp_intens_16_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 32>> comp_intens_32_driver(N, bs_vec, output_dir+"computational_intensity_32_kernel_output.csv", dev_ctx, true);
-    comp_intens_32_driver.check_then_run_kernels();
+    if (!comp_intens_32_driver.check_then_run_kernels()) {return -1;} 
     MicrobenchmarkDriver<ComputationalIntensityContext<vt, int, 64>> comp_intens_64_driver(N, bs_vec, output_dir+"computational_intensity_64_kernel_output.csv", dev_ctx, true);
-    comp_intens_64_driver.check_then_run_kernels();
+    if (!comp_intens_64_driver.check_then_run_kernels()) {return -1;} 
+
+
     return 0;
 }
