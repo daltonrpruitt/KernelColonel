@@ -191,10 +191,10 @@ struct KernelCPUContext {
     void compute_max_simultaneous_blocks(bool& pass) {
         local_compute_register_usage(pass);
         if(!pass) { okay = false; return;}
-        int due_to_block_size = (int) floor(dev_props.props_.maxThreadsPerMultiProcessor / Bsz); 
-        int due_to_registers =  (int) floor(dev_props.props_.regsPerMultiprocessor / (register_usage * Bsz));
+        int due_to_block_size = (int) floor(dev_props->props_.maxThreadsPerMultiProcessor / Bsz); 
+        int due_to_registers =  (int) floor(dev_props->props_.regsPerMultiprocessor / (register_usage * Bsz));
         max_blocks_simultaneous_per_sm = std::min({due_to_block_size, 
-                                            due_to_registers, dev_props.props_.maxBlocksPerMultiProcessor});
+                                            due_to_registers, dev_props->props_.maxBlocksPerMultiProcessor});
 
     }
 
@@ -207,7 +207,7 @@ struct KernelCPUContext {
             alloc_amounts.push_back(-1);
             return alloc_amounts;
         }
-        int max_shd_mem = dev_props.props_.sharedMemPerBlock;
+        int max_shd_mem = dev_props->props_.sharedMemPerBlock;
 
         for(int i=1; i < max_blocks_simultaneous_per_sm ; i+=1) {
             int sm_alloc = (max_shd_mem / i - 256) / 256 * 256;
@@ -219,12 +219,12 @@ struct KernelCPUContext {
     float get_occupancy() {
         int max_blocks_shared_mem;
         if(shared_memory_usage == 0) {
-            max_blocks_shared_mem = dev_props.props_.maxBlocksPerMultiProcessor;
+            max_blocks_shared_mem = dev_props->props_.maxBlocksPerMultiProcessor;
         } else {
-            max_blocks_shared_mem = dev_props.props_.sharedMemPerBlock / shared_memory_usage;
+            max_blocks_shared_mem = dev_props->props_.sharedMemPerBlock / shared_memory_usage;
         }
         int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
         int num_threads_simul = max_blocks_simul * Bsz; 
-        return float(num_threads_simul) / float(dev_props.props_.maxThreadsPerMultiProcessor);
+        return float(num_threads_simul) / float(dev_props->props_.maxThreadsPerMultiProcessor);
     }
 };
