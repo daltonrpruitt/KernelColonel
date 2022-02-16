@@ -207,10 +207,13 @@ struct KernelCPUContext {
             alloc_amounts.push_back(-1);
             return alloc_amounts;
         }
-        int max_shd_mem = dev_props->props_.sharedMemPerBlock;
+        int max_shd_mem_per_block = dev_props->props_.sharedMemPerBlock;
+        int max_shd_mem_per_proc = dev_props->props_.sharedMemPerMultiprocessor;
 
-        for(int i=1; i < max_blocks_simultaneous_per_sm ; i+=1) {
-            int sm_alloc = (max_shd_mem / i - 256) / 256 * 256;
+        int min_blocks_due_to_shd_mem = max_shd_mem_per_proc / max_shd_mem_per_block;
+
+        for(int i=min_blocks_due_to_shd_mem; i < max_blocks_simultaneous_per_sm ; i+=1) {
+            int sm_alloc = (max_shd_mem_per_proc / i - 256) / 256 * 256;
             alloc_amounts.push_back(sm_alloc);
         }
         return alloc_amounts;
@@ -221,7 +224,7 @@ struct KernelCPUContext {
         if(shared_memory_usage == 0) {
             max_blocks_shared_mem = dev_props->props_.maxBlocksPerMultiProcessor;
         } else {
-            max_blocks_shared_mem = dev_props->props_.sharedMemPerBlock / shared_memory_usage;
+            max_blocks_shared_mem = dev_props->props_.sharedMemPerMultiprocessor / shared_memory_usage;
         }
         int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
         int num_threads_simul = max_blocks_simul * Bsz; 
