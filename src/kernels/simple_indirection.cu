@@ -147,11 +147,11 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
             cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *simple_indirection_kernel_for_regs<vt,it, is_indirect>), "getting function attributes (for # registers)", pass);
-            if(!pass) return;
+            if(!pass) {
+                this->okay = false; 
+                return;
+            }
             this->register_usage = funcAttrib.numRegs;
-#ifdef DEBUG
-            cout << this->name << " numRegs=" << this->register_usage << endl;
-#endif
         }
 
 };
