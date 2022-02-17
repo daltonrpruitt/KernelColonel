@@ -11,7 +11,9 @@
  * 
  */
 
+#include <iostream>
 #include <vector>
+#include <string>
 
 #include <cuda.h>
 #include <local_cuda_utils.h>

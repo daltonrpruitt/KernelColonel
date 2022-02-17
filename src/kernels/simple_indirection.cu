@@ -11,7 +11,9 @@
  * Do not modify function signatures unless obvious (comment in signature).
  */
 
+#include <iostream>
 #include <vector>
+#include <string>
 #include <type_traits>
 
 #include <cuda.h>
