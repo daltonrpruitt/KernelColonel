@@ -32,6 +32,8 @@ if "output" not in os.path.abspath(base_folder):
     print("Error: Base directory to process must be within the 'output' directory!")
     exit(-1)
 
+kernel_extra_configs = {"copy": "",  "direct": "", "indirect":"", "overlapped": "degree", "computational_intensity": "comp-intens"}
+
 data_headers   = ["kernel_type", "array_size", "tpb", "occupancy", "min", "med", "max", "avg", "stddev"]
 
 if False:
@@ -43,6 +45,31 @@ if False:
     data_types_dict = dict(zip(data_headers, data_types))
 
 
+kernel_types = []
+main_df = pd.DataFrame()
+for filename in os.listdir(base_folder):
+    post_fix = "_kernel_output"
+
+    data = pd.read_csv(base_folder + "/" + filename,header=0)
+    kernel_type = filename[:filename.find(post_fix)]
+    # print(filename[len(kernel_type) + len(post_fix)])
+
+    has_extra_config = filename[len(kernel_type)-1].isdigit()
+    # ic(filename[len(kernel_type)-1])
+    if(has_extra_config):
+        search_start = len(kernel_type) - 5
+        possible_vals = [int(v[1:-1]) for v in re.findall(r'_\d+_', filename[search_start:search_start+10])]
+        value = possible_vals[0]
+        kernel_type = kernel_type[:-int(np.log10(value))-2]
+        data[kernel_extra_configs[kernel_type]] = value
+    
+    # ic(data.head())
+    # if main_df is None: main_df = data
+    # else: 
+    main_df = main_df.append(data)
+    # ic(main_df)
+
+ic(main_df)
 
 filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapped_kernel_output_1.csv"
 try:
