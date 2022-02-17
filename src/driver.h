@@ -50,6 +50,7 @@ class MicrobenchmarkDriver {
 
         for (int bs : bs_vec) {
             kernel_ctx_t* curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
+            curr_ctx->print_register_usage();
             if(span_occupancies) {
                 vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
 #ifdef DEBUG

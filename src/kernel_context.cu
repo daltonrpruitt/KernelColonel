@@ -230,4 +230,13 @@ struct KernelCPUContext {
         int num_threads_simul = max_blocks_simul * Bsz; 
         return float(num_threads_simul) / float(dev_props->props_.maxThreadsPerMultiProcessor);
     }
+
+    void print_register_usage() {
+        bool pass = true; 
+        if(register_usage < 0) { 
+            local_compute_register_usage(pass);
+        }
+        if(!pass) {cerr << "Cannot get register usage for " << name << "!" << endl;}
+        else { cout << name << " register usage = " << register_usage << endl;}
+    }
 };
