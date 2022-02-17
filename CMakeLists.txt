@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.22 )
 project(TEST_DRIVER CUDA CXX)
 
 include(FindCUDAToolkit)
-find_package(Python 3.1 REQUIRED)
+# find_package(Python 3.1 REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
@@ -18,7 +18,7 @@ set_property(TARGET ctx_driver PROPERTY CXX_STANDARD 17)
 set_property(TARGET ctx_driver PROPERTY CUDA_ARCHITECTURES 35 52 80) #35-K20m, 52-Quadro M2000, 80-A100  
 target_compile_options(ctx_driver PRIVATE "--keep")
 
-message(STATUS "python exec: ${Python_EXECUTABLE}")
+# message(STATUS "python exec: ${Python_EXECUTABLE}")
 
 # add_custom_target(
 #  gen_kernels ALL
