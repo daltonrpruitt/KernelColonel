@@ -15,7 +15,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
 # add_executable(driver src/driver.cu)
 add_executable(ctx_driver src/kernel_context_driver.cu)
 set_property(TARGET ctx_driver PROPERTY CXX_STANDARD 17)
-set_property(TARGET ctx_driver PROPERTY CUDA_ARCHITECTURES 35 52 80) #35-K20m, 52-Quadro M2000, 80-A100  
+set_property(TARGET ctx_driver PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 target_compile_options(ctx_driver PRIVATE "--keep")
 
 # message(STATUS "python exec: ${Python_EXECUTABLE}")
