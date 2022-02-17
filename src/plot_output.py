@@ -71,9 +71,9 @@ for filename in os.listdir(base_folder):
 
 ic(main_df)
 
-filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapped_kernel_output_1.csv"
+full_filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapped_kernel_output_1.csv"
 try:
-    main_df = pd.read_csv(filename,header=0)
+    main_df = pd.read_csv(full_filename,header=0)
     print(main_df.head())
 except Exception as e:
     print(e)
@@ -112,7 +112,7 @@ except Exception as e:
     main_df = pd.DataFrame(small_dfs, columns=data_headers)
     main_df.to_csv("collated_data.csv", index=False)
 
-print("Entries in", filename,"=", len(main_df))
+print("Entries in", full_filename,"=", len(main_df))
 # exit(0)
 
 # Plotting 
@@ -122,10 +122,11 @@ occupancy = main_df["occupancy"]
 print(occupancy)
 
 fig = plt.figure(num=0) 
-fig.suptitle(filename, fontsize=11)
+fig.suptitle(full_filename, fontsize=11)
 
 plt.plot(main_df["occupancy"], main_df["min"], c='b', marker="o", label="min")
 plt.show()
+plt.savefig(full_filename[:-4]+".png")
 
 exit(0)
 independent_vars = ['bwss', 'tpb', 'num_repeat']
