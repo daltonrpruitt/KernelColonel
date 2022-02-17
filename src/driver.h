@@ -41,8 +41,8 @@ class MicrobenchmarkDriver {
 
     int N = 0;
     int bs = 0;
-    int kernel_runs = 15;
-    int kernel_checks = 2;
+    int kernel_runs = 25;
+    int kernel_checks = 1;
 
    public:
     MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) {
