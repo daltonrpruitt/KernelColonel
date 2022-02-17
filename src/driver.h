@@ -8,7 +8,7 @@
  * 
  */
 
-#include <kernel_types.h>
+// #include <kernel_types.h>
 #include <local_cuda_utils.h>
 #include <stats.h>
 #include <device_props.h>

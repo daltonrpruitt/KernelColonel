@@ -1,7 +1,6 @@
 #pragma once
 
 #include <local_cuda_utils.h>
-#include <kernel_context.cu>
 
 using std::pow;
 

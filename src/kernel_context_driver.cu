@@ -4,6 +4,8 @@
 // local files
 #include <driver.h>
 #include <device_props.h>
+#include <copy.cu>
+#include <simple_indirection.cu>
 #include <overlap_index_access_with_data.cu>
 #include <computation.cu>
 #include <output.h>
