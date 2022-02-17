@@ -17,6 +17,9 @@ import numpy as np
 
 from pandas.io.parsers import read_csv
 
+import re
+from icecream import ic
+
 #assuming current folder only
 base_folder = sys.argv[1] 
 
