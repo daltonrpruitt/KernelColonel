@@ -1,12 +1,22 @@
 #!/bin/bash
-ml cmake
-ml cuda 
+module load cmake
+module load gcc
+module load cuda
 
-mkdir output
-mkdir -p build/debug
+dirs="output build/debug"
+for d in ${dirs[@]}; do 
+    if test -d "$d"; then
+        echo "$d exists.";
+    else  
+        mkdir -vp $d;
+    fi
+done
 
-cd build/debug
-cmake -B . -S ../..
+cd build/debug ;
+if test ! -f "../CMakeCache.txt"; then
+    cmake -B . -S ../.. ;
+fi 
+
 make
 
 echo "Run './build/debug/ctx_driver' to test"
