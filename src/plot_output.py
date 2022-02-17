@@ -9,7 +9,7 @@ import datetime as dt
 import types
 import matplotlib
 from matplotlib.transforms import Bbox
-matplotlib.use('svg')
+matplotlib.use('tkagg')
 import matplotlib.pyplot as plt
 
 import pandas as pd
@@ -20,22 +20,18 @@ from pandas.io.parsers import read_csv
 #assuming current folder only
 base_folder = sys.argv[1] 
 
-if len(sys.argv) == 1: 
-    print("Error: Must provide a benchmark version name!")
-    exit(-1)
-bm_version_name = sys.argv[-1]
+# if len(sys.argv) == 1: 
+#     print("Error: Must provide a benchmark version name!")
+#     exit(-1)
+# bm_version_name = sys.argv[-1]
 
 if "output" not in os.path.abspath(base_folder):
     print("Error: Base directory to process must be within the 'output' directory!")
     exit(-1)
+
+data_headers   = ["kernel_type", "array_size", "tpb", "occupancy", "min", "med", "max", "avg", "stddev"]
+
 if False:
-    data_headers   = ['Array_size','tpb','ept','bwss',
-                  'twss','num_blocks','fraction_of_l2_used_per_block','num_repeat',
-                  'theoretical_bandwidth','shuffle_type','kernel_type','blocks_per_sm',
-                  'min','med','max','avg',
-                  'stddev','achieved_throughput']
-
-
     data_types = [int, int, int, int, 
               int, int, float, int, 
               float, str, str, int, 
@@ -45,8 +41,8 @@ if False:
 
 
 
+filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapped_kernel_output_1.csv"
 try:
-    filename = base_folder + "/overlapped_kernel_output_1.csv"
     main_df = pd.read_csv(filename,header=0)
     print(main_df.head())
 except Exception as e:
@@ -86,13 +82,20 @@ except Exception as e:
     main_df = pd.DataFrame(small_dfs, columns=data_headers)
     main_df.to_csv("collated_data.csv", index=False)
 
-print("Entries in", file,"=", len(main_df))
+print("Entries in", filename,"=", len(main_df))
 # exit(0)
 
 # Plotting 
 plt.close("all")
 
 occupancy = main_df["occupancy"]
+print(occupancy)
+
+fig = plt.figure(num=0) 
+fig.suptitle(filename, fontsize=11)
+
+plt.plot(main_df["occupancy"], main_df["min"], c='b', marker="o", label="min")
+plt.show()
 
 exit(0)
 independent_vars = ['bwss', 'tpb', 'num_repeat']
