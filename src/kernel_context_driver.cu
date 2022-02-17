@@ -1,6 +1,7 @@
 // driver.cpp
 // simple driver file for kernel testing
 
+#define DEBUG
 // local files
 #include <driver.h>
 #include <device_props.h>
@@ -18,7 +19,6 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#define DEBUG
 
 
 using vt = double;
