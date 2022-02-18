@@ -217,7 +217,7 @@ struct KernelCPUContext {
         int min_blocks_due_to_shd_mem = max_shd_mem_per_proc / max_shd_mem_per_block;
 
         for(int i=min_blocks_due_to_shd_mem; i < max_blocks_simultaneous_per_sm ; i+=1) {
-            int sm_alloc = (max_shd_mem_per_proc / i - 256) / 256 * 256;
+            int sm_alloc = std::min((max_shd_mem_per_proc / i - 256) / 256 * 256, max_shd_mem_per_block);
             alloc_amounts.push_back(sm_alloc);
         }
         return alloc_amounts;
