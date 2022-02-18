@@ -75,12 +75,9 @@ struct OverlappedIdxDataAccessKernel : public KernelCPUContext<vt, it> {
         it* & d_indices = super::device_indices_ptrs[0];
         
 
-        int reads_per_element = 1; // Actual number 
+        int data_reads_per_element = 1; // Actual number 
+        int index_reads_per_element = 1; // Actual number
         int writes_per_element = 1; // Actual number
-        int indirect_reads_per_element = 1; // Actual number
-        int total_reads;
-        int total_writes;
-        int total_indirect_reads;
 
         struct gpu_ctx {
             vt * gpu_in; 
@@ -98,9 +95,9 @@ struct OverlappedIdxDataAccessKernel : public KernelCPUContext<vt, it> {
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "OverlappedIdxDataAccessKernel";
             this->Gsz /= num_idxs;
-            total_reads = N * reads_per_element;
-            total_writes = N * writes_per_element;
-            total_indirect_reads = N * indirect_reads_per_element;
+            this->total_data_reads = N * data_reads_per_element;
+            this->total_index_reads = N * index_reads_per_element;
+            this->total_writes = N * writes_per_element;
         }
         ~OverlappedIdxDataAccessKernel(){}
 

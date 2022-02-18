@@ -74,12 +74,9 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
         it* & d_indices = super::device_indices_ptrs[0];
         
 
-        int reads_per_element = 1; // Actual number 
+        int data_reads_per_element = 1; // Actual number 
         int writes_per_element = 1; // Actual number
-        int indirect_reads_per_element = 1; // Actual number
-        int total_reads;
-        int total_writes;
-        int total_indirect_reads;
+        int index_reads_per_element = 1; // Actual number
 
         struct gpu_ctx {
             vt * gpu_in; 
@@ -104,9 +101,9 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             } else {
                 this->name = "SimpleIndirectionTest_Direct";
             }
-            total_reads = N * reads_per_element;
-            total_writes = N * writes_per_element;
-            total_indirect_reads = N * indirect_reads_per_element;
+            this->total_data_reads = N * data_reads_per_element;
+            this->total_index_reads = N * index_reads_per_element;
+            this->total_writes = N * writes_per_element;
         }
         ~SimpleIndirectionKernel(){}
 

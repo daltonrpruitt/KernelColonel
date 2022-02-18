@@ -61,10 +61,10 @@ struct TemplateKernelContext : public KernelCPUContext<vt, it> {
         vt* & d_out = super::device_data_ptrs[1];
         
 
-        int reads_per_element = -1; // Actual number 
+        int data_reads_per_element = -1; // Actual number 
+        int index_reads_per_element = -1; // Actual number
         int writes_per_element = -1; // Actual number
-        int total_reads;
-        int total_writes;
+
         struct gpu_ctx {
             // Params for kernel; set in set_dev_ptrs()
             vt * gpu_in; 
@@ -80,8 +80,9 @@ struct TemplateKernelContext : public KernelCPUContext<vt, it> {
         TemplateKernelContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(/*#inputs, #outputs, #index arrays */, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "/* Identifying name */";
-            total_reads = N * reads_per_element;
-            total_writes = N * writes_per_element;
+            this->total_data_reads = N * data_reads_per_element;
+            this->total_index_reads = N * index_reads_per_element;
+            this->total_writes = N * writes_per_element;
         }
         ~TemplateKernelContext(){}
 

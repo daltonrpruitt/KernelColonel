@@ -52,6 +52,10 @@ struct KernelCPUContext {
         int register_usage=-1;
         int max_blocks_simultaneous_per_sm=-1;
 
+        int total_data_reads;
+        int total_index_reads;
+        int total_writes;
+
         device_context* dev_props;
 
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
@@ -239,4 +243,9 @@ struct KernelCPUContext {
         if(!pass) {cerr << "Cannot get register usage for " << name << "!" << endl;}
         else { cout << name << " register usage = " << register_usage << endl;}
     }
+
+    int get_total_bandwidth_used() {
+        return ( total_data_reads+ total_writes)*sizeof(vt) +  total_index_reads*sizeof(it);
+    }
+
 };

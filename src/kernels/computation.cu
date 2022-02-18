@@ -64,10 +64,9 @@ struct ComputationalIntensityContext : public KernelCPUContext<vt, it> {
         vt* & d_in = super::device_data_ptrs[0];
         vt* & d_out = super::device_data_ptrs[1];
 
-        int reads_per_element = 1 + LOOPS;
+        int data_reads_per_element = 1 + LOOPS;
+        int index_reads_per_element = 0;
         int writes_per_element = 1;
-        int total_reads;
-        int total_writes;
         struct gpu_ctx {
             vt * gpu_in;
             vt * gpu_out;   
@@ -82,8 +81,9 @@ struct ComputationalIntensityContext : public KernelCPUContext<vt, it> {
         ComputationalIntensityContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "ComputationalIntesity"; // _N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
-            total_reads = N * reads_per_element;
-            total_writes = N * writes_per_element;
+            this->total_data_reads = N * data_reads_per_element;
+            this->total_index_reads = N * index_reads_per_element;
+            this->total_writes = N * writes_per_element;
         }
         ~ComputationalIntensityContext(){}
 
