@@ -82,7 +82,7 @@ class MicrobenchmarkDriver {
         // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename.c_str());
-        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl;
+        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" << endl;
     }
     ~MicrobenchmarkDriver() {
         for (auto ctx : contexts) {
@@ -116,14 +116,22 @@ class MicrobenchmarkDriver {
 #endif
 
             if(!ctx->init()) {return;}
-            vector<float> times;
+            using timing_precision_t = double;
+            vector<timing_precision_t> times;
             for (int i = 0; i < kernel_runs; ++i) {
-                float t = ctx->run();
+                timing_precision_t t = ctx->run();
                 times.push_back(t);
             }
             ctx->uninit();
             // avg/std dev/ min, max, med
-            vector<float> timing_stats = stats_from_vec(times);
+            vector<timing_precision_t> timing_stats = stats_from_vec(times);
+            timing_precision_t throughput =  (timing_precision_t) ctx->get_total_bytes_processed() / (1024*1024*1024)  // Total data processed * 1 GB/(1024^3) B
+                    / timing_stats[0]                                                       // Min time to finish (1/ms)
+                    * 1000;                                                                 // 1000 ms / 1 s
+            timing_stats.push_back(throughput);
+            timing_precision_t fraction_theoretical_bw_achieved = throughput / dev_ctx_->theoretical_bw_; 
+            timing_stats.push_back(fraction_theoretical_bw_achieved);
+
 #ifdef DEBUG
             cout << "Actual runtimes:" << endl;
             for (int i = 0; i < times.size(); ++i) {
@@ -140,7 +148,9 @@ class MicrobenchmarkDriver {
                       << setw(w) << "med"
                       << setw(w) << "max"
                       << setw(w) << "avg"
-                      << setw(w) << "stddev" << endl;
+                      << setw(w) << "stddev"
+                      << setw(w) << "througput" 
+                      << setw(w) << "frac. of max bw" << endl;
             for (auto v : timing_stats) {
                 cout << setw(w) << v;
             }
@@ -163,9 +173,10 @@ class MicrobenchmarkDriver {
     }
 
     // output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl ;
-    void write_data(kernel_ctx_t* ctx, vector<float> data) {
+    template<typename T>
+    void write_data(kernel_ctx_t* ctx, vector<T> data) {
         stringstream s;
-        copy(data.begin(), data.end(), std::ostream_iterator<float>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
+        copy(data.begin(), data.end(), std::ostream_iterator<T>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
         string wo_last_comma = s.str();
         wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
         output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << ","  << ctx->get_occupancy() << "," << wo_last_comma << endl;
