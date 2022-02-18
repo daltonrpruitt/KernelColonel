@@ -90,6 +90,9 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
 
         
         void local_execute() override {
+            if(this->dev_ctx->props_.major >= 7) {
+                cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, this->dev_ctx->props_.sharedMemPerMultiprocessor);
+            }
             compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
         }
 
