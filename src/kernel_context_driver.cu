@@ -59,9 +59,6 @@ int main() {
         cerr << "Not continuing!" << endl;
         return -1;
     }
-    string filename = "new_file.csv";
-    cout << output_dir+"indirect_kernel_output.csv" << endl;
-    cout << output_dir+filename << endl;
 
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, true);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
