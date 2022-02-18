@@ -56,7 +56,7 @@ struct KernelCPUContext {
         int total_index_reads;
         int total_writes;
 
-        device_context* dev_props;
+        device_context* dev_ctx;
 
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
@@ -83,7 +83,7 @@ struct KernelCPUContext {
 
         KernelCPUContext(int in, int out, int indices, int n, int bs, device_context* d_ctx, int shd_mem_alloc=0)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
-            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_props(d_ctx), shared_memory_usage(shd_mem_alloc) {
+            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc) {
             }
 
         bool init(){
@@ -195,10 +195,10 @@ struct KernelCPUContext {
     void compute_max_simultaneous_blocks(bool& pass) {
         local_compute_register_usage(pass);
         if(!pass) { okay = false; return;}
-        int due_to_block_size = (int) floor(dev_props->props_.maxThreadsPerMultiProcessor / Bsz); 
-        int due_to_registers =  (int) floor(dev_props->props_.regsPerMultiprocessor / (register_usage * Bsz));
+        int due_to_block_size = (int) floor(dev_ctx->props_.maxThreadsPerMultiProcessor / Bsz); 
+        int due_to_registers =  (int) floor(dev_ctx->props_.regsPerMultiprocessor / (register_usage * Bsz));
         max_blocks_simultaneous_per_sm = std::min({due_to_block_size, 
-                                            due_to_registers, dev_props->props_.maxBlocksPerMultiProcessor});
+                                            due_to_registers, dev_ctx->props_.maxBlocksPerMultiProcessor});
 
     }
 
@@ -211,8 +211,8 @@ struct KernelCPUContext {
             alloc_amounts.push_back(-1);
             return alloc_amounts;
         }
-        int max_shd_mem_per_block = dev_props->props_.sharedMemPerBlock;
-        int max_shd_mem_per_proc = dev_props->props_.sharedMemPerMultiprocessor;
+        int max_shd_mem_per_block = dev_ctx->props_.sharedMemPerBlock;
+        int max_shd_mem_per_proc = dev_ctx->props_.sharedMemPerMultiprocessor;
 
         int min_blocks_due_to_shd_mem = max_shd_mem_per_proc / max_shd_mem_per_block;
 
@@ -226,13 +226,13 @@ struct KernelCPUContext {
     float get_occupancy() {
         int max_blocks_shared_mem;
         if(shared_memory_usage == 0) {
-            max_blocks_shared_mem = dev_props->props_.maxBlocksPerMultiProcessor;
+            max_blocks_shared_mem = dev_ctx->props_.maxBlocksPerMultiProcessor;
         } else {
-            max_blocks_shared_mem = dev_props->props_.sharedMemPerMultiprocessor / shared_memory_usage;
+            max_blocks_shared_mem = dev_ctx->props_.sharedMemPerMultiprocessor / shared_memory_usage;
         }
         int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
         int num_threads_simul = max_blocks_simul * Bsz; 
-        return float(num_threads_simul) / float(dev_props->props_.maxThreadsPerMultiProcessor);
+        return float(num_threads_simul) / float(dev_ctx->props_.maxThreadsPerMultiProcessor);
     }
 
     void print_register_usage() {
