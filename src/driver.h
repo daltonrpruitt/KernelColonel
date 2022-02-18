@@ -37,6 +37,7 @@ template <typename kernel_ctx_t>
 class MicrobenchmarkDriver {
    private:
     ofstream output_file;
+    device_context* dev_ctx_;
     vector<kernel_ctx_t*> contexts;
 
     int N = 0;
@@ -46,7 +47,8 @@ class MicrobenchmarkDriver {
 
    public:
     MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) {
-        dev_ctx->init();
+        //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
+        dev_ctx_ = dev_ctx;
 
         for (int bs : bs_vec) {
             kernel_ctx_t* curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
