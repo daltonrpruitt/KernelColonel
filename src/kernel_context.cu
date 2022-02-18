@@ -244,7 +244,7 @@ struct KernelCPUContext {
         else { cout << name << " register usage = " << register_usage << endl;}
     }
 
-    int get_total_bandwidth_used() {
+    int get_total_bytes_processed() {
         return ( total_data_reads+ total_writes)*sizeof(vt) +  total_index_reads*sizeof(it);
     }
 
