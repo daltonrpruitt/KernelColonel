@@ -3,9 +3,11 @@
 #include <local_cuda_utils.h>
 
 #include <iostream>
+#include <iomanip>
 
-using std::pow;
-using std::cout; 
+#include <cuda.h>
+
+using std::cout;
 using std::endl;
 
 class device_context {
@@ -26,7 +28,10 @@ class device_context {
                             * props_.memoryBusWidth        // bit / cycle
                             / 8                                // byte / 8 bits
                             * 2                                // Assuming Double Data Rate (DDR) memory
-                            * pow(1000.0, -2);                     // 1000 cycles/kcycle * 1 GB/10^9 B = 1/10^6
+                            * 1000 / (1024*1024*1024);                     // 1000 cycles/kcycle * 1 GB/1024^3 B 
+			std::streamsize ss = cout.precision();
+            cout << "Device '" << props_.name << "' : Max Bandwidth = " << std::fixed << std::setprecision(1) << theoretical_bw_ << " GB/s" << endl;
+			cout << std::setprecision(ss) << resetiosflags( std::ios::fixed | std::ios::showpoint );
         }
         cudaPrintLastError();
         return pass;
