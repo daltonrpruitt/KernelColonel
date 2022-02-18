@@ -27,14 +27,13 @@ using std::endl;
 using std::string;
 using std::to_string;
 
-#define N (32*32*32 * 32 * 8)
+// #define N (32*32*32 * 32 * 8)
 
 int main() {
     timespec mainStart, mainEnd;
     clock_gettime(CLOCK_MONOTONIC, &mainStart);
     int total_runs = 0;
 
-    cout << "Processing " << N  << " elements" << endl;
     typedef ArrayCopyContext<vt, int> copy_kernel_t;
     typedef MicrobenchmarkDriver<copy_kernel_t> copy_driver_t;
 
@@ -48,6 +47,9 @@ int main() {
 
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
+    int N = dev_ctx.props_.l2CacheSize / sizeof(vt) * 15; 
+    cout << "Processing " << N  << " elements" << endl;
+
 
     std::vector<int> bs_vec;
     // Only one of the next two lines 
