@@ -150,7 +150,7 @@ class MicrobenchmarkDriver {
                       << setw(w) << "avg"
                       << setw(w) << "stddev"
                       << setw(w) << "througput" 
-                      << setw(w) << "frac. of max bw" << endl;
+                      << setw(w) << "frac mx bw" << endl;
             for (auto v : timing_stats) {
                 cout << setw(w) << v;
             }
