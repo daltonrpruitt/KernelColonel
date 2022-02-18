@@ -12,6 +12,17 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Python: Plotting",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/plot_output.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "output/Bayonet/2022-02-17_10-00-33"
+            ]
+        },
+        {
             "name": "Debug debug/ctx_driver",
             "type": "cppdbg",
             "request": "launch",

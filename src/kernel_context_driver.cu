@@ -74,13 +74,13 @@ int main() {
     total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
 
 
-    overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_kernel_output_1.csv", &dev_ctx, true);
+    overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_1_kernel_output.csv", &dev_ctx, true);
     if (!overlapped_1_driver.check_then_run_kernels()) {return -1;} 
-    overlapped_access_driver_2_t overlapped_2_driver(N, bs_vec, output_dir+"overlapped_kernel_output_2.csv", &dev_ctx, true);
+    overlapped_access_driver_2_t overlapped_2_driver(N, bs_vec, output_dir+"overlapped_2_kernel_output.csv", &dev_ctx, true);
     if (!overlapped_2_driver.check_then_run_kernels()) {return -1;} 
-    overlapped_access_driver_4_t overlapped_4_driver(N, bs_vec, output_dir+"overlapped_kernel_output_4.csv", &dev_ctx, true);
+    overlapped_access_driver_4_t overlapped_4_driver(N, bs_vec, output_dir+"overlapped_4_kernel_output.csv", &dev_ctx, true);
     if (!overlapped_4_driver.check_then_run_kernels()) {return -1;} 
-    overlapped_access_driver_8_t overlapped_8_driver(N, bs_vec, output_dir+"overlapped_kernel_output_8.csv", &dev_ctx, true);
+    overlapped_access_driver_8_t overlapped_8_driver(N, bs_vec, output_dir+"overlapped_8_kernel_output.csv", &dev_ctx, true);
     if (!overlapped_8_driver.check_then_run_kernels()) {return -1;} 
     total_runs += overlapped_1_driver.get_total_runs() + overlapped_2_driver.get_total_runs() + 
                             overlapped_4_driver.get_total_runs() + overlapped_8_driver.get_total_runs();
