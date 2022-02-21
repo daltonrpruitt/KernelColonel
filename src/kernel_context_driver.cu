@@ -112,7 +112,12 @@ int main() {
     
     cout << "#########  Finished  #########" << endl << endl;
     cout << "Total runs performed        = " << total_runs << endl;
-    cout << "Total time taken (m:ss)     = " <<(int)main_time / 1000 / 60 << ":" << (int)main_time / 1000 % 60 << endl;
+    cout << "Total time taken (h:mm:ss)     = " << std::setfill('0') << std::setw(2) 
+                                                << (int)main_time / 1000 / 60 / 60 << ":" 
+                                                << std::setfill('0') << std::setw(2)
+                                                << (int)main_time / 1000 / 60 << ":" 
+                                                << std::setfill('0') << std::setw(2)
+                                                << (int)main_time / 1000 % 60 << endl;
 
     return 0;
 }
