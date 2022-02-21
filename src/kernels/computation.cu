@@ -39,7 +39,7 @@ void kernel(uint idx, vt* gpu_in, vt* gpu_out){
         data = gpu_in[uint(data)];
     }
 
-    gpu_out[int(data)] = data;
+    gpu_out[uint(data)] = data;
 }
 
 
