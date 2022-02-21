@@ -47,7 +47,7 @@ int main() {
 
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
-    int N = dev_ctx.props_.l2CacheSize / sizeof(vt) * 15; 
+    int N = dev_ctx.props_.l2CacheSize / sizeof(vt) * 10;
     cout << "Processing " << N  << " elements" << endl;
 
 
