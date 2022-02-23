@@ -44,6 +44,8 @@ if False:
               float, float]
     data_types_dict = dict(zip(data_headers, data_types))
 
+date_time_str = base_folder[base_folder.find("2022"):]
+ic(date_time_str)
 
 kernel_types = []
 main_df = pd.DataFrame()
