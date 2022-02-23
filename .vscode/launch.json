@@ -19,7 +19,7 @@
             "console": "integratedTerminal", 
             "cwd": "${workspaceFolder}",
             "args": [
-                "output/Bayonet/2022-02-17_10-00-33"
+                "output/Bayonet/2022-02-22_10-05-03"
             ]
         },
         {
