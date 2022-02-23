@@ -71,6 +71,7 @@ for filename in os.listdir(base_folder):
     # else: 
     main_df = main_df.append(data)
     # ic(main_df)
+main_df.reset_index(drop=True, inplace=True)  # make sure indexes pair with number of rows
 
 ic(main_df)
 
