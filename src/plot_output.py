@@ -50,6 +50,7 @@ ic(date_time_str)
 kernel_types = []
 main_df = pd.DataFrame()
 for filename in os.listdir(base_folder):
+    if ".csv" not in filename: continue # ignore images and/or directories
     post_fix = "_kernel_output"
 
     data = pd.read_csv(base_folder + "/" + filename,header=0)
