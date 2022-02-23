@@ -33,6 +33,12 @@ if "output" not in os.path.abspath(base_folder):
     exit(-1)
 
 kernel_extra_configs = {"copy": "",  "direct": "", "indirect":"", "overlapped": "degree", "computational_intensity": "comp-intens"}
+kernel_type_names = {"copy": "ArrayCopy",  
+                    "direct": "SimpleIndirectionTest_Direct", 
+                    "indirect":"SimpleIndirectionTest_Indirect", 
+                    "overlapped": "OverlappedIdxDataAccessKernel", 
+                    "computational_intensity": "ComputationalIntensity"}
+
 
 data_headers   = ["kernel_type", "array_size", "tpb", "occupancy", "min", "med", "max", "avg", "stddev"]
 
@@ -80,61 +86,68 @@ if not os.path.exists(images_dir):
     os.makedirs(images_dir)
 
 full_filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapped_kernel_output_1.csv"
-try:
-    main_df = pd.read_csv(full_filename,header=0)
-    print(main_df.head())
-except Exception as e:
-    print(e)
-    exit(-1)
-    small_dfs = [] # https://stackoverflow.com/a/56746204 Following this advice not because I need performance, but it may be good?
 
-    one_processed = False
 
-    for subdir, dirs, files in os.walk(base_folder):
-        for file in files:
-            if ".csv" in file and not "collated" in file:
-                # try:
-                if len(open(os.path.join(subdir, file),'r').readlines()) < 3:
-                    print(os.path.join(subdir, file),"recorded an error (more than likely...)")    
-                    continue
-                # except FileNotFoundError:
-                #     print(os.path.join(subdir, file), "does not exist!")
-                print("Processing:", os.path.join(subdir, file))
-                
-                current_df = pd.read_csv(os.path.join(subdir, file), header=0, dtype=data_types_dict)
-                
-                        
-                # print(current_df.values.tolist()[:10])
-                # print(type(current_df.values.tolist()))
-                if len(small_dfs) == 0:
-                    small_dfs = current_df.values.tolist()
-                else:
-                    small_dfs += current_df.values.tolist()
-                # print(current_df.iloc[:])
-        #         one_processed = True
-        #         break 
-        # if one_processed:
-        #     break
+print("Entries in all files in ", base_folder,"=", len(main_df))
 
-    # print(small_dfs)
-    main_df = pd.DataFrame(small_dfs, columns=data_headers)
-    main_df.to_csv("collated_data.csv", index=False)
 
-print("Entries in", full_filename,"=", len(main_df))
-# exit(0)
+def process_comp_intens(df):
+    kernel_name = kernel_type_names["computational_intensity"]
+    data = df[df["kernel_type"]==kernel_name]
+    config_name = kernel_extra_configs["computational_intensity"]
 
-# Plotting 
-plt.close("all")
+    for intens in data[config_name].unique(): 
+        print(intens)
+        plt.close("all")
 
-occupancy = main_df["occupancy"]
-print(occupancy)
+        fig = plt.figure() 
+        fig.suptitle(kernel_name + " intensity=" +str(int(intens)) + " " + date_time_str, fontsize=11)
+        plt.xlabel("Max Occupancy")
+        plt.ylabel("Fraction of max Bandwidth")
 
-fig = plt.figure(num=0) 
-fig.suptitle(full_filename, fontsize=11)
+        local_data = data[data[config_name] == intens]
+        plt.plot(local_data["occupancy"], local_data["fraction_of_max_bandwidth"], c='b', marker="o", label="bandwidth fraction")
+        # plt.show()
+        plt.savefig(images_dir+"/"+kernel_name+"_"+config_name+"-"+str(int(intens))+".png")
 
-plt.plot(main_df["occupancy"], main_df["min"], c='b', marker="o", label="min")
-plt.show()
-plt.savefig(full_filename[:-4]+".png")
+def process_overlapped_access(df):
+    kernel_name = kernel_type_names["overlapped"]
+    data = df[df["kernel_type"]==kernel_name]
+    config_name = kernel_extra_configs["overlapped"]
+    
+    uniques = data[config_name].unique()
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(uniques)))
+
+    plt.close("all")
+    combined_fig = plt.figure(1)
+    combined_fig.suptitle(kernel_name +" Combined " + date_time_str, fontsize=11)
+    plt.xlabel("Max Occupancy")
+    plt.ylabel("Fraction of max Bandwidth")
+    
+    for i, degree in enumerate(uniques): 
+        print(degree)
+
+        fig = plt.figure() 
+        fig.suptitle(kernel_name + " intensity=" +str(int(degree)) + " " + date_time_str, fontsize=11)
+        plt.xlabel("Max Occupancy")
+        plt.ylabel("Fraction of max Bandwidth")
+
+        local_data = data[data[config_name] == degree]
+        plt.plot(local_data["occupancy"], local_data["fraction_of_max_bandwidth"], c='b', marker="o", label="bandwidth fraction")
+        # plt.show()
+        plt.savefig(images_dir+"/"+kernel_name+"_"+config_name+"-"+str(int(degree))+".png")
+        plt.close()
+        combined_fig = plt.figure(1)
+        plt.plot(local_data["occupancy"], local_data["fraction_of_max_bandwidth"], c=colors[i], marker="o", label="degree="+str(int(degree)))
+    combined_fig = plt.figure(1)
+    plt.legend(loc="best")
+
+    plt.savefig(images_dir+"/"+kernel_name+"_combined.png")
+
+
+
+process_comp_intens(main_df)
+process_overlapped_access(main_df)
 
 exit(0)
 independent_vars = ['bwss', 'tpb', 'num_repeat']
