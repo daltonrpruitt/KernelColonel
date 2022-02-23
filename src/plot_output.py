@@ -75,6 +75,10 @@ main_df.reset_index(drop=True, inplace=True)  # make sure indexes pair with numb
 
 ic(main_df)
 
+images_dir = base_folder + "/images"
+if not os.path.exists(images_dir):
+    os.makedirs(images_dir)
+
 full_filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapped_kernel_output_1.csv"
 try:
     main_df = pd.read_csv(full_filename,header=0)
