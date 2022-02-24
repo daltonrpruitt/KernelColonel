@@ -1,10 +1,10 @@
 #pragma once
 /**
- * @file copy.cu
+ * @file interleaved_copy.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from KernelCPUContext; actual kernel specification
+ * @brief Derived from ArrayCopyContext; testing for burst mode 
  * @version 0.1
- * @date 2022-01-27
+ * @date 2022-02-24
  * 
  */
 
