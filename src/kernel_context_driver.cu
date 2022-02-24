@@ -5,10 +5,10 @@
 // local files
 #include <driver.h>
 #include <device_props.h>
-#include <copy.cu>
-#include <simple_indirection.cu>
-#include <overlap_index_access_with_data.cu>
-#include <computation.cu>
+#include <kernels/general/copy.cu>
+#include <kernels/general/simple_indirection.cu>
+#include <kernels/general/overlap_index_access_with_data.cu>
+#include <kernels/general/computation.cu>
 #include <output.h>
 #include <utils.h>
 
