@@ -13,10 +13,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 
 # add_executable(driver src/driver.cu)
-add_executable(ctx_driver src/kernel_context_driver.cu)
-set_property(TARGET ctx_driver PROPERTY CXX_STANDARD 17)
-set_property(TARGET ctx_driver PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
-target_compile_options(ctx_driver PRIVATE "--keep")
+add_executable(main src/main.cu)
+set_property(TARGET main PROPERTY CXX_STANDARD 17)
+set_property(TARGET main PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
+target_compile_options(main PRIVATE "--keep")
 
 # message(STATUS "python exec: ${Python_EXECUTABLE}")
 
@@ -27,4 +27,4 @@ target_compile_options(ctx_driver PRIVATE "--keep")
 #  COMMENT "Generating kernel template instances"
 # )
 
-# add_dependencies(ctx_driver gen_kernels)
+# add_dependencies(main gen_kernels)
