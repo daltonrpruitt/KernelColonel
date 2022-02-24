@@ -16,8 +16,6 @@
 #include <local_cuda_utils.h>
 #include <kernel_context.cu>
 
-#define DEBUG
-
 using std::string;
 using std::cout;
 using std::endl;
