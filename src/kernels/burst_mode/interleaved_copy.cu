@@ -6,6 +6,9 @@
  * @version 0.1
  * @date 2022-02-24
  * 
+ * Based on my write up that is currently at 
+ * https://app.diagrams.net/#G1NgMgo7joWueBNKOvifh_rLW__W7VOhrP
+ * 
  */
 
 #include <iostream>
