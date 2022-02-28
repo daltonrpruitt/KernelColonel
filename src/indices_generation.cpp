@@ -69,33 +69,15 @@ int strided_indices(int* indxs, unsigned long long N, int block_size, int shuffl
     return 0;
 }
 
-int strided_access_no_conflicts(int* indxs, int N, int block_size, int shuffle_size){
-#ifdef DEBUG
-    printf("indices: ");
-#endif
+int strided_no_conflict_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
+    if(output_sample) cout << "strided no conflict indices (Bsz="<<block_size<<",shuffle sz="<<shuffle_size<< "): ";
     int num_warps = block_size / 32;
     for(int i=0; i < N/block_size; i++) {
         int start_idx = i * block_size;
         for(int j=0; j < block_size; j++) {
             int idx = start_idx + j;
             indxs[idx] = ( (j % 32) * 32 + (j % 32 + j / num_warps ) % 32) % block_size + start_idx; 
-#ifdef DEBUG 
-            if(idx % block_size >= block_size / 2 - 2 && 
-                    idx % block_size <= block_size / 2 + 2 && 
-                    idx / block_size < 2)      
-                printf("%d:%d | ",idx,indxs[idx]); 
-            else if(idx % block_size == block_size / 2 + 3 && 
-                    idx / block_size < 2)                               
-                printf(" ... | ");
-            else if((idx % block_size >= block_size - 2 && idx / block_size < 2 ) || 
-                    (idx % block_size <= 2 && idx / block_size < 3))   
-                printf("%d:%d | ",idx,indxs[idx]); 
-            else if(idx % block_size == 3 && 
-                    idx / block_size < 2)                               
-                printf(" ... | ");
-            else if(idx / block_size == 2 && idx % block_size == 3 )                                   
-                printf(" ... ... ... ");
-#endif
+            if(output_sample) print_indices_sample(indxs, block_size, idx);
         }
     }
 
