@@ -116,7 +116,7 @@ int main() {
 #define STRINGIFY( x ) #x
 
 #define INTERLEAVED(X, Y, Z) MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y, Z>> \
-      INTER_DRIVER(X, Y, Z)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y, Z) ) ".csv", &dev_ctx, false); \
+      INTER_DRIVER(X, Y, Z)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y, Z) ) ".csv", &dev_ctx, true); \
     if (!INTER_DRIVER(X, Y, Z).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_DRIVER(X, Y, Z).get_total_runs();
 
