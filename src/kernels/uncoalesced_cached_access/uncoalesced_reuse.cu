@@ -84,7 +84,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
         vt* & d_in = super::device_data_ptrs[0];
         vt* & d_out = super::device_data_ptrs[1];
 
-        int data_reads_per_element = 1;
+        int data_reads_per_element = ELEMENTS_REUSED;
         int index_reads_per_element = 0;
         int writes_per_element = 1;
         struct gpu_ctx {
@@ -105,6 +105,10 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
             this->name = "UncoalescedReuse"; 
             // this->Gsz /= local_group_size * elements * block_life;
             assert(this->Gsz > 0);
+            if constexpr(preload_for_reuse) {
+                data_reads_per_element += 1;
+            }
+
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
