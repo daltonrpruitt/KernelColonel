@@ -38,7 +38,8 @@ void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N)
         for(int y=0; y < local_group_size; ++y) {
             for(int z=0; z < elements; ++z) {
                 unsigned long long data_idx =  b_idx * Bsz * local_group_size * elements +
-                        t_idx + Gsz * Bsz * local_group_size * x + Bsz*(y*elements + z);
+                        t_idx + Gsz * Bsz * local_group_size * elements * x + Bsz*(y*elements + z);
+                if(data_idx >= N) continue;
                 gpu_out[data_idx] = gpu_in[data_idx];
             }
         }
