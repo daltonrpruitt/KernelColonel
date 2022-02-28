@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <algorithm>
 
-int sequential_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
+int sequential_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
 
     if(output_sample) cout << "sequential indices: ");
-    for(int i=0; i < N; i++) {
+    for(unsigned long long i=0; i < N; i++) {
         indxs[i] = i;
         if(output_sample && (i < 10 || (i > 1022 && i < 1028)) ) cout << i <<":"<<indxs[i];
     }
@@ -30,13 +30,13 @@ int sequential_indices(int* indxs, int N, int block_size, int shuffle_size, bool
  *      0 32 64 96 ... 71 103 8 40 ... 79 111 16 48 ... ... 31  63  95  127 128 160 192 ... ... 159 191 223 255
  * 
  */
-int strided_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
+int strided_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "strided indices (Bsz="<<block_size<<",shuffle sz="<<shuffle_size<< "): ";
     int num_warps = block_size / 32;
-    for(int i=0; i < N/block_size; i++) {
+    for(unsigned long long i=0; i < N/block_size; i++) {
         int start_idx = i * block_size;
-        for(int j=0; j < block_size; j++) {
-            int idx = start_idx + j;
+        unsigned long long(int j=0; j < block_size; j++) {
+            unsigned long long idx = start_idx + j;
             indxs[idx] = (j%num_warps) * 32 + j / num_warps + start_idx;
             if(output_sample) {
                 if(idx % block_size >= block_size / 2 - 2 &&
