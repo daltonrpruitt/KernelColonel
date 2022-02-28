@@ -45,14 +45,14 @@ void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N)
 }
 
 
-template<typename vt, typename it>
+template<typename vt, typename it, int block_life, int local_group_size, int elements>
 __global__        
-void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out){
+void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        kernel<vt, it>(idx, gpu_in, gpu_out);
+        interleaved_kernel<vt, it, block_life, local_group_size, elements>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, int local_group_size, int elements>
+template<typename vt, typename it, int block_life, int local_group_size, int elements>
 struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
@@ -76,7 +76,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                kernel<vt, it, local_group_size, elements>(idx, gpu_in, gpu_out);
+                interleaved_kernel<vt, it, block_life, local_group_size, elements>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
@@ -124,7 +124,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,local_group_size,elements>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,block_life,local_group_size,elements>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
