@@ -8,7 +8,7 @@ using std::endl;
 
 int sequential_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
 
-    if(output_sample) cout << "sequential indices: ");
+    if(output_sample) cout << "sequential indices: ";
     for(unsigned long long i=0; i < N; i++) {
         indxs[i] = i;
         if(output_sample && (i < 10 || (i > 1022 && i < 1028)) ) cout << i <<":"<<indxs[i];
