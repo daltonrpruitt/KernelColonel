@@ -1,7 +1,10 @@
 // Index array generation functions
 
-#include <stdio.h>
+#include <iostream>
 #include <algorithm>
+
+using std::cout;
+using std::endl;
 
 int sequential_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
 
