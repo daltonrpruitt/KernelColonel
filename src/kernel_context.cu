@@ -25,7 +25,7 @@ using std::vector;
 
 template<typename kernel_ctx_t>
 __global__
-void compute_kernel(int N, kernel_ctx_t ctx) {
+void compute_kernel(unsigned long long N, kernel_ctx_t ctx) {
     uint idx = blockIdx.x * blockDim.x + threadIdx.x;
     if(idx >= N) return;
     ctx(idx);
@@ -37,7 +37,7 @@ template<typename vt, typename it>
 struct KernelCPUContext {
     public:
         string name;
-        int N=-1;
+        unsigned long long N=0;
         int Bsz=-1;
         int Gsz=-1;
         int num_in_data=-1;
@@ -81,7 +81,7 @@ struct KernelCPUContext {
         virtual void init_inputs(bool& pass) {};
         virtual void init_indices(bool& pass) {};
 
-        KernelCPUContext(int in, int out, int indices, int n, int bs, device_context* d_ctx, int shd_mem_alloc=0)
+        KernelCPUContext(int in, int out, int indices, unsigned long long n, int bs, device_context* d_ctx, int shd_mem_alloc=0)
             : num_in_data(in), num_out_data(out), num_indices(indices), 
             num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc) {
             }
