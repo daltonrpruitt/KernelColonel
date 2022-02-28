@@ -119,7 +119,15 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
 
         void local_execute() override {
             if(this->dev_ctx->props_.major >= 7) {
-                cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, this->dev_ctx->props_.sharedMemPerMultiprocessor);
+                //cout << "this->dev_ctx->props_.sharedMemPerMultiprocessor = " << this->dev_ctx->props_.sharedMemPerMultiprocessor << endl;
+                //cout << "this->shared_memory_usage = " << this->shared_memory_usage << endl;
+                //cout << "cudaDevAttrMaxSharedMemoryPerBlockOptin = " << this->dev_ctx->props_.sharedMemPerBlockOptin << endl;
+                cudaFuncAttributes attr;
+                cudaFuncGetAttributes(&attr, compute_kernel<gpu_ctx>);
+                //cout << " sharedSizeBytes = " << attr.sharedSizeBytes << endl;
+                int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
+                cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
+                cudaPrintLastError();
             }
             compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
             cudaPrintLastError();
