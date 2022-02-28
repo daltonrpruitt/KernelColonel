@@ -64,6 +64,7 @@ int main() {
         return -1;
     }
 
+    /*
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, true);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
     total_runs += copy_driver.get_total_runs();
@@ -107,6 +108,8 @@ int main() {
                             comp_intens_4_driver.get_total_runs() + comp_intens_8_driver.get_total_runs() + 
                             comp_intens_16_driver.get_total_runs() + comp_intens_32_driver.get_total_runs() + 
                             comp_intens_64_driver.get_total_runs();
+    */
+
 #define INTER_DRIVER(X, Y, Z) interleaved_copy_ ## X  ## _ ## Y  ## _ ## Z ## _driver
 #define XSTRINGIFY( x ) STRINGIFY ( x )
 #define STRINGIFY( x ) #x
