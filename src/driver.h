@@ -95,6 +95,7 @@ class MicrobenchmarkDriver {
     bool check_kernels() {
         bool pass = true;
         for (auto ctx : contexts) {
+            ctx->output_config_info();
             ctx->init();
             for (int i = 0; i < kernel_checks; ++i) {
                 pass = (pass && ctx->run_and_check());
@@ -112,7 +113,7 @@ class MicrobenchmarkDriver {
     void run_kernels() {
         for (auto ctx : contexts) {
 #ifdef DEBUG
-            cout << "Running " << ctx->name << endl;
+            ctx->output_config_info();
 #endif
 
             if(!ctx->init()) {return;}

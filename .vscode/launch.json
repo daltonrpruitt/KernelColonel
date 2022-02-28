@@ -23,10 +23,10 @@
             ]
         },
         {
-            "name": "Debug debug/ctx_driver",
+            "name": "Debug debug/main",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/ctx_driver",
+            "program": "${workspaceFolder}/build/debug/main",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/debug",
