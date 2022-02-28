@@ -38,7 +38,7 @@ int strided_indices(int* indxs, unsigned long long N, int block_size, int shuffl
     int num_warps = block_size / 32;
     for(unsigned long long i=0; i < N/block_size; i++) {
         int start_idx = i * block_size;
-        unsigned long long(int j=0; j < block_size; j++) {
+        for(unsigned long long j=0; j < block_size; j++) {
             unsigned long long idx = start_idx + j;
             indxs[idx] = (j%num_warps) * 32 + j / num_warps + start_idx;
             if(output_sample) {
