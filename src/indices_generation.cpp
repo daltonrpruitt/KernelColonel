@@ -86,22 +86,23 @@ int strided_no_conflict_indices(int* indxs, unsigned long long N, int block_size
 }
 
 
-int random_indices(int* indxs, int N, int block_size){
-#ifdef DEBUG
-    printf("indices: ");
-#endif
+int random_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
+    if(output_sample) cout << "random indices : ";
     for(int i=0; i < N; i++) {
         indxs[i] = i;                                                                    
     }
     std::random_shuffle(indxs, indxs + N);
     
-    for(int i=0; i < N; i++) {
-#ifdef DEBUG
-        if(i < 10 || (i > 1022 && i < 1028)) printf("%d:%d ",i,indxs[i]);
-#endif
+    if(output_sample) {
+        for(int i=0; i < 10; i++) {
+            cout << " " << idx << ":" << indxs[idx];
+        }
+        cout << " ... | ";
+        for(int i=1022; i < 1029; i++) {
+            cout << " " << idx << ":" << indxs[idx];
+        }
+        cout << " ... ... ... ";
+        cout << endl;
     }
-#ifdef DEBUG
-    printf("\n");
-#endif
     return 0;
 }
