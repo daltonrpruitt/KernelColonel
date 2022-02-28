@@ -3,19 +3,14 @@
 #include <stdio.h>
 #include <algorithm>
 
-int same_indices(int* indxs, int N, int block_size, int shuffle_size){
-#ifdef DEBUG
-    printf("indices: ");
-#endif
+int sequential_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
+
+    if(output_sample) cout << "sequential indices: ");
     for(int i=0; i < N; i++) {
         indxs[i] = i;
-#ifdef DEBUG
-        if(i < 10 || (i > 1022 && i < 1028)) printf("%d:%d ",i,indxs[i]);
-#endif
+        if(output_sample && (i < 10 || (i > 1022 && i < 1028)) ) cout << i <<":"<<indxs[i];
     }
-#ifdef DEBUG
-    printf("\n");
-#endif
+    if(output_sample) cout << endl;
     return 0;
 }
 
