@@ -9,6 +9,8 @@
 #include <kernels/general/simple_indirection.cu>
 #include <kernels/general/overlap_index_access_with_data.cu>
 #include <kernels/general/computation.cu>
+#include <kernels/burst_mode/interleaved_copy.cu>
+
 #include <output.h>
 #include <utils.h>
 
@@ -105,6 +107,57 @@ int main() {
                             comp_intens_4_driver.get_total_runs() + comp_intens_8_driver.get_total_runs() + 
                             comp_intens_16_driver.get_total_runs() + comp_intens_32_driver.get_total_runs() + 
                             comp_intens_64_driver.get_total_runs();
+#define INTER_DRIVER(X, Y, Z) interleaved_copy_ ## X  ## _ ## Y  ## _ ## Z ## _driver
+#define XSTRINGIFY( x ) STRINGIFY ( x )
+#define STRINGIFY( x ) #x
+
+#define INTERLEAVED(X, Y, Z) MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y, Z>> \
+      INTER_DRIVER(X, Y, Z)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y, Z) ) ".csv", &dev_ctx, false); \
+    if (!INTER_DRIVER(X, Y, Z).check_then_run_kernels()) {return -1;}  \
+    total_runs += INTER_DRIVER(X, Y, Z).get_total_runs();
+
+    
+    INTERLEAVED(1, 1, 1)
+    INTERLEAVED(2, 1, 1)
+    INTERLEAVED(4, 1, 1)
+    INTERLEAVED(8, 1, 1)
+    INTERLEAVED(16, 1, 1)
+    INTERLEAVED(32, 1, 1)
+    INTERLEAVED(64, 1, 1)
+
+    // INTERLEAVED(1, 1, 1)
+    INTERLEAVED(1, 2, 1)
+    INTERLEAVED(1, 4, 1)
+    INTERLEAVED(1, 8, 1)
+    INTERLEAVED(1, 16, 1)
+    INTERLEAVED(1, 32, 1)
+    INTERLEAVED(1, 64, 1)
+
+    // INTERLEAVED(1, 1, 1)
+    INTERLEAVED(1, 1, 2)
+    INTERLEAVED(1, 1, 4)
+    INTERLEAVED(1, 1, 8)
+    INTERLEAVED(1, 1, 16)
+    INTERLEAVED(1, 1, 32)
+    INTERLEAVED(1, 1, 64)
+
+    // INTERLEAVED(8, 1, 1)
+    INTERLEAVED(8, 2, 1)
+    INTERLEAVED(8, 4, 1)
+    INTERLEAVED(8, 8, 1)
+    INTERLEAVED(8, 16, 1)
+    INTERLEAVED(8, 32, 1)
+
+    // INTERLEAVED(32, 1, 1)
+    INTERLEAVED(32, 2, 1)
+    INTERLEAVED(32, 4, 1)
+    INTERLEAVED(32, 8, 1)
+    INTERLEAVED(32, 16, 1)
+
+    INTERLEAVED(8, 8, 2)
+    INTERLEAVED(32, 8, 4)
+    INTERLEAVED(32, 8, 8)
+    INTERLEAVED(32, 8, 16)
 
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
