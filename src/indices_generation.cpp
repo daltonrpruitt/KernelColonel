@@ -81,9 +81,7 @@ int strided_no_conflict_indices(int* indxs, unsigned long long N, int block_size
         }
     }
 
-#ifdef DEBUG
-    printf("\n");
-#endif 
+    if(output_sample) cout << endl;
     return 0;
 }
 
