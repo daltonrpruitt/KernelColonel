@@ -57,7 +57,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
-        int N = super::N;
+        unsigned long long N = super::N;
         int Gsz = super::Gsz;
         int Bsz = super::Bsz;
 
@@ -71,7 +71,8 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         int writes_per_element = 1;
         struct gpu_ctx {
             vt * gpu_in;
-            vt * gpu_out;   
+            vt * gpu_out;
+            unsigned long long N;
 
             __device__        
             void operator() (uint idx){
@@ -82,6 +83,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
 
         InterleavedCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
+            assert(N % (local_group_size * elements * block_life) == 0);
             this->name = "InterleavedCopy"; 
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
@@ -101,6 +103,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         void set_dev_ptrs() override {
             ctx.gpu_in = d_in;
             ctx.gpu_out = d_out;
+            ctx.N = N;
         }
 
         
