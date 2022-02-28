@@ -30,39 +30,36 @@ int sequential_indices(int* indxs, int N, int block_size, int shuffle_size, bool
  *      0 32 64 96 ... 71 103 8 40 ... 79 111 16 48 ... ... 31  63  95  127 128 160 192 ... ... 159 191 223 255
  * 
  */
-int strided_access(int* indxs, int N, int block_size, int shuffle_size){
-#ifdef DEBUG
-    printf("indices: ");
-#endif
+int strided_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
+    if(output_sample) cout << "strided indices (Bsz="<<block_size<<",shuffle sz="<<shuffle_size<< "): ";
     int num_warps = block_size / 32;
     for(int i=0; i < N/block_size; i++) {
         int start_idx = i * block_size;
         for(int j=0; j < block_size; j++) {
             int idx = start_idx + j;
-            indxs[idx] = (j%num_warps) * 32 + j / num_warps + start_idx; 
-#ifdef DEBUG 
-            if(idx % block_size >= block_size / 2 - 2 && 
-                    idx % block_size <= block_size / 2 + 2 && 
-                    idx / block_size < 2)      
-                printf("%d:%d | ",idx,indxs[idx]); 
-            else if(idx % block_size == block_size / 2 + 3 && 
-                    idx / block_size < 2)                               
-                printf(" ... | ");
-            else if((idx % block_size >= block_size - 2 && idx / block_size < 2 ) || 
-                    (idx % block_size <= 2 && idx / block_size < 3))   
-                printf("%d:%d | ",idx,indxs[idx]); 
-            else if(idx % block_size == 3 && 
-                    idx / block_size < 2)                               
-                printf(" ... | ");
-            else if(idx / block_size == 2 && idx % block_size == 3 )                                   
-                printf(" ... ... ... ");
-#endif
+            indxs[idx] = (j%num_warps) * 32 + j / num_warps + start_idx;
+            if(output_sample) {
+                if(idx % block_size >= block_size / 2 - 2 &&
+                        idx % block_size <= block_size / 2 + 2 &&
+                        idx / block_size < 2) {
+                    printf("%d:%d | ",idx,indxs[idx]);
+                } else if(idx % block_size == block_size / 2 + 3 &&
+                        idx / block_size < 2) {
+                    printf(" ... | ");
+                } else if((idx % block_size >= block_size - 2 && idx / block_size < 2 ) || 
+                        (idx % block_size <= 2 && idx / block_size < 3))
+                    printf("%d:%d | ",idx,indxs[idx]);
+                } else if(idx % block_size == 3 &&
+                        idx / block_size < 2) {
+                    printf(" ... | ");
+                } else if(idx / block_size == 2 && idx % block_size == 3 ) {
+                    printf(" ... ... ... ");
+                }
+            }
         }
     }
 
-#ifdef DEBUG
-    printf("\n");
-#endif 
+    if(output_sample) cout << endl;
     return 0;
 }
 
