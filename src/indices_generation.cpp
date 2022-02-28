@@ -95,11 +95,11 @@ int random_indices(int* indxs, int N, int block_size, int shuffle_size, bool out
     
     if(output_sample) {
         for(int i=0; i < 10; i++) {
-            cout << " " << idx << ":" << indxs[idx];
+            cout << " " << i << ":" << indxs[i];
         }
         cout << " ... | ";
         for(int i=1022; i < 1029; i++) {
-            cout << " " << idx << ":" << indxs[idx];
+            cout << " " << i << ":" << indxs[i];
         }
         cout << " ... ... ... ";
         cout << endl;
