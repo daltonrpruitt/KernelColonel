@@ -24,10 +24,24 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int local_group_size, int elements>
+template<typename vt, typename it, int block_life, int local_group_size, int elements>
 __forceinline__ __host__ __device__        
-void kernel(uint idx, vt* gpu_in, vt* gpu_out){
-        gpu_out[idx] = gpu_in[idx];
+void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+
+    unsigned long long b_idx = blockIdx.x;
+    unsigned long long t_idx = threadIdx.x;
+    unsigned long long Bsz = blockDim.x;
+    unsigned long long Gsz = gridDim.x;
+    
+    for(int x=0; x < block_life; ++x) {
+        for(int y=0; y < local_group_size; ++y) {
+            for(int z=0; z < elements; ++z) {
+                unsigned long long data_idx =  b_idx * Bsz * local_group_size * elements +
+                        t_idx + Gsz * Bsz * local_group_size * x + Bsz*(y*elements + z);
+                gpu_out[data_idx] = gpu_in[data_idx];
+            }
+        }
+    }
 }
 
 
