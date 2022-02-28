@@ -147,12 +147,25 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
         bool local_check_result() override {
             bool pass = true;
             unsigned long long i = 0;
-            for(; i<N; ++i){
-                if(in[i] != out[i]){
-                    cout << "Validation Failed at " << i << ": in="<<in[i] << " out="<< out[i] << endl;
-                    pass = false;
-                    break;
+            for(int i=0; i < this->Gsz; ++i) {
+                for (int j=0; i < this->Bsz; ++j){
+                    vt sum = 0;
+                    for(int e=0; e<ELEMENTS_REUSED; ++e) {
+                        int tmp_t_idx = (t_idx+e) % Bsz;
+                        if constexpr(!avoid_bank_conflicts) {
+                            sum += in[( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx];
+                        } else {
+                            sum += in[( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + j / num_warps ) % 32) % block_size + start_idx];
+
+                        }
+                    }
+                    if (out[i] != sum) {
+                        cout << "Validation Failed at " << i << ": in="<<in[i] << " out="<< out[i] << endl;
+                        pass = false;
+                        break;
+                    }
                 }
+                if(!pass) break;
             }
 
             if(!pass) {
