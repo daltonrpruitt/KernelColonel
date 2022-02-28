@@ -18,6 +18,26 @@ int sequential_indices(int* indxs, unsigned long long N, int block_size, int shu
 }
 
 
+void print_indices_sample(int* indxs, int block_size, unsigned long long idx) {
+    if(idx % block_size >= block_size / 2 - 2 &&
+            idx % block_size <= block_size / 2 + 2 &&
+            idx / block_size < 2) {
+        cout << " " << idx << ":" << indxs[idx];
+    } else if(idx % block_size == block_size / 2 + 3 &&
+            idx / block_size < 2) {
+        cout << " ... | ";
+    } else if((idx % block_size >= block_size - 2 && idx / block_size < 2 ) || 
+            (idx % block_size <= 2 && idx / block_size < 3)){
+        cout << " " << idx << ":" << indxs[idx];
+    } else if(idx % block_size == 3 &&
+            idx / block_size < 2) {
+        cout << " ... | ";
+    } else if(idx / block_size == 2 && idx % block_size == 3 ) {
+        cout << " ... ... ... ";
+    }
+}
+
+
 /**
  * \brief Strides a warp's accesses to go across the other warps in the block
  * 
@@ -41,24 +61,7 @@ int strided_indices(int* indxs, unsigned long long N, int block_size, int shuffl
         for(unsigned long long j=0; j < block_size; j++) {
             unsigned long long idx = start_idx + j;
             indxs[idx] = (j%num_warps) * 32 + j / num_warps + start_idx;
-            if(output_sample) {
-                if(idx % block_size >= block_size / 2 - 2 &&
-                        idx % block_size <= block_size / 2 + 2 &&
-                        idx / block_size < 2) {
-                    printf("%d:%d | ",idx,indxs[idx]);
-                } else if(idx % block_size == block_size / 2 + 3 &&
-                        idx / block_size < 2) {
-                    printf(" ... | ");
-                } else if((idx % block_size >= block_size - 2 && idx / block_size < 2 ) || 
-                        (idx % block_size <= 2 && idx / block_size < 3))
-                    printf("%d:%d | ",idx,indxs[idx]);
-                } else if(idx % block_size == 3 &&
-                        idx / block_size < 2) {
-                    printf(" ... | ");
-                } else if(idx / block_size == 2 && idx % block_size == 3 ) {
-                    printf(" ... ... ... ");
-                }
-            }
+            if(output_sample) print_indices_sample(indxs, block_size, idx);
         }
     }
 
