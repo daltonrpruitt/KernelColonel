@@ -25,27 +25,43 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int block_life, int local_group_size, int elements>
-__forceinline__ __host__ __device__        
-void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+#define ELEMENTS_REUSED 4
 
-    unsigned long long b_idx = blockIdx.x;
-    unsigned long long t_idx = threadIdx.x;
-    unsigned long long Bsz = blockDim.x;
-    unsigned long long Gsz = gridDim.x;
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
+__forceinline__ __host__ __device__        
+void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+
+    uint b_idx = blockIdx.x;
+    uint t_idx = threadIdx.x;
+    uint Bsz = blockDim.x;
+    uint Gsz = gridDim.x;
+
+    uint num_warps = Bsz / 32;
     
-    for(int x=0; x < block_life; ++x) {
-        for(int y=0; y < local_group_size; ++y) {
-            for(int z=0; z < elements; ++z) {
-                unsigned long long data_idx =  b_idx * Bsz * local_group_size * elements +
-                        t_idx + Gsz * Bsz * local_group_size * elements * x + Bsz*(y*elements + z);
-                if(data_idx >= N) continue;
-                gpu_out[data_idx] = gpu_in[data_idx];
-            }
+    // Preload data
+    if constexpr(preload_for_reuse) {
+        vt tmp = gpu_in[idx];
+        if(tmp < 0) return; // all values should be > 0; this is just to ensure this write is not removed
+    }
+
+    int start_idx = b_idx * Bsz;
+    int generated_indices[ELEMENTS_REUSED];
+    for(int i=0; i<ELEMENTS_REUSED; ++i){
+        if constexpr(!avoid_bank_conflicts) {
+            int tmp_t_idx = (t_idx+i) % Bsz;
+            generated_indices[i] = ( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx;
+        } else {
+            generated_indices[i] = ( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + j / num_warps ) % 32) % block_size + start_idx; 
         }
     }
-}
 
+    vt output_val = 0;
+    for(int i=0; i<ELEMENTS_REUSED; ++i) {
+        output_val += gpu_in[generated_indices[i]];
+    }
+
+    gpu_out[idx] = output_val;
+}
 
 template<typename vt, typename it, int block_life, int local_group_size, int elements>
 __global__        
