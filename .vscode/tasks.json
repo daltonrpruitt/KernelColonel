@@ -24,8 +24,9 @@
         {
             "label": "CMake Debug Build",
             "type": "process",
-            "command": "cmake",
+            "command": "time",
             "args":[
+                "cmake",
                 "--build",
                 "."
             ],
