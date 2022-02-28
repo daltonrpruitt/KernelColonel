@@ -75,7 +75,6 @@ template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_confl
 struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
-        // name = "Array_Copy";
         unsigned long long N = super::N;
         int Gsz = super::Gsz;
         int Bsz = super::Bsz;
