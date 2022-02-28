@@ -116,13 +116,26 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         }
 
         bool local_check_result() override {
-            for(int i=0; i<N; ++i){
+            bool pass = true;
+            unsigned long long i = 0;
+            for(; i<N; ++i){
                 if(in[i] != out[i]){
                     cout << "Validation Failed at " << i << ": in="<<in[i] << " out="<< out[i] << endl;
-                    return false;
+                    pass = false;
+                    break;
                 }
             }
-            return true;
+
+            if(!pass) {
+                cout << "Debug dump of in and out array: " << endl;
+                cout << std::setw(10) << "IN"<<"|" <<std::setw(10)<<"OUT " << endl; 
+                int output_size = 10;
+                unsigned long long j = max(0, i - output_size/2);
+                for(int k=0; k < output_size; ++k, ++j j) { 
+                    cout << std::setw(10) << in[j] <<"|" <<std::setw(10)<<out[j] << endl; 
+                }
+            }
+            return pass;
         }
 
         void local_compute_register_usage(bool& pass) override {   
