@@ -108,17 +108,17 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             ctx.N = N;
         }
 
-        
+        void output_config_info() override {
+            cout << "InterleavedCopy with : "
+                 <<" Block life=" << block_life 
+                 << " Local group size=" << local_group_size 
+                 << " Elements per group=" << elements << endl;
+        }
+
         void local_execute() override {
             if(this->dev_ctx->props_.major >= 7) {
                 cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, this->dev_ctx->props_.sharedMemPerMultiprocessor);
             }
-#ifdef DEBUG
-            cout << "Running InterleavedCopy with : "
-                 <<" Block life=" << block_life 
-                 << " Local group size=" << local_group_size 
-                 << " Elements per group=" << elements << endl;
-#endif
             compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
             cudaPrintLastError();
         }

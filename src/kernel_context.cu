@@ -136,6 +136,10 @@ struct KernelCPUContext {
             free();            
         }
 
+        virtual void output_config_info() {
+            cout << name << endl; 
+        }
+
         virtual void set_dev_ptrs() {}
 
         virtual void local_execute() {}
