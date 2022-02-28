@@ -1,13 +1,13 @@
 #pragma once
 /**
- * @file interleaved_copy.cu
+ * @file uncoalesced_reuse.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from ArrayCopyContext; testing for burst mode 
+ * @brief Derived from InterleavedCopyContext; testing for burst mode 
  * @version 0.1
- * @date 2022-02-24
+ * @date 2022-02-28
  * 
- * Based on my write up that is currently at 
- * https://app.diagrams.net/#G1NgMgo7joWueBNKOvifh_rLW__W7VOhrP
+ * Meant to evaluate the effect coalescing/non-coalescing has on accesses 
+ * to cached data (data within the memory hierarchy).
  * 
  */
 
