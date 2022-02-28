@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cassert>
 
 #include <cuda.h>
 #include <local_cuda_utils.h>
