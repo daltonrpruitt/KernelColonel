@@ -87,6 +87,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             assert(N % (local_group_size * elements * block_life) == 0);
             this->name = "InterleavedCopy"; 
             this->Gsz /= local_group_size * elements * block_life;
+            assert(this->Gsz > 0);
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
