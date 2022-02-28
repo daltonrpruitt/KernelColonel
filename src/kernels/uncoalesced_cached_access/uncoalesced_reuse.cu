@@ -63,15 +63,16 @@ void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long l
     gpu_out[idx] = output_val;
 }
 
-template<typename vt, typename it, int block_life, int local_group_size, int elements>
+
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
 __global__        
 void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        interleaved_kernel<vt, it, block_life, local_group_size, elements>(idx, gpu_in, gpu_out, N);
+        uncoalesced_reuse_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, int block_life, int local_group_size, int elements>
-struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
+struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
@@ -95,21 +96,21 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                interleaved_kernel<vt, it, block_life, local_group_size, elements>(idx, gpu_in, gpu_out, N);
+                uncoalesced_reuse_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
-        InterleavedCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        UncoalescedReuseContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
-            assert(N % (local_group_size * elements * block_life) == 0);
-            this->name = "InterleavedCopy"; 
-            this->Gsz /= local_group_size * elements * block_life;
+            // assert(N % (local_group_size * elements * block_life) == 0);
+            this->name = "UncoalescedReuse"; 
+            // this->Gsz /= local_group_size * elements * block_life;
             assert(this->Gsz > 0);
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~InterleavedCopyContext(){}
+        ~UncoalescedReuseContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -127,10 +128,9 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         }
 
         void output_config_info() override {
-            cout << "InterleavedCopy with : "
-                 <<" Block life=" << block_life 
-                 << " Local group size=" << local_group_size 
-                 << " Elements per group=" << elements << endl;
+            cout << this->name << " with : "
+                 <<" preloading?=" << preload_for_reuse 
+                 << " avoiding bank conflicts?=" << avoid_bank_conflicts << endl;
         }
 
         void local_execute() override {
@@ -167,7 +167,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,block_life,local_group_size,elements>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
