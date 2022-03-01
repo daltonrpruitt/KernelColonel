@@ -10,6 +10,7 @@
 #include <kernels/general/overlap_index_access_with_data.cu>
 #include <kernels/general/computation.cu>
 #include <kernels/burst_mode/interleaved_copy.cu>
+#include <kernels/uncoalesced_cached_access/uncoalesced_reuse.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -57,8 +58,8 @@ int main() {
 
     std::vector<int> bs_vec;
     // Only one of the next two lines 
-    // for (int bs = 32; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    bs_vec.push_back(128);
+    for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
+    // bs_vec.push_back(128);
 
     Output output_dir;
     if(output_dir.empty()) {
@@ -120,6 +121,7 @@ int main() {
     if (!INTER_DRIVER(X, Y, Z).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_DRIVER(X, Y, Z).get_total_runs();
 
+   /*
     
     INTERLEAVED(1, 1, 1)
     INTERLEAVED(2, 1, 1)
@@ -162,6 +164,22 @@ int main() {
     INTERLEAVED(32, 8, 4)
     INTERLEAVED(32, 8, 8)
     INTERLEAVED(32, 8, 16)
+    */
+
+#define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
+
+#define UNCOAL_REUSE(B1, B2) MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
+      UNCOAL_REUSE_DRIVER(B1, B2)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_DRIVER(B1, B2) ) ".csv", &dev_ctx, true); \
+    if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs();
+    
+    UNCOAL_REUSE(false, false)
+    UNCOAL_REUSE(true, false)
+    UNCOAL_REUSE(false, true)
+    UNCOAL_REUSE(true, true)
+
+
+
 
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
