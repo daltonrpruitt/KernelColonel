@@ -173,7 +173,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
 
             if(!pass) {
                 cout << "Debug dump of in and out array: " << endl;
-                cout << std::setw(10) << "IN"<<"|" <<std::setw(10)<<"OUT " << endl; 
+                cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "OUT " << endl; 
                 int output_size = 10;
                 unsigned long long j = max((int)0, (int)(i - output_size/2));
                 for(int k=0; k < output_size; ++k, ++j) { 
