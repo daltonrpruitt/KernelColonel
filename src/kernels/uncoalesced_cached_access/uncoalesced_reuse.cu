@@ -147,20 +147,23 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
         bool local_check_result() override {
             bool pass = true;
             unsigned long long i = 0;
+            int num_warps = Bsz / 32;
             for(int i=0; i < this->Gsz; ++i) {
-                for (int j=0; i < this->Bsz; ++j){
+                int start_idx = i * Bsz;
+                for (int j=0; j < Bsz; ++j){
+                    uint global_tidx = start_idx + j;
                     vt sum = 0;
                     for(int e=0; e<ELEMENTS_REUSED; ++e) {
-                        int tmp_t_idx = (t_idx+e) % Bsz;
+                        int tmp_t_idx = (j + e) % Bsz;
                         if constexpr(!avoid_bank_conflicts) {
                             sum += in[( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx];
                         } else {
-                            sum += in[( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + j / num_warps ) % 32) % block_size + start_idx];
+                            sum += in[( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + tmp_t_idx / num_warps ) % 32) % Bsz + start_idx];
 
                         }
                     }
-                    if (out[i] != sum) {
-                        cout << "Validation Failed at " << i << ": in="<<in[i] << " out="<< out[i] << endl;
+                    if (out[global_tidx] != sum) {
+                        cout << "Validation Failed at " << global_tidx << ": in="<<in[global_tidx] << " out="<< out[global_tidx] << endl;
                         pass = false;
                         break;
                     }
