@@ -58,8 +58,8 @@ int main() {
 
     std::vector<int> bs_vec;
     // Only one of the next two lines 
-    for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    // bs_vec.push_back(128);
+    // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
+    bs_vec.push_back(128);
 
     Output output_dir;
     if(output_dir.empty()) {
@@ -112,59 +112,46 @@ int main() {
     //                         comp_intens_64_driver.get_total_runs();
     
 
-#define INTER_DRIVER(X, Y, Z) interleaved_copy_ ## X  ## _ ## Y  ## _ ## Z ## _driver
+#define INTER_DRIVER(X, Y) interleaved_copy_ ## X  ## _ ## Y ## _driver
 #define XSTRINGIFY( x ) STRINGIFY ( x )
 #define STRINGIFY( x ) #x
 
-#define INTERLEAVED(X, Y, Z) MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y, Z>> \
-      INTER_DRIVER(X, Y, Z)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y, Z) ) ".csv", &dev_ctx, true); \
-    if (!INTER_DRIVER(X, Y, Z).check_then_run_kernels()) {return -1;}  \
-    total_runs += INTER_DRIVER(X, Y, Z).get_total_runs();
+#define INTERLEAVED(X, Y) MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y>> \
+      INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, true); \
+    if (!INTER_DRIVER(X, Y).check_then_run_kernels()) {return -1;}  \
+    total_runs += INTER_DRIVER(X, Y).get_total_runs();
 
-   /*
+   
     
-    INTERLEAVED(1, 1, 1)
-    INTERLEAVED(2, 1, 1)
-    INTERLEAVED(4, 1, 1)
-    INTERLEAVED(8, 1, 1)
-    INTERLEAVED(16, 1, 1)
-    INTERLEAVED(32, 1, 1)
-    INTERLEAVED(64, 1, 1)
+    INTERLEAVED(1, 1)
+    INTERLEAVED(2, 1)
+    INTERLEAVED(4, 1)
+    INTERLEAVED(8, 1)
+    INTERLEAVED(16, 1)
+    INTERLEAVED(32, 1)
+    // INTERLEAVED(64, 1)
 
-    // INTERLEAVED(1, 1, 1)
-    INTERLEAVED(1, 2, 1)
-    INTERLEAVED(1, 4, 1)
-    INTERLEAVED(1, 8, 1)
-    INTERLEAVED(1, 16, 1)
-    INTERLEAVED(1, 32, 1)
-    INTERLEAVED(1, 64, 1)
-
-    // INTERLEAVED(1, 1, 1)
-    INTERLEAVED(1, 1, 2)
-    INTERLEAVED(1, 1, 4)
-    INTERLEAVED(1, 1, 8)
-    INTERLEAVED(1, 1, 16)
-    INTERLEAVED(1, 1, 32)
-    INTERLEAVED(1, 1, 64)
+    // INTERLEAVED(1, 1)
+    INTERLEAVED(1, 2)
+    INTERLEAVED(1, 4)
+    INTERLEAVED(1, 8)
+    INTERLEAVED(1, 16)
+    INTERLEAVED(1, 32)
+    // INTERLEAVED(1, 64)
 
     // INTERLEAVED(8, 1, 1)
-    INTERLEAVED(8, 2, 1)
-    INTERLEAVED(8, 4, 1)
-    INTERLEAVED(8, 8, 1)
-    INTERLEAVED(8, 16, 1)
-    INTERLEAVED(8, 32, 1)
+    INTERLEAVED(8, 2)
+    INTERLEAVED(8, 4)
+    INTERLEAVED(8, 8)
+    INTERLEAVED(8, 16)
+    INTERLEAVED(8, 32)
 
-    // INTERLEAVED(32, 1, 1)
-    INTERLEAVED(32, 2, 1)
-    INTERLEAVED(32, 4, 1)
-    INTERLEAVED(32, 8, 1)
-    INTERLEAVED(32, 16, 1)
+    // INTERLEAVED(32, 1)
+    INTERLEAVED(32, 2)
+    INTERLEAVED(32, 4)
+    INTERLEAVED(32, 8)
+    INTERLEAVED(32, 16)
 
-    INTERLEAVED(32, 8, 2)
-    INTERLEAVED(32, 8, 4)
-    INTERLEAVED(32, 8, 8)
-    INTERLEAVED(32, 8, 16)
-    */
 
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
@@ -173,10 +160,10 @@ int main() {
     if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs();
     
-    UNCOAL_REUSE(false, false)
-    UNCOAL_REUSE(true, false)
-    UNCOAL_REUSE(false, true)
-    UNCOAL_REUSE(true, true)
+    // UNCOAL_REUSE(false, false)
+    // UNCOAL_REUSE(true, false)
+    // UNCOAL_REUSE(false, true)
+    // UNCOAL_REUSE(true, true)
 
 
 
