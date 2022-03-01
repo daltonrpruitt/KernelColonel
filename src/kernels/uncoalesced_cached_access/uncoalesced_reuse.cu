@@ -47,8 +47,8 @@ void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long l
     int start_idx = b_idx * Bsz;
     int generated_indices[ELEMENTS_REUSED];
     for(int i=0; i<ELEMENTS_REUSED; ++i){
+        int tmp_t_idx = (t_idx+i) % Bsz;
         if constexpr(!avoid_bank_conflicts) {
-            int tmp_t_idx = (t_idx+i) % Bsz;
             generated_indices[i] = ( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx;
         } else {
             generated_indices[i] = ( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + j / num_warps ) % 32) % block_size + start_idx; 
