@@ -111,8 +111,8 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         void output_config_info() override {
             cout << "InterleavedCopy with : "
                  <<" Block life=" << block_life 
-                 << " Local group size=" << local_group_size 
-                 << " Elements per group=" << elements << endl;
+                 << " Elements/cycle=" << elements 
+                 << " Blocks used="<< this->Gsz << endl;
         }
 
         float local_execute() override {
