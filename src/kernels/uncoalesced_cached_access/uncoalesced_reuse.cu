@@ -34,7 +34,7 @@ void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long l
     uint b_idx = blockIdx.x;
     uint t_idx = threadIdx.x;
     uint Bsz = blockDim.x;
-    uint Gsz = gridDim.x;
+    // uint Gsz = gridDim.x;
 
     uint num_warps = Bsz / 32;
     
