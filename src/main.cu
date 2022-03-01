@@ -160,10 +160,10 @@ int main() {
     if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs();
     
-    UNCOAL_REUSE(false, false)
-    UNCOAL_REUSE(true, false)
-    UNCOAL_REUSE(false, true)
-    UNCOAL_REUSE(true, true)
+    // UNCOAL_REUSE(false, false)
+    // UNCOAL_REUSE(true, false)
+    // UNCOAL_REUSE(false, true)
+    // UNCOAL_REUSE(true, true)
 
 
 
