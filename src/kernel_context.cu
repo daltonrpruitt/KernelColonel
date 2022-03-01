@@ -142,26 +142,12 @@ struct KernelCPUContext {
 
         virtual void set_dev_ptrs() {}
 
-        virtual void local_execute() {}
+        virtual float local_execute() = 0;
 
         float execute() {
             if(!okay) return -1.0;
-            cudaEvent_t start, stop;
-            cudaEventCreate(&start);
-            cudaEventCreate(&stop);
 
-            cudaEventRecord(start);
-            local_execute();
-            cudaEventRecord(stop);
-            cudaEventSynchronize(stop);
-
-            cudaPrintLastError();
-
-            float time = 0;
-            cudaEventElapsedTime(&time, start, stop);
-            cudaEventDestroy(start);
-            cudaEventDestroy(stop);
-
+            float time = local_execute();
 
             bool pass = true;
             for(int i=num_in_data; i < num_total_data; ++i) {
