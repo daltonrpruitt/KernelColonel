@@ -83,11 +83,21 @@ full_filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapp
 print("Entries in all files in ", base_folder,"=", len(main_df))
 
 
+def check_data(data):
+    if len(data) == 0: 
+        return False 
+    elif len(data) < 5:
+        ic("Not enough data!")
+        return False
+    
+
 def process_comp_intens(df):
     kernel_name = kernel_type_names["computational_intensity"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["computational_intensity"]
-
+    
+    if not check_data(data): return
+    
     for intens in data[config_name].unique(): 
         print(intens)
         plt.close("all")
@@ -106,7 +116,9 @@ def process_overlapped_access(df):
     kernel_name = kernel_type_names["overlapped"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["overlapped"]
-    
+
+    if not check_data(data): return
+
     uniques = data[config_name].unique()
     colors = plt.cm.rainbow(np.linspace(0, 1, len(uniques)))
 
