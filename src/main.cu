@@ -58,8 +58,8 @@ int main() {
 
     std::vector<int> bs_vec;
     // Only one of the next two lines 
-    // for (int bs = 32; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    bs_vec.push_back(128);
+    for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
+    // bs_vec.push_back(128);
 
     Output output_dir;
     if(output_dir.empty()) {
