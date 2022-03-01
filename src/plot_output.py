@@ -42,14 +42,6 @@ kernel_type_names = {"copy": "ArrayCopy",
 
 data_headers   = ["kernel_type", "array_size", "tpb", "occupancy", "min", "med", "max", "avg", "stddev"]
 
-if False:
-    data_types = [int, int, int, int, 
-              int, int, float, int, 
-              float, str, str, int, 
-              float, float, float, float, 
-              float, float]
-    data_types_dict = dict(zip(data_headers, data_types))
-
 date_time_str = base_folder[base_folder.find("2022"):]
 ic(date_time_str)
 
