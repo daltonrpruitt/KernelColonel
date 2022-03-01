@@ -25,7 +25,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int block_life, int local_group_size, int elements>
+template<typename vt, typename it, int block_life, int elements>
 __forceinline__ __host__ __device__        
 void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
@@ -35,26 +35,24 @@ void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N)
     unsigned long long Gsz = gridDim.x;
     
     for(int x=0; x < block_life; ++x) {
-        for(int y=0; y < local_group_size; ++y) {
-            for(int z=0; z < elements; ++z) {
-                unsigned long long data_idx =  b_idx * Bsz * local_group_size * elements +
-                        t_idx + Gsz * Bsz * local_group_size * elements * x + Bsz*(y*elements + z);
-                if(data_idx >= N) continue;
-                gpu_out[data_idx] = gpu_in[data_idx];
-            }
+        for(int y=0; y < elements; ++y) {
+            unsigned long long data_idx =  b_idx * Bsz * elements +
+                    t_idx + Gsz * Bsz * elements * x + Bsz*y;
+            if(data_idx >= N) continue;
+            gpu_out[data_idx] = gpu_in[data_idx];
         }
     }
 }
 
 
-template<typename vt, typename it, int block_life, int local_group_size, int elements>
+template<typename vt, typename it, int block_life, int elements>
 __global__        
-void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        interleaved_kernel<vt, it, block_life, local_group_size, elements>(idx, gpu_in, gpu_out, N);
+        interleaved_kernel<vt, it, block_life, elements>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, int block_life, int local_group_size, int elements>
+template<typename vt, typename it, int block_life, int elements>
 struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
@@ -79,15 +77,15 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                interleaved_kernel<vt, it, block_life, local_group_size, elements>(idx, gpu_in, gpu_out, N);
+                interleaved_kernel<vt, it, block_life, elements>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
         InterleavedCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
-            assert(N % (local_group_size * elements * block_life) == 0);
+            assert(N % (block_life * elements) == 0);
             this->name = "InterleavedCopy"; 
-            this->Gsz /= local_group_size * elements * block_life;
+            this->Gsz /=  block_life * elements;
             assert(this->Gsz > 0);
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
@@ -159,7 +157,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,block_life,local_group_size,elements>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *uncoalesced_reuse_kernel_for_regs<vt,it,block_life,elements>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
