@@ -1,13 +1,14 @@
 #pragma once
 /**
- * @file uncoalesced_reuse.cu
+ * @file uncoalesced_reuse_general_size.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from InterleavedCopyContext; testing for burst mode 
+ * @brief Derived from UncoalescedReuseContext; testing for coalescing's impact on cache 
  * @version 0.1
- * @date 2022-02-28
+ * @date 2022-03-02
  * 
- * Meant to evaluate the effect coalescing/non-coalescing has on accesses 
- * to cached data (data within the memory hierarchy).
+ * Meant to "improve" upon the regular uncoalesced reuse as we can have a more 
+ * general size for the shuffled region, not just the block size.
+ * 
  * 
  */
 
