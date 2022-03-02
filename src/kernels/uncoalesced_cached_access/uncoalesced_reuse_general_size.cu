@@ -28,16 +28,17 @@ using std::vector;
 
 #define ELEMENTS_REUSED 4
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __forceinline__ __host__ __device__        
-void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     uint b_idx = blockIdx.x;
     uint t_idx = threadIdx.x;
-    uint Bsz = blockDim.x;
+    uint Sz = shuffle_size; // blockDim.x;
+    uint shuffle_idx = idx / Sz;
     // uint Gsz = gridDim.x;
 
-    uint num_warps = Bsz / 32;
+    uint num_warps = shuffle_size / 32;
     
     // Preload data
     if constexpr(preload_for_reuse) {
@@ -45,14 +46,14 @@ void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long l
         if(tmp < 0) return; // all values should be > 0; this is just to ensure this write is not removed
     }
 
-    int start_idx = b_idx * Bsz;
+    int start_idx = shuffle_idx * Sz;
     int generated_indices[ELEMENTS_REUSED];
     for(int i=0; i<ELEMENTS_REUSED; ++i){
-        int tmp_t_idx = (t_idx+i) % Bsz;
+        int tmp_t_idx = (t_idx+i) % Sz;
         if constexpr(!avoid_bank_conflicts) {
             generated_indices[i] = ( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx;
         } else {
-            generated_indices[i] = ( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + tmp_t_idx / num_warps ) % 32) % Bsz + start_idx; 
+            generated_indices[i] = ( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + tmp_t_idx / num_warps ) % 32) % Sz + start_idx; 
         }
     }
 
@@ -65,15 +66,15 @@ void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long l
 }
 
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __global__        
 void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        uncoalesced_reuse_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts>(idx, gpu_in, gpu_out, N);
+        uncoalesced_reuse_general_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
-struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
+struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         unsigned long long N = super::N;
@@ -96,15 +97,13 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                uncoalesced_reuse_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts>(idx, gpu_in, gpu_out, N);
+                uncoalesced_reuse_general_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, int shuffle_size>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
-        UncoalescedReuseContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        UncoalescedReuseGeneralContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
-            // assert(N % (local_group_size * elements * block_life) == 0);
-            this->name = "UncoalescedReuse"; 
-            // this->Gsz /= local_group_size * elements * block_life;
+            this->name = "UncoalescedReuseGeneral"; 
             assert(this->Gsz > 0);
             if constexpr(preload_for_reuse) {
                 data_reads_per_element += 1;
@@ -114,7 +113,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~UncoalescedReuseContext(){}
+        ~UncoalescedReuseGeneralContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -183,7 +182,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
