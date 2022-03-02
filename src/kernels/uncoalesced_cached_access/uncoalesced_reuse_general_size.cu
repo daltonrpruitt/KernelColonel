@@ -32,8 +32,8 @@ template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_confl
 __forceinline__ __host__ __device__        
 void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
-    uint b_idx = blockIdx.x;
-    uint t_idx = threadIdx.x;
+    // uint b_idx = blockIdx.x;
+    // uint t_idx = threadIdx.x;
     uint Sz = shuffle_size; // blockDim.x;
     uint shuffle_idx = idx / Sz;
     // uint Gsz = gridDim.x;
@@ -49,7 +49,7 @@ void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigne
     int start_idx = shuffle_idx * Sz;
     int generated_indices[ELEMENTS_REUSED];
     for(int i=0; i<ELEMENTS_REUSED; ++i){
-        int tmp_t_idx = (t_idx+i) % Sz;
+        int tmp_t_idx = (idx+i) % Sz;
         if constexpr(!avoid_bank_conflicts) {
             generated_indices[i] = ( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx;
         } else {
