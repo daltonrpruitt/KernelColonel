@@ -136,12 +136,8 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
                  << " avoiding bank conflicts?=" << avoid_bank_conflicts << endl;
         }
 
-        void local_execute() override {
-            if(this->dev_ctx->props_.major >= 7) {
-                cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, this->dev_ctx->props_.sharedMemPerMultiprocessor);
-            }
-            compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
-            cudaPrintLastError();
+        float local_execute() override {
+            return local_execute_template<gpu_ctx>(N, Gsz, Bsz, this->shared_memory_usage, this->dev_ctx, ctx);
         }
 
         bool local_check_result() override {
