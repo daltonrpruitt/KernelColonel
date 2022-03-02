@@ -26,7 +26,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-#define ELEMENTS_REUSED 4
+#define ELEMENTS_REUSED_GEN 8
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __forceinline__ __host__ __device__        
@@ -47,8 +47,8 @@ void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigne
     }
 
     int start_idx = shuffle_idx * Sz;
-    int generated_indices[ELEMENTS_REUSED];
-    for(int i=0; i<ELEMENTS_REUSED; ++i){
+    int generated_indices[ELEMENTS_REUSED_GEN];
+    for(int i=0; i<ELEMENTS_REUSED_GEN; ++i){
         int tmp_t_idx = (idx+i) % Sz;
         if constexpr(!avoid_bank_conflicts) {
             generated_indices[i] = ( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx;
@@ -58,7 +58,7 @@ void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigne
     }
 
     vt output_val = 0;
-    for(int i=0; i<ELEMENTS_REUSED; ++i) {
+    for(int i=0; i<ELEMENTS_REUSED_GEN; ++i) {
         output_val += gpu_in[generated_indices[i]];
     }
 
@@ -86,7 +86,7 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
         vt* & d_in = super::device_data_ptrs[0];
         vt* & d_out = super::device_data_ptrs[1];
 
-        int data_reads_per_element = ELEMENTS_REUSED;
+        int data_reads_per_element = ELEMENTS_REUSED_GEN;
         int index_reads_per_element = 0;
         int writes_per_element = 1;
         struct gpu_ctx {
@@ -149,7 +149,7 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
                 for (int j=0; j < shuffle_size; ++j){
                     global_tidx = start_idx + j;
                     vt sum = 0;
-                    for(int e=0; e<ELEMENTS_REUSED; ++e) {
+                    for(int e=0; e<ELEMENTS_REUSED_GEN; ++e) {
                         int tmp_t_idx = (j + e) % shuffle_size;
                         if constexpr(!avoid_bank_conflicts) {
                             sum += in[( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx];
