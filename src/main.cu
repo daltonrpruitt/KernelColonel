@@ -200,6 +200,15 @@ int main() {
     UNCOAL_REUSE_INDIRECT(false, true, 8192)
     UNCOAL_REUSE_INDIRECT(true, true, 8192)
 
+    UNCOAL_REUSE_INDIRECT(false, false, 16384)
+    UNCOAL_REUSE_INDIRECT(true, false, 16384)
+    UNCOAL_REUSE_INDIRECT(false, true, 16384)
+    UNCOAL_REUSE_INDIRECT(true, true, 16384)
+
+    UNCOAL_REUSE_INDIRECT(false, false, 32768)
+    UNCOAL_REUSE_INDIRECT(true, false, 32768)
+    UNCOAL_REUSE_INDIRECT(false, true, 32768)
+    UNCOAL_REUSE_INDIRECT(true, true, 32768)
 
 
 
