@@ -32,23 +32,21 @@ if "output" not in os.path.abspath(base_folder):
     print("Error: Base directory to process must be within the 'output' directory!")
     exit(-1)
 
-kernel_extra_configs = {"copy": "",  "direct": "", "indirect":"", "overlapped": "degree", "computational_intensity": "comp-intens"}
+kernel_extra_configs = {"copy": "",  "direct": "", "indirect":"",
+                        "overlapped": "degree", 
+                        "computational_intensity": "comp-intens",
+                        "interleaved_copy": ["block_life", "elements"] 
+}
+
 kernel_type_names = {"copy": "ArrayCopy",  
                     "direct": "SimpleIndirectionTest_Direct", 
                     "indirect":"SimpleIndirectionTest_Indirect", 
                     "overlapped": "OverlappedIdxDataAccessKernel", 
-                    "computational_intensity": "ComputationalIntensity"}
+                    "computational_intensity": "ComputationalIntensity", 
+                    "interleaved_copy":"InterleavedCopy"}
 
 
 data_headers   = ["kernel_type", "array_size", "tpb", "occupancy", "min", "med", "max", "avg", "stddev"]
-
-if False:
-    data_types = [int, int, int, int, 
-              int, int, float, int, 
-              float, str, str, int, 
-              float, float, float, float, 
-              float, float]
-    data_types_dict = dict(zip(data_headers, data_types))
 
 date_time_str = base_folder[base_folder.find("2022"):]
 ic(date_time_str)
@@ -91,11 +89,21 @@ full_filename = base_folder + ("" if base_folder[-1]=="/" else "/") +  "overlapp
 print("Entries in all files in ", base_folder,"=", len(main_df))
 
 
+def check_data(data):
+    if len(data) == 0: 
+        return False 
+    elif len(data) < 5:
+        ic("Not enough data!")
+        return False
+    
+
 def process_comp_intens(df):
     kernel_name = kernel_type_names["computational_intensity"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["computational_intensity"]
-
+    
+    if not check_data(data): return
+    
     for intens in data[config_name].unique(): 
         print(intens)
         plt.close("all")
@@ -114,7 +122,9 @@ def process_overlapped_access(df):
     kernel_name = kernel_type_names["overlapped"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["overlapped"]
-    
+
+    if not check_data(data): return
+
     uniques = data[config_name].unique()
     colors = plt.cm.rainbow(np.linspace(0, 1, len(uniques)))
 
@@ -144,10 +154,52 @@ def process_overlapped_access(df):
 
     plt.savefig(images_dir+"/"+kernel_name+"_combined.png")
 
+def process_interleaved_kernel(df):
+    kernel_name = kernel_type_names["interleaved"]
+    data = df[df["kernel_type"]==kernel_name]
+    config_names = kernel_extra_configs["interleaved"]
+
+    if not check_data(data): return
+
+    assert(len(config_names) == 2)
+    for i, config in enumerate(config_names):
+        uniques = data[config].unique()
+        other_config_counts = {}
+        other_uniques = data[config_names[1-i]].unique()
+        
+
+        colors = plt.cm.rainbow(np.linspace(0, 1, len(uniques)))
+
+        plt.close("all")
+        combined_fig = plt.figure(1)
+        combined_fig.suptitle(kernel_name +" Combined " + date_time_str, fontsize=11)
+        plt.xlabel("Max Occupancy")
+        plt.ylabel("Fraction of max Bandwidth")
+    
+        for i, degree in enumerate(uniques): 
+            print(degree)
+
+            fig = plt.figure() 
+            fig.suptitle(kernel_name + " intensity=" +str(int(degree)) + " " + date_time_str, fontsize=11)
+            plt.xlabel("Max Occupancy")
+            plt.ylabel("Fraction of max Bandwidth")
+            
+            local_data = data[data[config_name] == degree]
+            plt.plot(local_data["occupancy"], local_data["fraction_of_max_bandwidth"], c='b', marker="o", label="bandwidth fraction")
+            # plt.show()
+            plt.savefig(images_dir+"/"+kernel_name+"_"+config_name+"-"+str(int(degree))+".png")
+            plt.close()
+            combined_fig = plt.figure(1)
+            plt.plot(local_data["occupancy"], local_data["fraction_of_max_bandwidth"], c=colors[i], marker="o", label="degree="+str(int(degree)))
+            combined_fig = plt.figure(1)
+            plt.legend(loc="best")
+        
+        plt.savefig(images_dir+"/"+kernel_name+"_combined.png")
 
 
 process_comp_intens(main_df)
 process_overlapped_access(main_df)
+process_interleaved_kernel(main_df)
 
 exit(0)
 independent_vars = ['bwss', 'tpb', 'num_repeat']
