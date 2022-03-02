@@ -161,8 +161,13 @@ def process_interleaved_kernel(df):
 
     if not check_data(data): return
 
-    for config in config_names:
-        uniques = data[config_name].unique()
+    assert(len(config_names) == 2)
+    for i, config in enumerate(config_names):
+        uniques = data[config].unique()
+        other_config_counts = {}
+        other_uniques = data[config_names[1-i]].unique()
+        
+
         colors = plt.cm.rainbow(np.linspace(0, 1, len(uniques)))
 
         plt.close("all")
