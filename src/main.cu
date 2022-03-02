@@ -68,6 +68,7 @@ int main() {
         return -1;
     }
 
+/*
     {
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
@@ -81,6 +82,7 @@ int main() {
     if (!indirect_driver.check_then_run_kernels()) {return -1;} 
     total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
     }
+*/
 
     // overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_1_kernel_output.csv", &dev_ctx, true);
     // if (!overlapped_1_driver.check_then_run_kernels()) {return -1;} 
@@ -113,12 +115,11 @@ int main() {
     //                         comp_intens_4_driver.get_total_runs() + comp_intens_8_driver.get_total_runs() + 
     //                         comp_intens_16_driver.get_total_runs() + comp_intens_32_driver.get_total_runs() + 
     //                         comp_intens_64_driver.get_total_runs();
-    
-
-#define INTER_DRIVER(X, Y) interleaved_copy_ ## X  ## _ ## Y ## _driver
 #define XSTRINGIFY( x ) STRINGIFY ( x )
 #define STRINGIFY( x ) #x
 
+/*
+#define INTER_DRIVER(X, Y) interleaved_copy_ ## X  ## _ ## Y ## _driver
 #define INTERLEAVED(X, Y) { MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y>> \
       INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_DRIVER(X, Y).check_then_run_kernels()) {return -1;}  \
@@ -167,6 +168,7 @@ int main() {
     UNCOAL_REUSE(true, false)
     UNCOAL_REUSE(false, true)
     UNCOAL_REUSE(true, true)
+*/
 
 
 
