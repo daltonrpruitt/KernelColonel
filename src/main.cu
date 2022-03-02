@@ -11,6 +11,7 @@
 #include <kernels/general/computation.cu>
 #include <kernels/burst_mode/interleaved_copy.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse.cu>
+#include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -60,7 +61,7 @@ int main() {
     // Only one of the next two lines 
     // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
     bs_vec.push_back(128);
-    bool span_occupancies = false;
+    bool span_occupancies = true;
 
     Output output_dir;
     if(output_dir.empty()) {
@@ -68,6 +69,7 @@ int main() {
         return -1;
     }
 
+/*
     {
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
@@ -81,6 +83,7 @@ int main() {
     if (!indirect_driver.check_then_run_kernels()) {return -1;} 
     total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
     }
+*/
 
     // overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_1_kernel_output.csv", &dev_ctx, true);
     // if (!overlapped_1_driver.check_then_run_kernels()) {return -1;} 
@@ -113,12 +116,11 @@ int main() {
     //                         comp_intens_4_driver.get_total_runs() + comp_intens_8_driver.get_total_runs() + 
     //                         comp_intens_16_driver.get_total_runs() + comp_intens_32_driver.get_total_runs() + 
     //                         comp_intens_64_driver.get_total_runs();
-    
-
-#define INTER_DRIVER(X, Y) interleaved_copy_ ## X  ## _ ## Y ## _driver
 #define XSTRINGIFY( x ) STRINGIFY ( x )
 #define STRINGIFY( x ) #x
 
+/*
+#define INTER_DRIVER(X, Y) interleaved_copy_ ## X  ## _ ## Y ## _driver
 #define INTERLEAVED(X, Y) { MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y>> \
       INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_DRIVER(X, Y).check_then_run_kernels()) {return -1;}  \
@@ -167,7 +169,34 @@ int main() {
     UNCOAL_REUSE(true, false)
     UNCOAL_REUSE(false, true)
     UNCOAL_REUSE(true, true)
+*/
 
+#define UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
+
+#define UNCOAL_REUSE_INDIRECT(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralContext<vt, int, B1, B2, X>> \
+      UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X).check_then_run_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X).get_total_runs(); }
+    
+    UNCOAL_REUSE_INDIRECT(false, false, 1024)
+    UNCOAL_REUSE_INDIRECT(true, false, 1024)
+    UNCOAL_REUSE_INDIRECT(false, true, 1024)
+    UNCOAL_REUSE_INDIRECT(true, true, 1024)
+    
+    UNCOAL_REUSE_INDIRECT(false, false, 2048)
+    UNCOAL_REUSE_INDIRECT(true, false, 2048)
+    UNCOAL_REUSE_INDIRECT(false, true, 2048)
+    UNCOAL_REUSE_INDIRECT(true, true, 2048)
+
+    UNCOAL_REUSE_INDIRECT(false, false, 4096)
+    UNCOAL_REUSE_INDIRECT(true, false, 4096)
+    UNCOAL_REUSE_INDIRECT(false, true, 4096)
+    UNCOAL_REUSE_INDIRECT(true, true, 4096)
+
+    UNCOAL_REUSE_INDIRECT(false, false, 8192)
+    UNCOAL_REUSE_INDIRECT(true, false, 8192)
+    UNCOAL_REUSE_INDIRECT(false, true, 8192)
+    UNCOAL_REUSE_INDIRECT(true, true, 8192)
 
 
 
