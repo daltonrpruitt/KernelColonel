@@ -97,7 +97,7 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                uncoalesced_reuse_general_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, int shuffle_size>(idx, gpu_in, gpu_out, N);
+                uncoalesced_reuse_general_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
