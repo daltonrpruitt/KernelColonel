@@ -142,19 +142,19 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
 
         bool local_check_result() override {
             bool pass = true;
-            unsigned long long i = 0;
-            int num_warps = Bsz / 32;
-            for(int i=0; i < this->Gsz; ++i) {
-                int start_idx = i * Bsz;
-                for (int j=0; j < Bsz; ++j){
-                    uint global_tidx = start_idx + j;
+            int num_warps = shuffle_size / 32;
+            unsigned long long global_tidx = 0;
+            for(int i=0; i < this->N / shuffle_size; ++i) {
+                int start_idx = i * shuffle_size;
+                for (int j=0; j < shuffle_size; ++j){
+                    global_tidx = start_idx + j;
                     vt sum = 0;
                     for(int e=0; e<ELEMENTS_REUSED; ++e) {
-                        int tmp_t_idx = (j + e) % Bsz;
+                        int tmp_t_idx = (j + e) % shuffle_size;
                         if constexpr(!avoid_bank_conflicts) {
                             sum += in[( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx];
                         } else {
-                            sum += in[( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + tmp_t_idx / num_warps ) % 32) % Bsz + start_idx];
+                            sum += in[( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + tmp_t_idx / num_warps ) % 32) % shuffle_size + start_idx];
 
                         }
                     }
@@ -171,7 +171,7 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
                 cout << "Debug dump of in and out array: " << endl;
                 cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "OUT " << endl; 
                 int output_size = 10;
-                unsigned long long j = max((int)0, (int)(i - output_size/2));
+                unsigned long long j = max((int)0, (int)(global_tidx - output_size/2));
                 for(int k=0; k < output_size; ++k, ++j) { 
                     cout << std::setw(10) << in[j] <<"|" <<std::setw(10)<<out[j] << endl; 
                 }
