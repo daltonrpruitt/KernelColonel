@@ -61,7 +61,7 @@ int main() {
     // Only one of the next two lines 
     // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
     bs_vec.push_back(128);
-    bool span_occupancies = false;
+    bool span_occupancies = true;
 
     Output output_dir;
     if(output_dir.empty()) {
