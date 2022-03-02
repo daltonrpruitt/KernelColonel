@@ -38,6 +38,7 @@ int main() {
     clock_gettime(CLOCK_MONOTONIC, &mainStart);
     int total_runs = 0;
 
+    /*
     typedef ArrayCopyContext<vt, int> copy_kernel_t;
     typedef MicrobenchmarkDriver<copy_kernel_t> copy_driver_t;
 
@@ -48,6 +49,7 @@ int main() {
     typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt, int, 2>> overlapped_access_driver_2_t;
     typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt, int, 4>> overlapped_access_driver_4_t;
     typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt, int, 8>> overlapped_access_driver_8_t;
+*/
 
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
