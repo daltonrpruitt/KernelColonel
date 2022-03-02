@@ -67,16 +67,16 @@ int main() {
         return -1;
     }
 
-    // copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, true);
-    // if (!copy_driver.check_then_run_kernels()) {return -1;} 
-    // total_runs += copy_driver.get_total_runs();
+    copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, true);
+    if (!copy_driver.check_then_run_kernels()) {return -1;} 
+    total_runs += copy_driver.get_total_runs();
 
     
-    // indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", &dev_ctx, true);
-    // if (!direct_driver.check_then_run_kernels()) {return -1;} 
-    // indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", &dev_ctx, true);
-    // if (!indirect_driver.check_then_run_kernels()) {return -1;} 
-    // total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
+    indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", &dev_ctx, true);
+    if (!direct_driver.check_then_run_kernels()) {return -1;} 
+    indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", &dev_ctx, true);
+    if (!indirect_driver.check_then_run_kernels()) {return -1;} 
+    total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
 
 
     // overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_1_kernel_output.csv", &dev_ctx, true);
