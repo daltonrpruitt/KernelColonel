@@ -116,31 +116,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         }
 
         float local_execute() override {
-            if(this->dev_ctx->props_.major >= 7) {
-                //cout << "this->dev_ctx->props_.sharedMemPerMultiprocessor = " << this->dev_ctx->props_.sharedMemPerMultiprocessor << endl;
-                //cout << "this->shared_memory_usage = " << this->shared_memory_usage << endl;
-                //cout << "cudaDevAttrMaxSharedMemoryPerBlockOptin = " << this->dev_ctx->props_.sharedMemPerBlockOptin << endl;
-                cudaFuncAttributes attr;
-                cudaFuncGetAttributes(&attr, compute_kernel<gpu_ctx>);
-                //cout << " sharedSizeBytes = " << attr.sharedSizeBytes << endl;
-                int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
-                cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
-                cudaPrintLastError();
-            }
-
-            cudaEvent_t start, stop;
-            cudaEventCreate(&start); cudaEventCreate(&stop);
-
-            cudaEventRecord(start);
-            compute_kernel<gpu_ctx><<<Gsz, Bsz, this->shared_memory_usage>>>(N, ctx);
-            cudaEventRecord(stop);
-            cudaEventSynchronize(stop);
-            cudaPrintLastError();
-
-            float time = 0;
-            cudaEventElapsedTime(&time, start, stop);
-            cudaEventDestroy(start); cudaEventDestroy(stop);
-            return time; 
+            return local_execute_template<gpu_ctx>(N, Gsz, Bsz, this->shared_memory_usage, this->dev_ctx, ctx);
         }
 
         bool local_check_result() override {
