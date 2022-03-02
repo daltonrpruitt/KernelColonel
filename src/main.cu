@@ -68,17 +68,19 @@ int main() {
         return -1;
     }
 
+    {
     copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
     total_runs += copy_driver.get_total_runs();
-
+    }
     
+    {
     indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!direct_driver.check_then_run_kernels()) {return -1;} 
     indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!indirect_driver.check_then_run_kernels()) {return -1;} 
     total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
-
+    }
 
     // overlapped_access_driver_1_t overlapped_1_driver(N, bs_vec, output_dir+"overlapped_1_kernel_output.csv", &dev_ctx, true);
     // if (!overlapped_1_driver.check_then_run_kernels()) {return -1;} 
@@ -117,10 +119,10 @@ int main() {
 #define XSTRINGIFY( x ) STRINGIFY ( x )
 #define STRINGIFY( x ) #x
 
-#define INTERLEAVED(X, Y) MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y>> \
+#define INTERLEAVED(X, Y) { MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y>> \
       INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_DRIVER(X, Y).check_then_run_kernels()) {return -1;}  \
-    total_runs += INTER_DRIVER(X, Y).get_total_runs();
+    total_runs += INTER_DRIVER(X, Y).get_total_runs(); }
 
    
     
@@ -156,10 +158,10 @@ int main() {
 
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
-#define UNCOAL_REUSE(B1, B2) MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
+#define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
       UNCOAL_REUSE_DRIVER(B1, B2)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_DRIVER(B1, B2) ) ".csv", &dev_ctx, span_occupancies); \
     if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
-    total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs();
+    total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs(); }
     
     UNCOAL_REUSE(false, false)
     UNCOAL_REUSE(true, false)
