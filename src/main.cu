@@ -60,6 +60,7 @@ int main() {
     // Only one of the next two lines 
     // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
     bs_vec.push_back(128);
+    bool span_occupancies = false;
 
     Output output_dir;
     if(output_dir.empty()) {
@@ -67,14 +68,14 @@ int main() {
         return -1;
     }
 
-    copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, true);
+    copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!copy_driver.check_then_run_kernels()) {return -1;} 
     total_runs += copy_driver.get_total_runs();
 
     
-    indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", &dev_ctx, true);
+    indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!direct_driver.check_then_run_kernels()) {return -1;} 
-    indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", &dev_ctx, true);
+    indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", &dev_ctx, span_occupancies);
     if (!indirect_driver.check_then_run_kernels()) {return -1;} 
     total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
 
@@ -117,7 +118,7 @@ int main() {
 #define STRINGIFY( x ) #x
 
 #define INTERLEAVED(X, Y) MicrobenchmarkDriver<InterleavedCopyContext<vt, int, X, Y>> \
-      INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, true); \
+      INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_DRIVER(X, Y).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_DRIVER(X, Y).get_total_runs();
 
@@ -156,7 +157,7 @@ int main() {
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
 #define UNCOAL_REUSE(B1, B2) MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
-      UNCOAL_REUSE_DRIVER(B1, B2)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_DRIVER(B1, B2) ) ".csv", &dev_ctx, true); \
+      UNCOAL_REUSE_DRIVER(B1, B2)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_DRIVER(B1, B2) ) ".csv", &dev_ctx, span_occupancies); \
     if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs();
     
