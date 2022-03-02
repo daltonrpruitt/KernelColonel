@@ -100,7 +100,7 @@ class MicrobenchmarkDriver {
         cout << "Beginning checks" << endl;
 #endif
         for (auto ctx : contexts) {
-            ctx->init();
+            if(!ctx->init()) {return false;}
             for (int i = 0; i < kernel_checks; ++i) {
                 pass = (pass && ctx->run_and_check());
                 if (!pass) break;

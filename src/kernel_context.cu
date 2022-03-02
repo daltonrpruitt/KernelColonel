@@ -70,7 +70,7 @@ struct KernelCPUContext {
         int num_indices=-1;
         
         bool okay = true;
-        bool initialized = true;
+        bool initialized = false;
 
         size_t shared_memory_usage=0;
         int register_usage=-1;
@@ -100,7 +100,8 @@ struct KernelCPUContext {
             free();
             for(int i=0; i<num_total_data; ++i) { host_data[i].clear(); }
             for(int i=0; i<num_indices; ++i) { host_indices[i].clear(); }
-            }
+            initialized = false;
+        }
 
         virtual void init_inputs(bool& pass) {};
         virtual void init_indices(bool& pass) {};
@@ -111,6 +112,7 @@ struct KernelCPUContext {
             }
 
         bool init(){
+            if(initialized) { return true; }
             bool pass = true;
 
             compute_max_simultaneous_blocks(pass);
@@ -153,11 +155,12 @@ struct KernelCPUContext {
                 okay = false;
                 cerr<<"Error in initializing "<<this->name << "for N="<<this->N<<" Bsz="<<this->Bsz<<" !" << endl;
             }
+            initialized = true;
             return pass;
         }
 
         ~KernelCPUContext(){
-            free();            
+            uninit();            
         }
 
         virtual void output_config_info() {
