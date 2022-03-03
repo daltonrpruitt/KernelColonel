@@ -170,7 +170,7 @@ int main() {
     total_runs += INTER_FULL_LIFE_DRIVER(X).get_total_runs(); }
     
     unsigned long long tmp_n = N;
-    int primes_product = 3 * 5 * 7 * 11 * 13;
+    int primes_product = 3 * 3 * 5 * 7 * 11 * 13;
     int primes_adjustment = pow(2, ceil(log2(primes_product)));
     N /= primes_adjustment;
     N *= primes_product;
