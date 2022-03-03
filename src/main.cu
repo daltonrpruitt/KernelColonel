@@ -12,6 +12,7 @@
 #include <kernels/burst_mode/interleaved_copy.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size.cu>
+#include <kernels/burst_mode/interleaved_copy_full_life.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -159,8 +160,32 @@ int main() {
     INTERLEAVED(32, 4)
     INTERLEAVED(32, 8)
     INTERLEAVED(32, 16)
+*/
+#define INTER_FULL_LIFE_DRIVER(X) interleaved_copy_full_life_ ## X  ## _driver
+#define INTERLEAVED_FULL_LIFE(X) { MicrobenchmarkDriver<InterleavedCopyFullLifeContext<vt, int, X>> \
+      INTER_FULL_LIFE_DRIVER(X)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FULL_LIFE_DRIVER(X) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!INTER_FULL_LIFE_DRIVER(X).check_then_run_kernels()) {return -1;}  \
+    total_runs += INTER_FULL_LIFE_DRIVER(X).get_total_runs(); }
+    INTERLEAVED_FULL_LIFE(1)
 
-
+    INTERLEAVED_FULL_LIFE(2)
+    INTERLEAVED_FULL_LIFE(4)
+    // INTERLEAVED_FULL_LIFE(6)
+    INTERLEAVED_FULL_LIFE(8)
+    // INTERLEAVED_FULL_LIFE(10)
+    // INTERLEAVED_FULL_LIFE(12)
+    // INTERLEAVED_FULL_LIFE(14)
+    INTERLEAVED_FULL_LIFE(16)
+    // INTERLEAVED_FULL_LIFE(18)
+    // INTERLEAVED_FULL_LIFE(20)
+    // INTERLEAVED_FULL_LIFE(22)
+    // INTERLEAVED_FULL_LIFE(24)
+    // INTERLEAVED_FULL_LIFE(26)
+    // INTERLEAVED_FULL_LIFE(28)
+    // INTERLEAVED_FULL_LIFE(30)
+    INTERLEAVED_FULL_LIFE(32)
+//*/
+/*
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
 #define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
@@ -173,6 +198,9 @@ int main() {
     UNCOAL_REUSE(false, true)
     UNCOAL_REUSE(true, true)
 */
+
+
+/*
 
 #define UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
@@ -211,7 +239,7 @@ int main() {
     UNCOAL_REUSE_INDIRECT(false, true, 32768)
     UNCOAL_REUSE_INDIRECT(true, true, 32768)
 
-
+*/
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);

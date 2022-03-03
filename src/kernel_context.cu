@@ -241,6 +241,13 @@ struct KernelCPUContext {
     }
 
     float get_occupancy() {
+        bool pass = true;
+        if(max_blocks_simultaneous_per_sm < 0) compute_max_simultaneous_blocks(pass);
+        if(!pass) { 
+            okay = false;  
+            return -1.0;
+        }
+
         int max_blocks_shared_mem;
         if(shared_memory_usage == 0) {
             max_blocks_shared_mem = dev_ctx->props_.maxBlocksPerMultiProcessor;
