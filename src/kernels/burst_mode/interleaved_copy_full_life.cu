@@ -30,16 +30,19 @@ template<typename vt, typename it, int elements>
 __forceinline__ __host__ __device__        
 void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
-    unsigned long long b_idx = blockIdx.x;
-    unsigned long long t_idx = threadIdx.x;
-    unsigned long long Bsz = blockDim.x;
-    unsigned long long Gsz = gridDim.x;
+    // unsigned long long b_idx = blockIdx.x;
+    // unsigned long long t_idx = threadIdx.x;
+    // unsigned long long Bsz = blockDim.x;
+    // unsigned long long Gsz = gridDim.x;
     
-    for(int x=0; x < block_life; ++x) {
+    // int block_life = N / gridDim.x / elements; 
+    unsigned long long start_idx = blockIdx.x * blockDim.x * elements + threadIdx.x;
+    uint cycle_offset = gridDim.x * blockDim.x * elements;
+
+    for(int x=0; x < N / gridDim.x / elements; ++x) {
         for(int y=0; y < elements; ++y) {
-            unsigned long long data_idx =  b_idx * Bsz * elements +
-                    t_idx + Gsz * Bsz * elements * x + Bsz*y;
-            if(data_idx >= N) continue;
+            unsigned long long data_idx =  start_idx + cycle_offset * x + blockDim.x*y;
+            if(data_idx >= N) return;
             gpu_out[data_idx] = gpu_in[data_idx];
         }
     }
