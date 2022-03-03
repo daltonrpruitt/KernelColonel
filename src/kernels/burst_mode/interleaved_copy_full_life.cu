@@ -2,12 +2,13 @@
 /**
  * @file interleaved_copy.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from ArrayCopyContext; testing for burst mode 
+ * @brief Derived from InterleavedCopyContext; testing for burst mode 
  * @version 0.1
  * @date 2022-02-24
  * 
- * Based on my write up that is currently at 
- * https://app.diagrams.net/#G1NgMgo7joWueBNKOvifh_rLW__W7VOhrP
+ * Meant to ensure the blocks last the entire time on GPU, i.e. the 
+ * blocks that are started on each SM persist throughout the lifetime
+ * of the kernel. 
  * 
  */
 
