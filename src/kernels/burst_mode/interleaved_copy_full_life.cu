@@ -26,9 +26,9 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int block_life, int elements>
+template<typename vt, typename it, int elements>
 __forceinline__ __host__ __device__        
-void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     unsigned long long b_idx = blockIdx.x;
     unsigned long long t_idx = threadIdx.x;
@@ -46,15 +46,15 @@ void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N)
 }
 
 
-template<typename vt, typename it, int block_life, int elements>
+template<typename vt, typename it, int elements>
 __global__        
 void uncoalesced_reuse_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        interleaved_kernel<vt, it, block_life, elements>(idx, gpu_in, gpu_out, N);
+        interleaved_full_life_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, int block_life, int elements>
-struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, int elements>
+struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
@@ -78,11 +78,11 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                interleaved_kernel<vt, it, block_life, elements>(idx, gpu_in, gpu_out, N);
+                interleaved_full_life_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
-        InterleavedCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        InterleavedCopyFullLifeContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             assert(N % (block_life * elements) == 0);
             this->name = "InterleavedCopy"; 
@@ -92,7 +92,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~InterleavedCopyContext(){}
+        ~InterleavedCopyFullLifeContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -110,8 +110,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         }
 
         void output_config_info() override {
-            cout << "InterleavedCopy with : "
-                 <<" Block life=" << block_life 
+            cout << "InterleavedCopyFullLife with : "
                  << " Elements/cycle=" << elements 
                  << " Blocks used="<< this->Gsz << endl;
         }
@@ -146,7 +145,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *uncoalesced_reuse_kernel_for_regs<vt,it,block_life,elements>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *uncoalesced_reuse_kernel_for_regs<vt,it,elements>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
