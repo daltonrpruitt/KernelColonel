@@ -53,8 +53,9 @@ int main() {
 
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
-    unsigned long long min_array_size = dev_ctx.props_.l2CacheSize / sizeof(vt) * 10;
-    unsigned long long N = pow(2, ceil(log2(min_array_size)));
+    unsigned long long min_array_size = dev_ctx.props_.l2CacheSize / sizeof(vt) / 2 / dev_ctx.props_.multiProcessorCount;
+    min_array_size = pow(2, ceil(log2(min_array_size)));
+    unsigned long long N = min_array_size * dev_ctx.props_.multiProcessorCount;
 
     cout << "Processing " << N  << " elements" << endl;
 
