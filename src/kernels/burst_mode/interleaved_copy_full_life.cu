@@ -87,10 +87,14 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
 
         InterleavedCopyFullLifeContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
-            assert(N % (block_life * elements) == 0);
+            assert(N % (elements) == 0);
             this->name = "InterleavedCopy"; 
-            this->Gsz /=  block_life * elements;
+
+            int occupancy_blocks = int(this->get_occupancy() * float(this->dev_ctx->props_.maxThreadsPerMultiProcessor)) / this->Bsz;
+            cout << "Occupancy = " << this->get_occupancy() << endl;
+            this->Gsz = this->dev_ctx->props_.multiProcessorCount * occupancy_blocks;
             assert(this->Gsz > 0);
+           
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
