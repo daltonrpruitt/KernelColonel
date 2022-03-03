@@ -170,28 +170,34 @@ int main() {
     total_runs += INTER_FULL_LIFE_DRIVER(X).get_total_runs(); }
     
     unsigned long long tmp_n = N;
-    int primes_product = 3 * 3 * 5 * 7 * 11 * 13;
-    int primes_adjustment = pow(2, ceil(log2(primes_product)));
-    N /= primes_adjustment;
-    N *= primes_product;
 
     INTERLEAVED_FULL_LIFE(1)
     INTERLEAVED_FULL_LIFE(2)
     INTERLEAVED_FULL_LIFE(4)
-    INTERLEAVED_FULL_LIFE(6)
     INTERLEAVED_FULL_LIFE(8)
-    INTERLEAVED_FULL_LIFE(10)
-    INTERLEAVED_FULL_LIFE(12)
-    INTERLEAVED_FULL_LIFE(14)
     INTERLEAVED_FULL_LIFE(16)
-    INTERLEAVED_FULL_LIFE(18)
-    INTERLEAVED_FULL_LIFE(20)
-    INTERLEAVED_FULL_LIFE(22)
-    INTERLEAVED_FULL_LIFE(24)
-    INTERLEAVED_FULL_LIFE(26)
-    INTERLEAVED_FULL_LIFE(28)
-    INTERLEAVED_FULL_LIFE(30)
     INTERLEAVED_FULL_LIFE(32)
+
+    N = tmp_n / 8 * 9;
+    INTERLEAVED_FULL_LIFE(6)
+    INTERLEAVED_FULL_LIFE(12)
+    INTERLEAVED_FULL_LIFE(24)
+    INTERLEAVED_FULL_LIFE(18)
+
+    N = tmp_n / 4 * 5;
+    INTERLEAVED_FULL_LIFE(10)
+    INTERLEAVED_FULL_LIFE(20)
+    INTERLEAVED_FULL_LIFE(30)
+
+    N = tmp_n / 8 * 7;
+    INTERLEAVED_FULL_LIFE(14)
+    INTERLEAVED_FULL_LIFE(28)
+
+    N = tmp_n / 8 * 11;
+    INTERLEAVED_FULL_LIFE(22)
+
+    N = tmp_n / 16 * 13;
+    INTERLEAVED_FULL_LIFE(26)
     N = tmp_n;
 
 //*/
