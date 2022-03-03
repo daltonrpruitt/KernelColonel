@@ -98,8 +98,12 @@ struct KernelCPUContext {
         void uninit() {
             if(!initialized) {return;}
             free();
-            for(int i=0; i<num_total_data; ++i) { host_data[i].clear(); }
-            for(int i=0; i<num_indices; ++i) { host_indices[i].clear(); }
+            for(int i=0; i<num_total_data; ++i) { 
+                vector<vt>().swap(host_data[i]); 
+            }
+            for(int i=0; i<num_indices; ++i) { 
+                vector<it>().swap(host_indices[i]); 
+            }
             initialized = false;
         }
 
