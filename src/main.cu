@@ -64,7 +64,9 @@ int main() {
     std::vector<int> bs_vec;
     // Only one of the next two lines 
     // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    bs_vec.push_back(128);
+    bs_vec.push_back(64);
+    bs_vec.push_back(256);
+    bs_vec.push_back(1024);
     bool span_occupancies = true;
 
     Output output_dir;
