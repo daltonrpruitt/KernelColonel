@@ -209,42 +209,42 @@ int main() {
 
 /*
 
-#define UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
+#define UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
-#define UNCOAL_REUSE_INDIRECT(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralContext<vt, int, B1, B2, X>> \
-      UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X) ) ".csv", &dev_ctx, span_occupancies); \
-    if (!UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X).check_then_run_kernels()) {return -1;}  \
-    total_runs += UNCOAL_REUSE_INDIRECT_DRIVER(B1, B2, X).get_total_runs(); }
+#define UNCOAL_REUSE_GENERAL(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralContext<vt, int, B1, B2, X>> \
+      UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X).check_then_run_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X).get_total_runs(); }
     
-    UNCOAL_REUSE_INDIRECT(false, false, 1024)
-    UNCOAL_REUSE_INDIRECT(true, false, 1024)
-    UNCOAL_REUSE_INDIRECT(false, true, 1024)
-    UNCOAL_REUSE_INDIRECT(true, true, 1024)
+    UNCOAL_REUSE_GENERAL(false, false, 1024)
+    UNCOAL_REUSE_GENERAL(true, false, 1024)
+    UNCOAL_REUSE_GENERAL(false, true, 1024)
+    UNCOAL_REUSE_GENERAL(true, true, 1024)
     
-    UNCOAL_REUSE_INDIRECT(false, false, 2048)
-    UNCOAL_REUSE_INDIRECT(true, false, 2048)
-    UNCOAL_REUSE_INDIRECT(false, true, 2048)
-    UNCOAL_REUSE_INDIRECT(true, true, 2048)
+    UNCOAL_REUSE_GENERAL(false, false, 2048)
+    UNCOAL_REUSE_GENERAL(true, false, 2048)
+    UNCOAL_REUSE_GENERAL(false, true, 2048)
+    UNCOAL_REUSE_GENERAL(true, true, 2048)
 
-    UNCOAL_REUSE_INDIRECT(false, false, 4096)
-    UNCOAL_REUSE_INDIRECT(true, false, 4096)
-    UNCOAL_REUSE_INDIRECT(false, true, 4096)
-    UNCOAL_REUSE_INDIRECT(true, true, 4096)
+    UNCOAL_REUSE_GENERAL(false, false, 4096)
+    UNCOAL_REUSE_GENERAL(true, false, 4096)
+    UNCOAL_REUSE_GENERAL(false, true, 4096)
+    UNCOAL_REUSE_GENERAL(true, true, 4096)
 
-    UNCOAL_REUSE_INDIRECT(false, false, 8192)
-    UNCOAL_REUSE_INDIRECT(true, false, 8192)
-    UNCOAL_REUSE_INDIRECT(false, true, 8192)
-    UNCOAL_REUSE_INDIRECT(true, true, 8192)
+    UNCOAL_REUSE_GENERAL(false, false, 8192)
+    UNCOAL_REUSE_GENERAL(true, false, 8192)
+    UNCOAL_REUSE_GENERAL(false, true, 8192)
+    UNCOAL_REUSE_GENERAL(true, true, 8192)
 
-    UNCOAL_REUSE_INDIRECT(false, false, 16384)
-    UNCOAL_REUSE_INDIRECT(true, false, 16384)
-    UNCOAL_REUSE_INDIRECT(false, true, 16384)
-    UNCOAL_REUSE_INDIRECT(true, true, 16384)
+    UNCOAL_REUSE_GENERAL(false, false, 16384)
+    UNCOAL_REUSE_GENERAL(true, false, 16384)
+    UNCOAL_REUSE_GENERAL(false, true, 16384)
+    UNCOAL_REUSE_GENERAL(true, true, 16384)
 
-    UNCOAL_REUSE_INDIRECT(false, false, 32768)
-    UNCOAL_REUSE_INDIRECT(true, false, 32768)
-    UNCOAL_REUSE_INDIRECT(false, true, 32768)
-    UNCOAL_REUSE_INDIRECT(true, true, 32768)
+    UNCOAL_REUSE_GENERAL(false, false, 32768)
+    UNCOAL_REUSE_GENERAL(true, false, 32768)
+    UNCOAL_REUSE_GENERAL(false, true, 32768)
+    UNCOAL_REUSE_GENERAL(true, true, 32768)
 
 */
 
