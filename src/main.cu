@@ -172,7 +172,8 @@ int main() {
     unsigned long long tmp_n = N;
     int primes_product = 3 * 5 * 7 * 11 * 13;
     int primes_adjustment = pow(2, ceil(log2(primes_product)));
-
+    N /= primes_adjustment;
+    N *= primes_product;
 
     INTERLEAVED_FULL_LIFE(1)
     INTERLEAVED_FULL_LIFE(2)
