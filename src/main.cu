@@ -166,24 +166,31 @@ int main() {
       INTER_FULL_LIFE_DRIVER(X)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FULL_LIFE_DRIVER(X) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_FULL_LIFE_DRIVER(X).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_FULL_LIFE_DRIVER(X).get_total_runs(); }
-    INTERLEAVED_FULL_LIFE(1)
+    
+    unsigned long long tmp_n = N;
+    int primes_product = 3 * 5 * 7 * 11 * 13;
+    int primes_adjustment = pow(2, ceil(log2(primes_product)));
 
+
+    INTERLEAVED_FULL_LIFE(1)
     INTERLEAVED_FULL_LIFE(2)
     INTERLEAVED_FULL_LIFE(4)
-    // INTERLEAVED_FULL_LIFE(6)
+    INTERLEAVED_FULL_LIFE(6)
     INTERLEAVED_FULL_LIFE(8)
-    // INTERLEAVED_FULL_LIFE(10)
-    // INTERLEAVED_FULL_LIFE(12)
-    // INTERLEAVED_FULL_LIFE(14)
+    INTERLEAVED_FULL_LIFE(10)
+    INTERLEAVED_FULL_LIFE(12)
+    INTERLEAVED_FULL_LIFE(14)
     INTERLEAVED_FULL_LIFE(16)
-    // INTERLEAVED_FULL_LIFE(18)
-    // INTERLEAVED_FULL_LIFE(20)
-    // INTERLEAVED_FULL_LIFE(22)
-    // INTERLEAVED_FULL_LIFE(24)
-    // INTERLEAVED_FULL_LIFE(26)
-    // INTERLEAVED_FULL_LIFE(28)
-    // INTERLEAVED_FULL_LIFE(30)
+    INTERLEAVED_FULL_LIFE(18)
+    INTERLEAVED_FULL_LIFE(20)
+    INTERLEAVED_FULL_LIFE(22)
+    INTERLEAVED_FULL_LIFE(24)
+    INTERLEAVED_FULL_LIFE(26)
+    INTERLEAVED_FULL_LIFE(28)
+    INTERLEAVED_FULL_LIFE(30)
     INTERLEAVED_FULL_LIFE(32)
+    N = tmp_n;
+
 //*/
 /*
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
