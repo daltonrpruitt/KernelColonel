@@ -192,7 +192,7 @@ int main() {
     N = tmp_n;
 
 //*/
-/*
+///*
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
 #define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
@@ -204,10 +204,10 @@ int main() {
     UNCOAL_REUSE(true, false)
     UNCOAL_REUSE(false, true)
     UNCOAL_REUSE(true, true)
-*/
+//*/
 
 
-/*
+///*
 
 #define UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
@@ -246,7 +246,7 @@ int main() {
     UNCOAL_REUSE_GENERAL(false, true, 32768)
     UNCOAL_REUSE_GENERAL(true, true, 32768)
 
-*/
+//*/
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
