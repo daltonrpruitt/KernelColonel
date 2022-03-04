@@ -161,7 +161,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
                 int output_size = 10;
                 unsigned long long j = max((int)0, (int)(global_tidx - output_size/2));
                 for(int k=0; k < output_size; ++k, ++j) { 
-                    cout << std::setw(10) << in[j] <<"|" <<std::setw(10)<<out[j] << endl; 
+                    cout << std::setw(10) << in[j] <<"  |" <<std::setw(10)<<out[j] << endl; 
                 }
             }
             return pass;
