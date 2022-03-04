@@ -75,7 +75,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
         vt* & d_in = super::device_data_ptrs[0];
         vt* & d_out = super::device_data_ptrs[1];
 
-        int data_reads_per_element = ELEMENTS_REUSED_GEN;
+        int data_reads_per_element = 1; // only one valualbe read?
         int index_reads_per_element = 0;
         int writes_per_element = 1;
         struct gpu_ctx {
