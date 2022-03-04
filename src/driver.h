@@ -61,7 +61,7 @@ class MicrobenchmarkDriver {
                 cout << endl;
 #endif
                 if(shdmem_allocs.size() > 0) {
-                    for(int i=0; i < shdmem_allocs.size()-1; ++i){ // not last one because we already have that one (max occupancy)
+                    for(int i=0; i < shdmem_allocs.size(); ++i){
                         contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx, shdmem_allocs[i]));
                     }
                 }
