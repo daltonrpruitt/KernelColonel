@@ -51,7 +51,7 @@ def collate_interleaved_copy(base_folder):
         # ic(filename[len(kernel_type)-1])
         if(has_extra_config):
             search_start = len(kernel_type) - 7
-            possible_vals = [int(v[1:]) for v in re.findall(r'_\d+', filename[search_start:search_start+8])]
+            possible_vals = [int(v[1:]) for v in re.findall(r'_\d+', filename[search_start:])]
             # print(possible_vals)
             # exit()
             assert(len(possible_vals) == len(configs))
