@@ -1,14 +1,13 @@
 #pragma once
 /**
- * @file uncoalesced_reuse_general_size.cu
+ * @file uncoalesced_reuse_general_size_single_element.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from UncoalescedReuseContext; testing for coalescing's impact on cache 
+ * @brief Derived from UncoalescedReuseGeneralContext; testing for coalescing's impact on cache 
  * @version 0.1
  * @date 2022-03-02
  * 
- * Meant to "improve" upon the regular uncoalesced reuse as we can have a more 
- * general size for the shuffled region, not just the block size.
- * 
+ * Meant to only test single load performance.
+ * Performance is still in the only used loads; this may need to change?
  * 
  */
 
