@@ -94,9 +94,9 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "UncoalescedReuseGeneralSingleElement"; 
             assert(this->Gsz > 0);
-            if constexpr(preload_for_reuse) {
-                data_reads_per_element += 1;
-            }
+            // if constexpr(preload_for_reuse) {
+            //     data_reads_per_element += 1;
+            // }
 
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
