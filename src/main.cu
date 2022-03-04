@@ -170,7 +170,7 @@ int main() {
     if (!INTER_FULL_LIFE_DRIVER(X).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_FULL_LIFE_DRIVER(X).get_total_runs(); }
     
-    unsigned long long tmp_n = N;
+    // unsigned long long tmp_n = N;
 
     INTERLEAVED_FULL_LIFE(1)
     INTERLEAVED_FULL_LIFE(2)
