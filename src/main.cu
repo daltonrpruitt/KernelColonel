@@ -12,6 +12,7 @@
 #include <kernels/burst_mode/interleaved_copy.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size.cu>
+#include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size_single_element.cu>
 #include <kernels/burst_mode/interleaved_copy_full_life.cu>
 
 #include <output.h>
@@ -65,7 +66,7 @@ int main() {
     // Only one of the next two lines 
     // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
     bs_vec.push_back(64);
-    bs_vec.push_back(256);
+    bs_vec.push_back(128);
     bs_vec.push_back(1024);
     bool span_occupancies = true;
 
@@ -201,7 +202,7 @@ int main() {
     N = tmp_n;
 
 //*/
-///*
+/*
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
 #define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt, int, B1, B2>> \
@@ -216,7 +217,7 @@ int main() {
 //*/
 
 
-///*
+/*
 
 #define UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
@@ -254,6 +255,44 @@ int main() {
     UNCOAL_REUSE_GENERAL(true, false, 32768)
     UNCOAL_REUSE_GENERAL(false, true, 32768)
     UNCOAL_REUSE_GENERAL(true, true, 32768)
+
+*/
+#define UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _driver
+
+#define UNCOAL_REUSE_GENERAL_SINGLE(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralSingleElementContext<vt, int, B1, B2, X>> \
+      UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X).check_then_run_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X).get_total_runs(); }
+    
+    UNCOAL_REUSE_GENERAL_SINGLE(false, false, 1024)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, false, 1024)
+    UNCOAL_REUSE_GENERAL_SINGLE(false, true, 1024)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, true, 1024)
+    
+    UNCOAL_REUSE_GENERAL_SINGLE(false, false, 2048)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, false, 2048)
+    UNCOAL_REUSE_GENERAL_SINGLE(false, true, 2048)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, true, 2048)
+
+    UNCOAL_REUSE_GENERAL_SINGLE(false, false, 4096)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, false, 4096)
+    UNCOAL_REUSE_GENERAL_SINGLE(false, true, 4096)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, true, 4096)
+
+    UNCOAL_REUSE_GENERAL_SINGLE(false, false, 8192)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, false, 8192)
+    UNCOAL_REUSE_GENERAL_SINGLE(false, true, 8192)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, true, 8192)
+
+    UNCOAL_REUSE_GENERAL_SINGLE(false, false, 16384)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, false, 16384)
+    UNCOAL_REUSE_GENERAL_SINGLE(false, true, 16384)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, true, 16384)
+
+    UNCOAL_REUSE_GENERAL_SINGLE(false, false, 32768)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, false, 32768)
+    UNCOAL_REUSE_GENERAL_SINGLE(false, true, 32768)
+    UNCOAL_REUSE_GENERAL_SINGLE(true, true, 32768)
 
 //*/
 
