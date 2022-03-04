@@ -188,6 +188,7 @@ int main() {
     N = tmp_n / 4 * 5;
     INTERLEAVED_FULL_LIFE(10)
     INTERLEAVED_FULL_LIFE(20)
+    N = N / 4 * 3;
     INTERLEAVED_FULL_LIFE(30)
 
     N = tmp_n / 8 * 7;
