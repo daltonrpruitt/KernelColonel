@@ -137,17 +137,16 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
                 int start_idx = i * shuffle_size;
                 for (int j=0; j < shuffle_size; ++j){
                     global_tidx = start_idx + j;
-                    vt sum = 0;
-                    for(int e=0; e<ELEMENTS_REUSED_GEN; ++e) {
-                        int tmp_t_idx = (j + e) % shuffle_size;
-                        if constexpr(!avoid_bank_conflicts) {
-                            sum += in[( tmp_t_idx % num_warps) * 32 + tmp_t_idx / num_warps + start_idx];
-                        } else {
-                            sum += in[( (tmp_t_idx % 32) * 32 + (tmp_t_idx % 32 + tmp_t_idx / num_warps ) % 32) % shuffle_size + start_idx];
 
-                        }
+                    uint shuffle_t_idx = global_tidx % shuffle_size;
+                    vt val = 0;
+                    if constexpr(!avoid_bank_conflicts) {
+                        val = in[( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx];
+                    } else {
+                        val = in[( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % shuffle_size + start_idx];
+
                     }
-                    if (out[global_tidx] != sum) {
+                    if (out[global_tidx] != val) {
                         cout << "Validation Failed at " << global_tidx << ": in="<<in[global_tidx] << " out="<< out[global_tidx] << endl;
                         pass = false;
                         break;
