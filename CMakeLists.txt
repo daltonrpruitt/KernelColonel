@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 add_executable(main src/main.cu)
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
-target_compile_options(main PRIVATE "--keep")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --keep -Xptxas -dlcm=cg")
 
 # message(STATUS "python exec: ${Python_EXECUTABLE}")
 
