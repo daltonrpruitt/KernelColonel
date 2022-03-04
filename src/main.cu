@@ -179,6 +179,7 @@ int main() {
     INTERLEAVED_FULL_LIFE(16)
     INTERLEAVED_FULL_LIFE(32)
 
+/*
     N = tmp_n / 8 * 9;
     INTERLEAVED_FULL_LIFE(6)
     INTERLEAVED_FULL_LIFE(12)
@@ -201,6 +202,7 @@ int main() {
     N = tmp_n / 16 * 13;
     INTERLEAVED_FULL_LIFE(26)
     N = tmp_n;
+*/
 
 //*/
 /*
