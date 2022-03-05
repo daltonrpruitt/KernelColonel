@@ -42,8 +42,9 @@ def collate_interleaved_copy(base_folder):
 
     for filename in os.listdir(base_folder):
         if ".csv" not in filename: continue 
-        if kernel not in filename: continue 
-        post_fix = "_driver"
+        if kernel not in filename: continue
+        if "collated" in filename: continue
+        post_fix = "_driver.csv"
         data = pd.read_csv(base_folder + "/" + filename,header=0)
     
 
