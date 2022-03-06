@@ -239,6 +239,7 @@ struct KernelCPUContext {
 
         for(int i=min_blocks_due_to_shd_mem; i < max_blocks_simultaneous_per_sm ; i*=2) {
             int sm_alloc = std::min((max_shd_mem_per_proc / i ) / 256 * 256, max_shd_mem_per_block);
+            if(dev_ctx->props_.major >= 8) {sm_alloc -= 1024;}
             if ( std::find(alloc_amounts.begin(), alloc_amounts.end(), sm_alloc) == alloc_amounts.end() ) {
                 alloc_amounts.push_back(sm_alloc);
             }
