@@ -145,6 +145,7 @@ class MicrobenchmarkDriver {
             timing_stats.push_back(fraction_theoretical_bw_achieved);
 
 #ifdef DEBUG
+#ifdef DEBUG_LEVEL1
             cout << "Actual runtimes:" << endl;
             for (int i = 0; i < times.size(); ++i) {
                 cout << setw(10) << times[i];
@@ -153,6 +154,7 @@ class MicrobenchmarkDriver {
                 }
             }
             cout << endl;
+#endif
 
             int w = 15;
             cout << "Timing stats:" << endl;
