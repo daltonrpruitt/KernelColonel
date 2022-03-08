@@ -234,7 +234,7 @@ struct KernelCPUContext {
         }
         int max_shd_mem_per_block = dev_ctx->props_.sharedMemPerBlock;
         int max_shd_mem_per_proc = dev_ctx->props_.sharedMemPerMultiprocessor;
-
+        if(dev_ctx->props_.major == 8) {max_shd_mem_per_block = max_shd_mem_per_proc;}
         int min_blocks_due_to_shd_mem = max_shd_mem_per_proc / max_shd_mem_per_block;
 
         for(int i=min_blocks_due_to_shd_mem; i < max_blocks_simultaneous_per_sm ; i*=2) {
