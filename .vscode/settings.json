@@ -53,5 +53,9 @@
         "thread": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "uncoalesced",
+        "vals"
+    ]
 }
