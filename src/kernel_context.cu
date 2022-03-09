@@ -167,6 +167,10 @@ struct KernelCPUContext {
             uninit();            
         }
 
+        virtual void set_config_bool(bool val) {
+            cerr << "set_config_bool() is undefined for this kernel!" << endl;
+        };
+
         virtual void output_config_info() {
             cout << name << endl; 
         }
@@ -264,6 +268,34 @@ struct KernelCPUContext {
         int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
         int num_threads_simul = max_blocks_simul * Bsz; 
         return float(num_threads_simul) / float(dev_ctx->props_.maxThreadsPerMultiProcessor);
+    }
+
+    int get_sharedmemory_from_occupancy(float occupancy) {
+        bool pass = true;
+        if(max_blocks_simultaneous_per_sm < 0) compute_max_simultaneous_blocks(pass);
+        if(!pass) { 
+            okay = false;  
+            return -1;
+        }
+
+        int blocks = float(dev_ctx->props_.maxThreadsPerMultiProcessor / Bsz) * occupancy;
+        if(blocks > max_blocks_simultaneous_per_sm){
+            cerr << "Try to get occupancy higher than architecture allows!" << endl;
+            return -1;
+        }
+
+        int max_shd_mem_per_block = dev_ctx->props_.sharedMemPerBlock;
+        int max_shd_mem_per_proc = dev_ctx->props_.sharedMemPerMultiprocessor;
+        if(dev_ctx->props_.major == 8) {max_shd_mem_per_block = max_shd_mem_per_proc;}
+
+        int shdmem = max_shd_mem_per_proc / blocks; 
+
+        if(shdmem > max_shd_mem_per_block) {
+            cerr << "Cannot set shared memory high enough to match occupancy of " << occupancy <<"!" << endl;
+            shdmem = max_shd_mem_per_block;
+        }
+        if(dev_ctx->props_.major == 8) {shdmem -= 1024;}
+        return shdmem;
     }
 
     void print_register_usage() {
