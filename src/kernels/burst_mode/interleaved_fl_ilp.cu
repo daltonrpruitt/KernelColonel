@@ -28,7 +28,7 @@ using std::vector;
 
 template<typename vt, typename it, int elements>
 __forceinline__ __host__ __device__        
-void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     // unsigned long long b_idx = blockIdx.x;
     // unsigned long long t_idx = threadIdx.x;
@@ -51,13 +51,13 @@ void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned lo
 
 template<typename vt, typename it, int elements>
 __global__        
-void uncoalesced_reuse_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_fl_ilp_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        interleaved_full_life_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
+        interleaved_fl_ilp_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
 }
 
 template<typename vt, typename it, int elements>
-struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
+struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
@@ -81,14 +81,14 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                interleaved_full_life_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
+                interleaved_fl_ilp_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
-        InterleavedCopyFullLifeContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        InterleavedFullLifeILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             assert(N % (elements) == 0);
-            this->name = "InterleavedCopyFullLife"; 
+            this->name = "InterleavedCopyFullLifeILP"; 
 
             int occupancy_blocks = int(this->get_occupancy() * float(this->dev_ctx->props_.maxThreadsPerMultiProcessor)) / this->Bsz;
             cout << "Occupancy = " << this->get_occupancy() << endl;
@@ -99,7 +99,7 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~InterleavedCopyFullLifeContext(){}
+        ~InterleavedFullLifeILPContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -152,7 +152,7 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *uncoalesced_reuse_kernel_for_regs<vt,it,elements>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *interleaved_fl_ilp_kernel_for_regs<vt,it,elements>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
