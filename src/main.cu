@@ -217,8 +217,7 @@ int main() {
     span_occupancies = false;
     bool match_ilp = true;
     INTERLEAVED_FL_ILP(1, 1)
-    
-    INTERLEAVED_FL_ILP(1, 2)
+    INTERLEAVED_FL_ILP(1, 2)    
     INTERLEAVED_FL_ILP(1, 4)
     INTERLEAVED_FL_ILP(1, 8)
 
@@ -226,8 +225,6 @@ int main() {
     INTERLEAVED_FL_ILP(8, 2)
     INTERLEAVED_FL_ILP(8, 4)
     INTERLEAVED_FL_ILP(8, 8)
-
-    INTERLEAVED_FL_ILP(128, 4)
 
     // INTERLEAVED_FL_ILP(1, 4)
     INTERLEAVED_FL_ILP(2, 4)
@@ -238,6 +235,11 @@ int main() {
     INTERLEAVED_FL_ILP(64, 4)
     INTERLEAVED_FL_ILP(128, 4)
     INTERLEAVED_FL_ILP(256, 4)
+    INTERLEAVED_FL_ILP(512, 4)
+    INTERLEAVED_FL_ILP(1024, 4)
+    INTERLEAVED_FL_ILP(2048, 4)
+    // INTERLEAVED_FL_ILP(4096, 4)
+
 //*/
     span_occupancies = tmp_span;
 
