@@ -92,6 +92,17 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             assert(N % (elements) == 0);
             this->name = "InterleavedFullLifeILP";
 
+            if(match_ilp) {
+                float desired_occupany = 1.0 / float(ILP);
+                int shdmem = this->get_sharedmemory_from_occupancy(desired_occupany);
+                if (shdmem == -1) {
+                    cerr << "Could not set sharedmem for occupancy!" << endl;
+                    this->okay = false;
+                    return;
+                }
+                this->shared_memory_usage = shdmem;
+            }
+            
             int occupancy_blocks = int(this->get_occupancy() * float(this->dev_ctx->props_.maxThreadsPerMultiProcessor)) / this->Bsz;
             cout << "Occupancy = " << this->get_occupancy() << endl;
             this->Gsz = this->dev_ctx->props_.multiProcessorCount * occupancy_blocks;
