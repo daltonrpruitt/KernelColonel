@@ -345,9 +345,9 @@ int main() {
     cout << "Total time taken (h:mm:ss)     = " << std::setfill('0') << std::setw(2) 
                                                 << (int)main_time / 1000 / 60 / 60 << ":" 
                                                 << std::setfill('0') << std::setw(2)
-                                                << (int)main_time / (1000 / 60) % 60 << ":" 
+                                                << ((int)main_time / 1000 / 60 ) % 60 << ":" 
                                                 << std::setfill('0') << std::setw(2)
-                                                << (int)main_time / 1000 % 60 << endl;
+                                                << ((int)main_time / 1000 ) % 60 << endl;
 
     return 0;
 }
