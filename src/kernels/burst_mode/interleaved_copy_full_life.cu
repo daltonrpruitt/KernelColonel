@@ -39,7 +39,7 @@ void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned lo
     unsigned long long start_idx = blockIdx.x * blockDim.x * elements + threadIdx.x;
     uint cycle_offset = gridDim.x * blockDim.x * elements;
 
-    for(int x=0; x < N / gridDim.x / elements; ++x) {
+    for(int x=0; x < N / ( gridDim.x * blockDim.x * elements); ++x) {
         for(int y=0; y < elements; ++y) {
             unsigned long long data_idx =  start_idx + cycle_offset * x + blockDim.x*y;
             if(data_idx >= N) return;
