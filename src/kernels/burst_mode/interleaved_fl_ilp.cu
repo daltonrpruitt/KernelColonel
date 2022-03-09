@@ -26,7 +26,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int elements>
+template<typename vt, typename it, int elements, int ILP>
 __forceinline__ __host__ __device__        
 void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
@@ -49,14 +49,14 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
 }
 
 
-template<typename vt, typename it, int elements>
+template<typename vt, typename it, int elements, int ILP>
 __global__        
 void interleaved_fl_ilp_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        interleaved_fl_ilp_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
+        interleaved_fl_ilp_kernel<vt, it, elements, ILP>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, int elements>
+template<typename vt, typename it, int elements, int ILP>
 struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
@@ -81,7 +81,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                interleaved_fl_ilp_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
+                interleaved_fl_ilp_kernel<vt, it, elements, ILP>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
@@ -152,7 +152,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *interleaved_fl_ilp_kernel_for_regs<vt,it,elements>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *interleaved_fl_ilp_kernel_for_regs<vt,it,elements,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
