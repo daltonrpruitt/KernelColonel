@@ -1,14 +1,14 @@
 #pragma once
 /**
- * @file interleaved_copy.cu
+ * @file interleaved_fl_ilp.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from InterleavedCopyContext; testing for burst mode 
+ * @brief Derived from InterleavedCopyFullLifeContext; testing for burst mode 
  * @version 0.1
- * @date 2022-02-24
+ * @date 2022-03-09
  * 
- * Meant to ensure the blocks last the entire time on GPU, i.e. the 
- * blocks that are started on each SM persist throughout the lifetime
- * of the kernel. 
+ * New functionality to allow for use of instruction-level parallelism (ILP). 
+ * Essentially, now a thread/warp can issue multiple reads or writes before moving 
+ * to next thread/warp.
  * 
  */
 
