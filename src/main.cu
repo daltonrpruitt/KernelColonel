@@ -14,6 +14,7 @@
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size_single_element.cu>
 #include <kernels/burst_mode/interleaved_copy_full_life.cu>
+#include <kernels/burst_mode/interleaved_fl_ilp.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -173,6 +174,7 @@ int main() {
     
     // unsigned long long tmp_n = N;
 
+/*
     INTERLEAVED_FULL_LIFE(1)
     INTERLEAVED_FULL_LIFE(2)
     INTERLEAVED_FULL_LIFE(4)
@@ -180,7 +182,6 @@ int main() {
     INTERLEAVED_FULL_LIFE(16)
     INTERLEAVED_FULL_LIFE(32)
 
-/*
     N = tmp_n / 8 * 9;
     INTERLEAVED_FULL_LIFE(6)
     INTERLEAVED_FULL_LIFE(12)
@@ -204,6 +205,41 @@ int main() {
     INTERLEAVED_FULL_LIFE(26)
     N = tmp_n;
 */
+
+#define INTER_FL_ILP_DRIVER(E, ILP) interleaved_fl_ilp_ ## E ## _ ## ILP ## _driver
+#define INTERLEAVED_FL_ILP(E, ILP) { MicrobenchmarkDriver<InterleavedFullLifeILPContext<vt, int, E, ILP>> \
+        INTER_FL_ILP_DRIVER(E, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FL_ILP_DRIVER(E, ILP) ) ".csv", &dev_ctx, span_occupancies); \
+        INTER_FL_ILP_DRIVER(E, ILP).set_config_bool(match_ilp); \
+        if (!INTER_FL_ILP_DRIVER(E, ILP).check_then_run_kernels()) {return -1;} \
+        total_runs += INTER_FL_ILP_DRIVER(E, ILP).get_total_runs(); }
+    
+    bool tmp_span = span_occupancies; 
+    span_occupancies = false;
+    bool match_ilp = true;
+    INTERLEAVED_FL_ILP(1, 1)
+    
+    INTERLEAVED_FL_ILP(1, 2)
+    INTERLEAVED_FL_ILP(1, 4)
+    INTERLEAVED_FL_ILP(1, 8)
+
+    INTERLEAVED_FL_ILP(8, 1)
+    INTERLEAVED_FL_ILP(8, 2)
+    INTERLEAVED_FL_ILP(8, 4)
+    INTERLEAVED_FL_ILP(8, 8)
+
+    INTERLEAVED_FL_ILP(128, 4)
+
+    // INTERLEAVED_FL_ILP(1, 4)
+    INTERLEAVED_FL_ILP(2, 4)
+    INTERLEAVED_FL_ILP(4, 4)
+    // INTERLEAVED_FL_ILP(8, 4)
+    INTERLEAVED_FL_ILP(16, 4)
+    INTERLEAVED_FL_ILP(32, 4)
+    INTERLEAVED_FL_ILP(64, 4)
+    INTERLEAVED_FL_ILP(128, 4)
+    INTERLEAVED_FL_ILP(256, 4)
+//*/
+    span_occupancies = tmp_span;
 
 //*/
 /*
@@ -261,6 +297,7 @@ int main() {
     UNCOAL_REUSE_GENERAL(true, true, 32768)
 
 */
+/*
 #define UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
 #define UNCOAL_REUSE_GENERAL_SINGLE(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralSingleElementContext<vt, int, B1, B2, X>> \
