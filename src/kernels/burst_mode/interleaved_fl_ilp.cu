@@ -129,6 +129,11 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             int occupancy_blocks = int(this->get_occupancy() * float(this->dev_ctx->props_.maxThreadsPerMultiProcessor)) / this->Bsz;
             cout << "Occupancy = " << this->get_occupancy() << endl;
             this->Gsz = this->dev_ctx->props_.multiProcessorCount * occupancy_blocks;
+            if(N < (elements * this->Bsz * this->Gsz ) ) {
+                cout << "Elements=" <<elements << " is too large!" << endl;
+                this->okay = false;
+                return;
+            }
             assert(this->Gsz > 0);
            
             this->total_data_reads = N * data_reads_per_element;
