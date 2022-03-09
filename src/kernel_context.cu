@@ -279,8 +279,8 @@ struct KernelCPUContext {
         }
 
         int blocks = dev_ctx->props_.maxThreadsPerMultiProcessor / Bsz;
-        if(blocks >= max_blocks_simultaneous_per_sm){
-            cerr << "Try to set occupancy higher than architecture allows!" << endl;
+        if(blocks > max_blocks_simultaneous_per_sm){
+            cerr << "Try to get occupancy higher than architecture allows!" << endl;
             return -1;
         }
 
