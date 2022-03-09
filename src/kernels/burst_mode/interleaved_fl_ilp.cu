@@ -85,6 +85,8 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
+        bool match_ilp;
+
         InterleavedFullLifeILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             assert(N % (elements) == 0);
@@ -100,6 +102,10 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             this->total_writes = N * writes_per_element;
         }
         ~InterleavedFullLifeILPContext(){}
+
+        void set_config_bool(bool val) override {
+            match_ilp = val;
+        }
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){

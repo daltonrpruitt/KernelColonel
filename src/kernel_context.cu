@@ -167,6 +167,10 @@ struct KernelCPUContext {
             uninit();            
         }
 
+        virtual void set_config_bool(bool val) {
+            cerr << "set_config_bool() is undefined for this kernel!" << endl;
+        };
+
         virtual void output_config_info() {
             cout << name << endl; 
         }
