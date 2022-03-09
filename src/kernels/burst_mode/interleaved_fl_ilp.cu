@@ -38,12 +38,24 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
     // int block_life = N / gridDim.x / elements; 
     unsigned long long start_idx = blockIdx.x * blockDim.x * elements + threadIdx.x;
     uint cycle_offset = gridDim.x * blockDim.x * elements;
+    uint ILP_loop_offset = blockDim.x * ILP;
 
-    for(int x=0; x < N / gridDim.x / elements; ++x) {
-        for(int y=0; y < elements; ++y) {
-            unsigned long long data_idx =  start_idx + cycle_offset * x + blockDim.x*y;
-            if(data_idx >= N) return;
-            gpu_out[data_idx] = gpu_in[data_idx];
+    vt vals[ILP];
+
+    for(int x=0; x < N / ( gridDim.x * blockDim.x * elements) ; ++x) {
+        for(int y=0; y < elements / ILP; ++y) {
+            unsigned long long ILP_loop_base_idx = start_idx + cycle_offset * x + ILP_loop_offset*y;
+            
+            for(int i=0; i < ILP; ++i){
+                unsigned long long data_idx = ILP_loop_base_idx + blockDim.x * i ;
+                // if(data_idx >= N) continue;
+                vals[i] = gpu_in[data_idx];
+            }
+            
+            for(int i=0; i < ILP; ++i){
+                unsigned long long data_idx = ILP_loop_base_idx + blockDim.x * i ;
+                gpu_out[data_idx] = vals[i];
+            }
         }
     }
 }
