@@ -36,7 +36,9 @@ using std::setw;
 template <typename kernel_ctx_t>
 class MicrobenchmarkDriver {
    private:
+    string output_filename_;
     ofstream output_file;
+    bool output_file_started = false;
     device_context* dev_ctx_;
     vector<kernel_ctx_t*> contexts;
 
@@ -46,7 +48,8 @@ class MicrobenchmarkDriver {
     int kernel_checks = 1;
 
    public:
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) {
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
+        output_filename_(output_filename) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
         dev_ctx_ = dev_ctx;
 
@@ -68,23 +71,6 @@ class MicrobenchmarkDriver {
             }
             contexts.push_back(curr_ctx);
         }
-
-
-        // Guard against overwriting data
-        struct stat output_file_buffer;
-        int i = 0;
-        string original_filename = output_filename;
-        while (stat(output_filename.c_str(), &output_file_buffer) == 0)
-        {
-            cerr << "The file '" << output_filename << "' already exists in the output directory!" << endl;
-            ++i;
-            output_filename = original_filename+"("+to_string(i)+")";
-        }
-
-        // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
-        //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
-        output_file.open(output_filename.c_str());
-        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" << endl;
     }
     ~MicrobenchmarkDriver() {
         for (auto ctx : contexts) {
@@ -106,6 +92,10 @@ class MicrobenchmarkDriver {
         cout << "Beginning checks" << endl;
 #endif
         for (auto ctx : contexts) {
+            if(!ctx->okay) {return false;}
+#ifdef DEBUG
+            ctx->output_config_info();
+#endif
             if(!ctx->init()) {return false;}
             for (int i = 0; i < kernel_checks; ++i) {
                 pass = (pass && ctx->run_and_check());
@@ -129,10 +119,10 @@ class MicrobenchmarkDriver {
             cout << "Beginning actual runs" << endl;
 #endif
         for (auto ctx : contexts) {
+            if(!ctx->okay) {return;}
 #ifdef DEBUG
             ctx->output_config_info();
 #endif
-
             if(!ctx->init()) {return;}
             using timing_precision_t = double;
             vector<timing_precision_t> times;
@@ -192,9 +182,30 @@ class MicrobenchmarkDriver {
         return pass; 
     }
 
+    void start_output_file(){
+        // Guard against overwriting data
+        struct stat output_file_buffer;
+        int i = 0;
+        string original_filename = output_filename_;
+        while (stat(output_filename_.c_str(), &output_file_buffer) == 0)
+        {
+            cerr << "The file '" << output_filename_ << "' already exists in the output directory!" << endl;
+            ++i;
+            output_filename_ = original_filename+"("+to_string(i)+")";
+        }
+
+        // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
+        //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
+        output_file.open(output_filename_.c_str());
+        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" << endl;
+        output_file_started = true;
+
+    }
+
     // output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev" << endl ;
     template<typename T>
     void write_data(kernel_ctx_t* ctx, vector<T> data) {
+        if(!output_file_started) { start_output_file(); }
         stringstream s;
         copy(data.begin(), data.end(), std::ostream_iterator<T>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
         string wo_last_comma = s.str();
