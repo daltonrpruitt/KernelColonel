@@ -164,6 +164,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         void output_config_info() override {
             cout << "InterleavedCopyFullLife with : "
                  << " Elements/cycle=" << elements 
+                 << " ILP=" << ILP 
                  << " Blocks used="<< this->Gsz << endl;
         }
 
