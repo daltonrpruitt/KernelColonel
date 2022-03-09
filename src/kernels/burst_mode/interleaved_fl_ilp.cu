@@ -90,7 +90,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         InterleavedFullLifeILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             assert(N % (elements) == 0);
-            this->name = "InterleavedCopyFullLifeILP"; 
+            this->name = "InterleavedFullLifeILP";
 
             int occupancy_blocks = int(this->get_occupancy() * float(this->dev_ctx->props_.maxThreadsPerMultiProcessor)) / this->Bsz;
             cout << "Occupancy = " << this->get_occupancy() << endl;
