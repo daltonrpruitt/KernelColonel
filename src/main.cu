@@ -210,7 +210,7 @@ int main() {
 #define INTERLEAVED_FL_ILP(E, ILP) { MicrobenchmarkDriver<InterleavedFullLifeILPContext<vt, int, E, ILP>> \
         INTER_FL_ILP_DRIVER(E, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FL_ILP_DRIVER(E, ILP) ) ".csv", &dev_ctx, span_occupancies); \
         INTER_FL_ILP_DRIVER(E, ILP).set_config_bool(match_ilp); \
-        if (!INTER_FL_ILP_DRIVER(E, ILP).check_then_run_kernels()) {return -1;} \
+        if (!INTER_FL_ILP_DRIVER(E, ILP).check_then_run_kernels()) {cout << "Could not run with this configuration!" << endl;} \
         total_runs += INTER_FL_ILP_DRIVER(E, ILP).get_total_runs(); }
     
     bool tmp_span = span_occupancies; 
