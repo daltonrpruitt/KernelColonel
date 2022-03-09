@@ -38,25 +38,35 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
     // int block_life = N / gridDim.x / elements; 
     unsigned long long start_idx = blockIdx.x * blockDim.x * elements + threadIdx.x;
     uint cycle_offset = gridDim.x * blockDim.x * elements;
-    uint ILP_loop_offset = blockDim.x * ILP;
+    // uint ILP_loop_offset = blockDim.x * ILP;
 
     vt vals[ILP];
 
-    for(int x=0; x < N / ( gridDim.x * blockDim.x * elements) ; ++x) {
-        for(int y=0; y < elements / ILP; ++y) {
-            unsigned long long ILP_loop_base_idx = start_idx + cycle_offset * x + ILP_loop_offset*y;
+    for(int i=0; i < N / ( gridDim.x * blockDim.x * ILP) ; ++i) {
+        // uint x = i / elements;
+        // uint y = i % elements;
+
+        // for(int y=0; y < elements / ILP; ++y) {
             
-            for(int i=0; i < ILP; ++i){
-                unsigned long long data_idx = ILP_loop_base_idx + blockDim.x * i ;
+            for(int k=0; k < ILP; ++k){
+                uint x = (i * ILP + k) / elements;
+                uint y = (i * ILP + k) % elements;
+                unsigned long long data_idx = start_idx + cycle_offset * x + blockDim.x * y ;
                 // if(data_idx >= N) continue;
-                vals[i] = gpu_in[data_idx];
+                vals[k] = gpu_in[data_idx];
             }
             
-            for(int i=0; i < ILP; ++i){
-                unsigned long long data_idx = ILP_loop_base_idx + blockDim.x * i ;
-                gpu_out[data_idx] = vals[i];
+            for(int k=0; k < ILP; ++k){
+                uint x = (i * ILP + k) / elements;
+                uint y = (i * ILP + k) % elements;
+                unsigned long long data_idx = start_idx + cycle_offset * x + blockDim.x * y ;
+                gpu_out[data_idx] = vals[k];
+                // if(data_idx >= N) {
+                //     gpu_out[idx] = data_idx;
+                //     // return; 
+                // }                    
             }
-        }
+        // }
     }
 }
 
