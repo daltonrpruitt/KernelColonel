@@ -19,4 +19,6 @@ fi
 
 make
 
-echo "Run './build/debug/ctx_driver' to test"
+echo "Run './build/debug/deviceQuery' to output device properties"
+echo "Run './build/debug/main' to test"
+
