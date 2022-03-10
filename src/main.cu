@@ -13,6 +13,7 @@
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size.cu>
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_general_size_single_element.cu>
+#include <kernels/uncoalesced_cached_access/uncoalesced_reuse_gen_single_ILP.cu>
 #include <kernels/burst_mode/interleaved_copy_full_life.cu>
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
 
@@ -212,8 +213,8 @@ int main() {
         INTER_FL_ILP_DRIVER(E, ILP).set_config_bool(match_ilp); \
         if (!INTER_FL_ILP_DRIVER(E, ILP).check_then_run_kernels()) {cout << "Could not run with this configuration!" << endl;} \
         total_runs += INTER_FL_ILP_DRIVER(E, ILP).get_total_runs(); }
-    
     bool tmp_span = span_occupancies; 
+/*    
     span_occupancies = false;
     bool match_ilp = true;
     INTERLEAVED_FL_ILP(1, 1)
@@ -343,6 +344,100 @@ int main() {
     UNCOAL_REUSE_GENERAL_SINGLE(true, true, 32768)
 
 //*/
+
+#define UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _ ## ILP ## _driver
+
+#define UNCOAL_REUSE_GEN_SINGLE_ILP(B1, B2, X, ILP) { MicrobenchmarkDriver<UncoalescedReuseGenSingleILPContext<vt, int, B1, B2, X, ILP>> \
+      UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).check_then_run_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).get_total_runs(); }
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 1)
+///*
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 1)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 1)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 1)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 2)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 2)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 2)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 2)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 8)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 8)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 8)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 8)
+    
+
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 1)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 1)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 1)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 1)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 2)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 2)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 2)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 2)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 8)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 8)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 8)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 8)
+
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 2048, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 2048, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  2048, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  2048, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 4096, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 4096, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  4096, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  4096, 4)
+
+    // 8192 above
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 16384, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 16384, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  16384, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  16384, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  32768, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  32768, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 65536, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 65536, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  65536, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  65536, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 131072, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 131072, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  131072, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  131072, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 262144, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 262144, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  262144, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  262144, 4)
+// */
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);

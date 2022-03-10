@@ -1,13 +1,13 @@
 #pragma once
 /**
- * @file uncoalesced_reuse_general_size_single_element.cu
+ * @file uncoalesced_reuse_gen_single_ILP.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from UncoalescedReuseGeneralContext; testing for coalescing's impact on cache 
+ * @brief Based on UncoalescedReuseGeneralSingleElementContext; 
+ *      testing for cache reducing impact of noncoalesced accesses  
  * @version 0.1
- * @date 2022-03-02
+ * @date 2022-03-10
  * 
- * Meant to only test single load performance.
- * Performance is still in the only used loads; this may need to change?
+ * Adding ILP (instruction-level parallelism) to uncoalesced reuse kernel. 
  * 
  */
 
@@ -26,44 +26,83 @@ using std::endl;
 using std::vector;
 
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
+#define SEPARATE_IDX_COMPUTATIONS_FROM_READS
+
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __forceinline__ __host__ __device__        
-void uncoalesced_reuse_general_single_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+    // idx = blockIdx.x * blockDim.x + threadIdx.x; 
 
     uint Sz = shuffle_size; 
-    uint shuffle_b_idx = idx / Sz;
-    uint shuffle_t_idx = idx % Sz;
-
     uint num_warps = shuffle_size / 32;
-    
-    // Preload data
-    if constexpr(preload_for_reuse) {
-        vt tmp = gpu_in[idx];
-        if(tmp < 0) return; // all values should be > 0; this is just to ensure this write is not removed
+
+    uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);  
+
+    for(int i=0; i < ILP; ++i) {
+
+        // Preload data
+        if constexpr(preload_for_reuse) {
+            vt tmp = gpu_in[local_start_idx + i*blockDim.x];
+            if(tmp < 0) return; // all values should be > 0; this is just to ensure this write is not removed
+        }
+
     }
 
-    int start_idx = shuffle_b_idx * Sz;
+#ifdef SEPARATE_IDX_COMPUTATIONS_FROM_READS
+    unsigned long long access_idxs[ILP];
+    for(int i=0; i < ILP; ++i) {
+        unsigned long long local_idx = local_start_idx + i*blockDim.x;
+        uint shuffle_b_idx = local_idx / Sz;
+        uint shuffle_t_idx = local_idx % Sz;
+        uint start_idx = shuffle_b_idx * Sz;
 
-    unsigned long long access_idx;
-    if constexpr(!avoid_bank_conflicts) {
-        access_idx = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
-    } else {
-        access_idx = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
+
+        if constexpr(!avoid_bank_conflicts) {
+            access_idxs[i] = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
+        } else {
+            access_idxs[i] = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
+        }
+    }
+#endif
+
+    vt data_vals[ILP];
+
+    for(int i=0; i < ILP; ++i) {
+        
+#ifdef SEPARATE_IDX_COMPUTATIONS_FROM_READS
+        data_vals[i] = gpu_in[access_idxs[i]];
+#else
+        unsigned long long local_idx = local_start_idx + i*blockDim.x;
+        uint shuffle_b_idx = local_idx / Sz;
+        uint shuffle_t_idx = local_idx % Sz;
+        unsigned long long access_idx;
+        uint start_idx = shuffle_b_idx * Sz;
+        unsigned long long access_idx; 
+        if constexpr(!avoid_bank_conflicts) {
+            access_idx = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
+        } else {
+            access_idx = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
+        }
+        data_vals[i] = gpu_in[access_idx];
+#endif
+
     }
 
-    gpu_out[idx] = gpu_in[access_idx];
+    for(int i=0; i < ILP; ++i) {
+        gpu_out[local_start_idx + i*blockDim.x] = data_vals[i];
+    }
 }
 
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __global__        
-void kernel_for_regs_reuse_single(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void kernel_for_regs_reuse_gen_single_ilp(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        uncoalesced_reuse_general_single_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
+        uncoalesced_reuse_gen_single_ilp_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size, ILP>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
-struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
+struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         unsigned long long N = super::N;
@@ -86,13 +125,14 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                uncoalesced_reuse_general_single_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
+                uncoalesced_reuse_gen_single_ilp_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size, ILP>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
-        UncoalescedReuseGeneralSingleElementContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        UncoalescedReuseGenSingleILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
-            this->name = "UncoalescedReuseGeneralSingleElement"; 
+            this->name = "UncoalescedReuseGenSingleILP"; 
+            this->Gsz /= ILP;
             assert(this->Gsz > 0);
             // if constexpr(preload_for_reuse) {
             //     data_reads_per_element += 1;
@@ -102,7 +142,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~UncoalescedReuseGeneralSingleElementContext(){}
+        ~UncoalescedReuseGenSingleILPContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -124,7 +164,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
                  <<" preloading?=" << preload_for_reuse 
                  << " avoiding bank conflicts?=" << avoid_bank_conflicts 
                  << " shuffle size=" << shuffle_size 
-                 << endl;
+                 << " ILP=" << ILP << endl;
         }
 
         float local_execute() override {
@@ -172,7 +212,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_reuse_single<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_reuse_gen_single_ilp<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
