@@ -122,7 +122,9 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
         void output_config_info() override {
             cout << this->name << " with : "
                  <<" preloading?=" << preload_for_reuse 
-                 << " avoiding bank conflicts?=" << avoid_bank_conflicts << endl;
+                 << " avoiding bank conflicts?=" << avoid_bank_conflicts 
+                 << " shuffle size=" << shuffle_size 
+                 << endl;
         }
 
         float local_execute() override {
