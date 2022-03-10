@@ -77,11 +77,13 @@ void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
         uint shuffle_t_idx = local_idx % Sz;
         unsigned long long access_idx;
         uint start_idx = shuffle_b_idx * Sz;
+        unsigned long long access_idx; 
         if constexpr(!avoid_bank_conflicts) {
-            data_vals[i] = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
+            access_idx = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
         } else {
-            data_vals[i] = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
+            access_idx = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
         }
+        data_vals[i] = gpu_in[access_idx];
 #endif
 
     }
