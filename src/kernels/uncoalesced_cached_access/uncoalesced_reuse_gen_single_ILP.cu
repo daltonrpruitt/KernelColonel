@@ -26,8 +26,9 @@ using std::endl;
 using std::vector;
 
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __forceinline__ __host__ __device__        
+void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 void uncoalesced_reuse_general_single_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     uint Sz = shuffle_size; 
@@ -55,15 +56,15 @@ void uncoalesced_reuse_general_single_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
 }
 
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __global__        
-void kernel_for_regs_reuse_single(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void kernel_for_regs_reuse_gen_single_ilp(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
-        uncoalesced_reuse_general_single_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
+        uncoalesced_reuse_gen_single_ilp_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size, ILP>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
-struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
+struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         unsigned long long N = super::N;
@@ -86,13 +87,13 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                uncoalesced_reuse_general_single_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
+                uncoalesced_reuse_gen_single_ilp_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size, ILP>(idx, gpu_in, gpu_out, N);
             }
         } ctx ;
 
-        UncoalescedReuseGeneralSingleElementContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        UncoalescedReuseGenSingleILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
-            this->name = "UncoalescedReuseGeneralSingleElement"; 
+            this->name = "UncoalescedReuseGenSingleILP"; 
             assert(this->Gsz > 0);
             // if constexpr(preload_for_reuse) {
             //     data_reads_per_element += 1;
@@ -102,7 +103,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~UncoalescedReuseGeneralSingleElementContext(){}
+        ~UncoalescedReuseGenSingleILPContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -170,7 +171,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_reuse_single<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_reuse_gen_single_ilp<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
