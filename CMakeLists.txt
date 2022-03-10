@@ -11,6 +11,10 @@ include(FindCUDAToolkit)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 # include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
 
+include_directories(${CMAKE_SOURCE_DIR}/src/utilities)
+add_executable(deviceQuery src/utilities/deviceQuery.cpp)
+set_property(TARGET deviceQuery PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
+target_link_libraries(deviceQuery -lcudadevrt -lcudart_static -lrt -lpthread -ldl) # why I have to manually link these, I don't know...
 
 # add_executable(driver src/driver.cu)
 add_executable(main src/main.cu)
