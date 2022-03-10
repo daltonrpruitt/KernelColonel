@@ -11,6 +11,9 @@
 /* This sample queries the properties of the CUDA devices present in the system
  * via CUDA Runtime API. */
 
+/*  This software contains source code provided by NVIDIA
+ *  Corporation.*/
+
 // std::system includes
 
 #include <cuda_runtime.h>
@@ -174,7 +177,11 @@ int main(int argc, char **argv) {
            deviceProp.sharedMemPerBlock);
     printf("  Total shared memory per multiprocessor:        %zu bytes\n",
            deviceProp.sharedMemPerMultiprocessor);
+    printf("  Shared memory reserved by cuda per block:      %zu bytes\n",
+           deviceProp.reservedSharedMemPerBlock);
     printf("  Total number of registers available per block: %d\n",
+           deviceProp.regsPerMultiprocessor);
+    printf("  Total number of registers avail per mutiproc.: %d\n",
            deviceProp.regsPerBlock);
     printf("  Warp size:                                     %d\n",
            deviceProp.warpSize);
@@ -221,6 +228,20 @@ int main(int argc, char **argv) {
            deviceProp.cooperativeLaunch ? "Yes" : "No");
     printf("  Supports MultiDevice Co-op Kernel Launch:      %s\n",
            deviceProp.cooperativeMultiDeviceLaunch ? "Yes" : "No");
+    
+    printf("\n");
+    printf("  Supports caching globals in L1:                %s\n",
+           deviceProp.globalL1CacheSupported ? "Yes" : "No");
+    printf("  Device is multi-GPU board:                     %s\n",
+           deviceProp.isMultiGpuBoard ? "Yes" : "No");
+    printf("  Supports caching locals in L1:                 %s\n",
+            deviceProp.localL1CacheSupported ? "Yes" : "No");
+    printf("\n");
+    printf(" Ratio of single/double precision  performance:  %d\n",
+            deviceProp.singleToDoublePrecisionPerfRatio);
+    printf("     (in floating-point operations per second)\n");
+    printf("\n");
+
     printf("  Device PCI Domain ID / Bus ID / location ID:   %d / %d / %d\n",
            deviceProp.pciDomainID, deviceProp.pciBusID, deviceProp.pciDeviceID);
 
