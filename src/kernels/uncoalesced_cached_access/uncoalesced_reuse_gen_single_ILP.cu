@@ -29,7 +29,7 @@ using std::vector;
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __forceinline__ __host__ __device__        
 void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
-void uncoalesced_reuse_general_single_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+    // idx = blockIdx.x * blockDim.x + threadIdx.x; 
 
     uint Sz = shuffle_size; 
     uint shuffle_b_idx = idx / Sz;
