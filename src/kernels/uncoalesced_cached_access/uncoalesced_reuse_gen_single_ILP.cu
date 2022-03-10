@@ -1,13 +1,13 @@
 #pragma once
 /**
- * @file uncoalesced_reuse_general_size_single_element.cu
+ * @file uncoalesced_reuse_gen_single_ILP.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from UncoalescedReuseGeneralContext; testing for coalescing's impact on cache 
+ * @brief Based on UncoalescedReuseGeneralSingleElementContext; 
+ *      testing for cache reducing impact of noncoalesced accesses  
  * @version 0.1
- * @date 2022-03-02
+ * @date 2022-03-10
  * 
- * Meant to only test single load performance.
- * Performance is still in the only used loads; this may need to change?
+ * Adding ILP (instruction-level parallelism) to uncoalesced reuse kernel. 
  * 
  */
 
