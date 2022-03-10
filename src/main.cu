@@ -212,8 +212,8 @@ int main() {
         INTER_FL_ILP_DRIVER(E, ILP).set_config_bool(match_ilp); \
         if (!INTER_FL_ILP_DRIVER(E, ILP).check_then_run_kernels()) {cout << "Could not run with this configuration!" << endl;} \
         total_runs += INTER_FL_ILP_DRIVER(E, ILP).get_total_runs(); }
-    
     bool tmp_span = span_occupancies; 
+/*    
     span_occupancies = false;
     bool match_ilp = true;
     INTERLEAVED_FL_ILP(1, 1)
