@@ -94,6 +94,7 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
         UncoalescedReuseGenSingleILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "UncoalescedReuseGenSingleILP"; 
+            this->Gsz /= ILP;
             assert(this->Gsz > 0);
             // if constexpr(preload_for_reuse) {
             //     data_reads_per_element += 1;
