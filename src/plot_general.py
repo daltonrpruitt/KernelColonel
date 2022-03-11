@@ -22,6 +22,7 @@ import re
 from icecream import ic
 
 from kernel_postprocessing_info import *
+from collate_csvs import collate_csv
 
 debug = True 
 if not debug: 
@@ -61,3 +62,11 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
     for element in itertools.product(*uniques):
         ic(element)
 
+for p in plot_configs:
+    kernel = p[0]
+    collated_file = collate_csv(base_folder, kernel)
+    if collated_file is None:
+        print("Could not collate", kernel, "in" ,base_folder, "!")
+        exit(1)
+    data = read_csv(collated_file)
+    plot_general(data, p[0], p[1], p[2], p[3], p[4], p[5], p[6])
