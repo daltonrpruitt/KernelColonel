@@ -15,7 +15,7 @@
             "name": "Python: Plotting",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/plot_output.py",
+            "program": "${workspaceFolder}/src/postprocessing/plot_output.py",
             "console": "integratedTerminal", 
             "cwd": "${workspaceFolder}",
             "args": [
@@ -26,7 +26,7 @@
             "name": "Python: Plotting General",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/plot_general.py",
+            "program": "${workspaceFolder}/src/postprocessing/plot_general.py",
             "console": "integratedTerminal", 
             "cwd": "${workspaceFolder}",
             "args": [
