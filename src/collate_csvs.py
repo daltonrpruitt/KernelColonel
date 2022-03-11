@@ -18,13 +18,21 @@ def collate_csv(base_folder, kernel):
 
     configs = kernel_extra_configs[kernel]
 
+    # First pass for collated files
     for filename in os.listdir(base_folder):
         if ".csv" not in filename: continue
         kernel_type = get_specific_kernel_type(filename)
         if kernel_type != kernel: continue
         if "collated" in filename:
             print("Collated file for", kernel,"already exists in",base_folder,"!")
-            return True
+            collated = os.path.join(base_folder, filename)
+            return collated
+
+    for filename in os.listdir(base_folder):
+        if ".csv" not in filename: continue
+        kernel_type = get_specific_kernel_type(filename)
+        if kernel_type != kernel: continue
+        if "collated" in filename: continue
         post_fix = "_driver.csv"
         data = pd.read_csv(base_folder + "/" + filename,header=0)
     
@@ -51,8 +59,9 @@ def collate_csv(base_folder, kernel):
         main_df = main_df.append(data)
         
     # print(main_df)
-    main_df.to_csv(os.path.join(base_folder, kernel+"_collated.csv"))
-    return True
+    new_filename = os.path.join(base_folder, kernel+"_collated.csv")
+    main_df.to_csv(new_filename, index=False)
+    return new_filename
 
 def main():
     base_folder = sys.argv[-1]
