@@ -8,6 +8,18 @@ current.
 
 '''
 
+debug = False
+
+try:
+    from icecream import ic
+    if not debug: 
+        ic.disable()
+except Exception as e: 
+    print("Could not import 'icecream':", e)
+    def ic(*args, **keyword_args):
+        if debug:
+            print(**locals())
+
 kernel_extra_configs = {
     "copy": [""],  "direct": [""], "indirect": [""], 
     "overlapped": ["degree"], 
