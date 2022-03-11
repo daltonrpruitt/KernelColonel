@@ -63,3 +63,4 @@ def get_specific_kernel_type(full_string):
         if name in full_string:
             ic(full_string, name)
             return name
+    return None
