@@ -50,6 +50,15 @@ plot_configs = [
             kxc[uncoal][:-1], kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."]
 ]
 
+def get_config_combos(d, fields):
+    uniques = []
+    for f in fields: 
+        uniques.append(data[f].unique())
+    product = itertools.product(*uniques)
+    ic(product)
+    return product
+
+
 def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
                 field_for_multiplotting, filename_base, plot_title_base):
     data = all_data.loc[all_data["kernel_type"] == kernel_class_names[kernel_name]]
@@ -58,14 +67,14 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         print(kernel_name, "does not have enough data to make useful plots!")
         return
 
+    unique_combos = get_config_combos(data, fields_to_keep_constant)
+    if len(unique_combos) > 32: 
+        print("Warning: Plotting", kernel_name, "with current configuration is about to generate", len(unique_combos), "unique plots...")
+        print("Continue?...(y/n)", end="")
+        if input().lower() != "y": 
+            print("Stopping current plotting...")
+            return
 
-    uniques = []
-    for f in fields_to_keep_constant: 
-        uniques.append(data[f].unique())
-    product = itertools.product(*uniques)
-    
-    for element in product:
-        ic(element)
 
 for p in plot_configs:
     kernel = p[0]
