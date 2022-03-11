@@ -35,6 +35,11 @@ if "output" not in os.path.abspath(base_folder):
     print("Error: Base directory to process must be within the 'output' directory!")
     exit(-1)
 
+images_dir = os.path.join(base_folder, "images")
+if not os.path.exists(images_dir):
+    os.makedirs(images_dir)
+
+
 # Field names for reference
 # kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth
 
