@@ -32,14 +32,14 @@ kernel_config_info = [
                                                 "preload", "avoid_bank_conflicts", "shuffle_size", "ILP"]
 ]
 
-kernel_type_names = {k[0]: k[1] for k in kernel_config_info}
+kernel_class_names = {k[0]: k[1] for k in kernel_config_info}
 kernel_extra_configs = {k[0]: "" for k in kernel_config_info}
 for i, k in enumerate(kernel_extra_configs.keys()):
     assert k == kernel_config_info[i][0]
     extras = kernel_config_info[i][2:]
     if len(extras) > 0:
         kernel_extra_configs[k] = extras
-ic(kernel_type_names)
+ic(kernel_class_names)
 ic(kernel_extra_configs)
 
 
@@ -54,7 +54,7 @@ def sort_dict(d):
         sorted_[k] = d[k]
     return sorted_
 
-sorted_kernel_type_names = sort_dict(kernel_type_names)
+sorted_kernel_type_names = sort_dict(kernel_class_names)
 
 def get_specific_kernel_type(full_string):
     for name in sorted_kernel_type_names.keys():
