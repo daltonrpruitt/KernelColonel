@@ -18,3 +18,8 @@ extra*
 kernel_types.h
 
 output*/
+
+# misc
+Average*
+cubin*
+*.sass
