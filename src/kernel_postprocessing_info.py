@@ -59,5 +59,5 @@ sorted_kernel_type_names = sort_dict(kernel_type_names)
 def get_specific_kernel_type(full_string):
     for name in sorted_kernel_type_names.keys():
         if name in full_string:
-            cur_match = name
             ic(full_string, name)
+            return name
