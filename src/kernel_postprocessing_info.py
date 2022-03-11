@@ -54,12 +54,10 @@ def sort_dict(d):
     for k in sorted(d, key=len, reverse=True):
         sorted_[k] = d[k]
 
+sorted_kernel_type_names = sort_dict(kernel_type_names)
 
 def get_specific_kernel_type(full_string):
-    # cur_match = ""
-    sorted_names = sort_dict(kernel_type_names)
-
-    for name in sorted_names.keys():
+    for name in sorted_kernel_type_names.keys():
         if name in full_string:
             cur_match = name
             ic(full_string, name)
