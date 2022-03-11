@@ -23,6 +23,17 @@
             ]
         },
         {
+            "name": "Python: Plotting General",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/plot_general.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "output/Bayonet/2022-03-10_12-20-04"
+            ]
+        },
+        {
             "name": "Python: Collating CSVs",
             "type": "python",
             "request": "launch",
