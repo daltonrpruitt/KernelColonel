@@ -19,6 +19,9 @@ kernel_types.h
 
 output*/
 
+# Python cache
+*.pyc
+
 # misc
 Average*
 cubin*
