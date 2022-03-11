@@ -52,14 +52,14 @@ plot_configs = [
 
 def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
                 field_for_multiplotting, filename_base, plot_title_base):
-
-    data = all_data[all_data["kernel_type"] == kernel_name]
+    data = all_data.loc[all_data["kernel_type"] == kernel_type_names[kernel_name]]
 
     uniques = []
-    for f in fields_to_keep_constant:
-        uniques.append(data[f].unique().sort())
+    for f in fields_to_keep_constant: 
+        uniques.append(data[f].unique())
+    product = itertools.product(*uniques)
     
-    for element in itertools.product(*uniques):
+    for element in product:
         ic(element)
 
 for p in plot_configs:
