@@ -52,7 +52,12 @@ plot_configs = [
 
 def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
                 field_for_multiplotting, filename_base, plot_title_base):
-    data = all_data.loc[all_data["kernel_type"] == kernel_type_names[kernel_name]]
+    data = all_data.loc[all_data["kernel_type"] == kernel_class_names[kernel_name]]
+    
+    if len(data) < 5:
+        print(kernel_name, "does not have enough data to make useful plots!")
+        return
+
 
     uniques = []
     for f in fields_to_keep_constant: 
