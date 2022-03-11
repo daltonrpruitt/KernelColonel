@@ -8,17 +8,14 @@ current.
 
 '''
 
-debug = False
+debug = True
 
 try:
     from icecream import ic
-    if not debug: 
-        ic.disable()
 except Exception as e: 
     print("Could not import 'icecream':", e)
     def ic(*args, **keyword_args):
-        if debug:
-            print(**locals())
+        print(**locals())
 
 kernel_config_info = [
     ["copy",                                "ArrayCopy"],  
@@ -61,6 +58,6 @@ sorted_kernel_type_names = sort_dict(kernel_type_names)
 def get_specific_kernel_type(full_string):
     for name in sorted_kernel_type_names.keys():
         if name in full_string:
-            ic(full_string, name)
+            if debug: ic(full_string, name)
             return name
     return None
