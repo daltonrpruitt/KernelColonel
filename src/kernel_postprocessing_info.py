@@ -20,29 +20,31 @@ except Exception as e:
         if debug:
             print(**locals())
 
-kernel_extra_configs = {
-    "copy": [""],  "direct": [""], "indirect": [""], 
-    "overlapped": ["degree"], 
-    "computational_intensity": ["comp-intens"], 
-    "interleaved_copy": ["block_life","elements"],
-    "interleaved_copy_full_life": ["elements"],
-    "interleaved_fl_ilp": ["elements", "ILP"],
-    "uncoalesced_reuse_general_single": ["preload", "avoid_bank_conflicts", "shuffle_size"],
-    "uncoalesced_reuse_gen_single_ilp": ["preload", "avoid_bank_conflicts", "shuffle_size", "ILP"]
-    }
+kernel_config_info = [
+    ["copy",                                "ArrayCopy"],  
+    ["direct",                              "SimpleIndirectionTest_Direct"], 
+    ["indirect",                            "SimpleIndirectionTest_Indirect"], 
+    # ["overlapped",                          "OverlappedIdxDataAccessKernel", "degree"], 
+    # ["computational_intensity",             "ComputationalIntensity", "comp-intens"], 
+    # ]"interleaved_copy",                    "InterleavedCopy", "block_life","elements"],
+    # ]"interleaved_copy_full_life",          "InterleavedCopyFullLife", "elements"],
+    ["interleaved_fl_ilp",                  "InterleavedFullLifeILP", "elements", "ILP"],
+    ["uncoalesced_reuse_general_single",    "UncoalescedReuseGeneralSingleElement", 
+                                                "preload", "avoid_bank_conflicts", "shuffle_size"],
+    ["uncoalesced_reuse_gen_single_ilp",    "UncoalescedReuseGenSingleILP", 
+                                                "preload", "avoid_bank_conflicts", "shuffle_size", "ILP"]
+]
 
-kernel_type_names = {
-    "copy": "ArrayCopy",  
-    "direct": "SimpleIndirectionTest_Direct", 
-    "indirect":"SimpleIndirectionTest_Indirect", 
-    "overlapped": "OverlappedIdxDataAccessKernel", 
-    "computational_intensity": "ComputationalIntensity", 
-    "interleaved_copy": "InterleavedCopy",
-    "interleaved_copy_full_life": "InterleavedCopyFullLife",
-    "interleaved_fl_ilp": "InterleavedFullLifeILP",
-    "uncoalesced_reuse_general_single": "UncoalescedReuseGeneralSingleElement",
-    "uncoalesced_reuse_gen_single_ilp": "UncoalescedReuseGenSingleILP"
-    }
+kernel_type_names = {k[0]: k[1] for k in kernel_config_info}
+kernel_extra_configs = {k[0]: "" for k in kernel_config_info}
+for i, k in enumerate(kernel_extra_configs.keys()):
+    assert k == kernel_config_info[i][0]
+    extras = kernel_config_info[i][2:]
+    if len(extras) > 0:
+        kernel_extra_configs[k] = extras
+ic(kernel_type_names)
+ic(kernel_extra_configs)
+
 
 data_field_plot_strings = {
     "occupancy": "Occup",
