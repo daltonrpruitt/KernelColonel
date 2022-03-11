@@ -34,3 +34,21 @@ if "output" not in os.path.abspath(base_folder):
     print("Error: Base directory to process must be within the 'output' directory!")
     exit(-1)
 
+# Field names for reference
+# kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth
+
+date_time_str = base_folder[base_folder.find("2022"):]
+ic(date_time_str)
+
+def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
+                field_for_multiplotting, filename_base, plot_title_base):
+
+    data = all_data[all_data["kernel_type"] == kernel_name]
+
+    uniques = []
+    for f in fields_to_keep_constant:
+        uniques.append(data[f].unique().sort())
+    
+    for element in itertools.product(*uniques):
+        ic(element)
+
