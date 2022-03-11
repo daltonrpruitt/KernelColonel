@@ -57,7 +57,11 @@ def collate_csv(base_folder, kernel):
                 data[cfg] = val
             # kernel_and_configs = kernel_and_configs[:-int(np.log10(value))-2]
         main_df = main_df.append(data)
-        
+
+    if(len(main_df) == 0):
+        print("Could not find any data for ", kernel,"!", sep="")
+        return ""
+
     # print(main_df)
     new_filename = os.path.join(base_folder, kernel+"_collated.csv")
     main_df.to_csv(new_filename, index=False)
