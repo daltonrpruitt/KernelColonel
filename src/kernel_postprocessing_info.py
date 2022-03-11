@@ -52,6 +52,7 @@ def sort_dict(d):
     sorted_ = {}
     for k in sorted(d, key=len, reverse=True):
         sorted_[k] = d[k]
+    return sorted_
 
 sorted_kernel_type_names = sort_dict(kernel_type_names)
 
