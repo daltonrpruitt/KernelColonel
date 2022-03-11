@@ -9,28 +9,7 @@ from pandas.io.parsers import read_csv
 import re
 # from icecream import ic
 
-kernel_extra_configs = {
-    "copy": [""],  "direct": [""], "indirect": [""], 
-    "overlapped": ["degree"], 
-    "computational_intensity": ["comp-intens"], 
-    "interleaved_copy": ["block_life","elements"],
-    "interleaved_copy_full_life": ["elements"],
-    "uncoalesced_reuse_general_single": ["preload", "avoid_bank_conflicts", "shuffle_size"]
-    }
-
-kernel_type_names = {
-    "copy": "ArrayCopy",  
-    "direct": "SimpleIndirectionTest_Direct", 
-    "indirect":"SimpleIndirectionTest_Indirect", 
-    "overlapped": "OverlappedIdxDataAccessKernel", 
-    "computational_intensity": "ComputationalIntensity", 
-    "interleaved_copy": "InterleavedCopy",
-    "interleaved_copy_full_life": "InterleavedCopyFullLife",
-    "uncoalesced_reuse_general_single": "UncoalescedReuseGeneralSingleElement"
-    }
-
-
-
+from kernel_postprocessing_info import *
 
 
 def collate_csv(base_folder, kernel):
