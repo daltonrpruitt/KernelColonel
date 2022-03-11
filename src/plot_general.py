@@ -40,6 +40,15 @@ if "output" not in os.path.abspath(base_folder):
 date_time_str = base_folder[base_folder.find("2022"):]
 ic(date_time_str)
 
+kxc = kernel_extra_configs
+
+uncoal = "uncoalesced_reuse_gen_single_ilp"
+
+plot_configs = [
+    ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
+            kxc[uncoal][:-1], kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."]
+]
+
 def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
                 field_for_multiplotting, filename_base, plot_title_base):
 
