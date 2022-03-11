@@ -88,7 +88,7 @@ def check_data(data):
     
 
 def process_comp_intens(df):
-    kernel_name = kernel_type_names["computational_intensity"]
+    kernel_name = kernel_class_names["computational_intensity"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["computational_intensity"]
     
@@ -109,7 +109,7 @@ def process_comp_intens(df):
         plt.savefig(images_dir+"/"+kernel_name+"_"+config_name+"-"+str(int(intens))+".png")
 
 def process_overlapped_access(df):
-    kernel_name = kernel_type_names["overlapped"]
+    kernel_name = kernel_class_names["overlapped"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["overlapped"]
 
@@ -145,7 +145,7 @@ def process_overlapped_access(df):
     plt.savefig(images_dir+"/"+kernel_name+"_combined.png")
 
 def process_interleaved_kernel(df):
-    kernel_name = kernel_type_names["interleaved"]
+    kernel_name = kernel_class_names["interleaved"]
     data = df[df["kernel_type"]==kernel_name]
     config_names = kernel_extra_configs["interleaved"]
 
