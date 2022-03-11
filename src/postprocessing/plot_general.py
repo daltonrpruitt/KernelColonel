@@ -60,8 +60,9 @@ def get_config_combos(d, fields):
     for f in fields: 
         uniques.append(data[f].unique())
     product = itertools.product(*uniques)
-    ic(product)
-    return product
+    product_list = [i for i in product]
+    ic(product_list)
+    return product_list
 
 
 def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
