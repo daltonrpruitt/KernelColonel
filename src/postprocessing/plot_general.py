@@ -42,6 +42,20 @@ if not os.path.exists(images_dir):
 
 # Field names for reference
 # kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth
+field_strings = {
+    "tpb": "Threads/Block",
+    "occupancy": "Occupancy Fraction",
+    "fraction_of_max_bandwidth": "Bandwidth Fraction",
+    "min": "Min Exec Time (ms)",
+    "throughput": "Bandwidth (GB/s)"
+}
+
+field_bounds = {
+    "occupancy": [0.0, 1.1], 
+    "fraction_of_max_bandwidth": [0.0, 1.1], 
+    # "min": [0, -1],
+    # "throughput": [0, -1]
+}
 
 date_time_str = base_folder[base_folder.find("2022"):]
 ic(date_time_str)
