@@ -72,9 +72,22 @@ kxc = kernel_extra_configs
 
 uncoal = "uncoalesced_reuse_gen_single_ilp"
 
+# Reference for inputs...
+# all_data, kernel_name, x_field, y_field, 
+#   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
 plot_configs = [
-    ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
-            kxc[uncoal][:-1], kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."]
+    # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
+    #     ["preload", "avoid_bank_conflicts", "ILP"], "shuffle_size", kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth",
+    #         ["shuffle_size","ILP"], ["preload", "avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    # ["interleaved_fl_ilp", "occupancy", "fraction_of_max_bandwidth",
+    #         "elements", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    # ["interleaved_fl_ilp", "occupancy", "fraction_of_max_bandwidth",
+    #         "ILP", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    ["interleaved_fl_ilp", "ILP", "fraction_of_max_bandwidth",
+            "kernel_type", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    ["interleaved_fl_ilp", "elements", "fraction_of_max_bandwidth",
+            "kernel_type", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
 ]
 
 def get_config_combos(d, fields):
