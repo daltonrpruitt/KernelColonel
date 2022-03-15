@@ -56,7 +56,9 @@ field_strings = {
     "occupancy": "Occupancy Fraction",
     "fraction_of_max_bandwidth": "Bandwidth Fraction",
     "min": "Min Exec Time (ms)",
-    "throughput": "Bandwidth (GB/s)"
+    "throughput": "Bandwidth (GB/s)",
+    "avoid_bank_conflicts": "avd bnk conf",
+    "shuffle_size": "Shuff Sz"
 }
 
 field_bounds = {
