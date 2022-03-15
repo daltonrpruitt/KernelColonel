@@ -22,6 +22,7 @@ import re
 from icecream import ic
 
 from kernel_postprocessing_info import *
+from node_postprocessing_info import *
 from collate_csvs import collate_csv
 
 debug = True 
@@ -41,6 +42,11 @@ if not os.path.exists(images_dir):
 
 date_time_str = base_folder[base_folder.find("2022"):]
 ic(date_time_str)
+
+node_start_idx = base_folder.find("output")+len("output/")
+node_str = base_folder[node_start_idx:node_start_idx+base_folder[node_start_idx:].find(os.path.sep)]
+architecture_str = node_gpu_info[node_str]
+ic(architecture_str)
 
 
 # Field names for reference
