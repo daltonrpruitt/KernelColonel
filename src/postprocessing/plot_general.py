@@ -39,6 +39,9 @@ images_dir = os.path.join(base_folder, "images")
 if not os.path.exists(images_dir):
     os.makedirs(images_dir)
 
+date_time_str = base_folder[base_folder.find("2022"):]
+ic(date_time_str)
+
 
 # Field names for reference
 # kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth
@@ -56,9 +59,6 @@ field_bounds = {
     # "min": [0, -1],
     # "throughput": [0, -1]
 }
-
-date_time_str = base_folder[base_folder.find("2022"):]
-ic(date_time_str)
 
 kxc = kernel_extra_configs
 
