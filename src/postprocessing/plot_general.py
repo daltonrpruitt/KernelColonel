@@ -217,5 +217,8 @@ for p in plot_configs:
     if collated_file is None:
         print("Could not collate", kernel, "in" ,base_folder, "!")
         exit(1)
+    elif collated_file == "":
+        print(f"No data for {kernel}!")
+        continue
     data = read_csv(collated_file)
     plot_general(data, p[0], p[1], p[2], p[3], p[4], p[5], p[6])
