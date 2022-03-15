@@ -101,14 +101,24 @@ def get_config_combos(d, fields):
 
 
 def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constant, 
-                field_for_multiplotting, filename_base, plot_title_base):
+                fields_for_multiplotting, filename_base, plot_title_base):
     data = all_data.loc[all_data["kernel_type"] == kernel_class_names[kernel_name]]
     
+    if type(fields_to_keep_constant) is str: fields_to_keep_constant = [fields_to_keep_constant] 
+    if type(fields_for_multiplotting) is str: fields_for_multiplotting = [fields_for_multiplotting] 
+
     if len(data) < 5:
         print(kernel_name, "does not have enough data to make useful plots!")
         return
 
+    unique_combos = None
+    # if type(fields_to_keep_constant) is list: 
     unique_combos = get_config_combos(data, fields_to_keep_constant)
+    # elif type(fields_to_keep_constant) is str:
+    #     unique_combos = data[fields_to_keep_constant].unique()
+    # else:                                
+    #     raise TypeError("Invalid type for fields to keep constant: "+str(type(fields_to_keep_constant)))
+
     if len(unique_combos) > 32: 
         print("Warning: Plotting", kernel_name, "with current configuration is about to generate", len(unique_combos), "unique plots...")
         print("Continue?...(y/n)", end="")
@@ -116,9 +126,10 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
             print("Stopping current plotting...")
             return
 
-    multi_plot_field_uniques = data[field_for_multiplotting].unique()
+    kernel_class_name = kernel_class_names[kernel_name]
+    config_names = kernel_extra_configs[kernel_name]
 
-    colors = plt.cm.rainbow(np.linspace(0, 1, len(multi_plot_field_uniques)))
+
 
     for i, constants in enumerate(unique_combos):
         title_configs = ""
@@ -126,39 +137,74 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         for j in range(len(fields_to_keep_constant)):
             title_configs += fields_to_keep_constant[j]+"="+str(constants[j]) + (", " if j < len(fields_to_keep_constant) - 1 else "")
             filename_configs += fields_to_keep_constant[j]+"-"+str(constants[j]) + ("_" if j < len(fields_to_keep_constant) - 1 else "")
-        filename = filename_base + "_" + filename_configs
+        filename = f"{architecture_str}_{filename_base}_{filename_configs}"
         ic(title_configs)
-
+        
         plt.close("all")
         
         # Filter data to only that matching the corrent constants
         multi_local_data = data.copy(deep=False)
         for j in range(len(fields_to_keep_constant)):
             multi_local_data = multi_local_data.loc[multi_local_data[fields_to_keep_constant[j]] == constants[j]]
-    
+        if len(multi_local_data) == 0: 
+            print(f"Configuration of {title_configs} does not have enough data to plot!")
+            continue
+        elif len(multi_local_data) <= 4: 
+            print(f"Configuration of {title_configs} only has {len(multi_local_data)} values to plot!")
+            print("Plot anyway? (y/n)")
+            inpt = input()
+            if inpt.lower() != "y": continue
+
+
+        multi_plot_field_unique_combos = None
+        
+        # if type(fields_for_multiplotting) is list:
+        multi_plot_field_unique_combos = get_config_combos(multi_local_data, fields_for_multiplotting)
+        # elif type(fields_for_multiplotting) is str:
+        #     multi_plot_field_unique_combos = multi_local_data[fields_for_multiplotting].unique()
+        # else:                                
+        #     raise TypeError("Invalid type for multiplot fields: "+str(type(fields_for_multiplotting)))
+
+        colors = plt.cm.rainbow(np.linspace(0, 1, len(multi_plot_field_unique_combos)))
+
+        plt.figure()
+        subtitle = f"Arch={architecture_str} | {date_time_str} \n{title_configs}"
+        plt.suptitle(plot_title_base, fontsize=11)
+        plt.title(subtitle, fontsize=9, y=1)
+        plt.xlabel(field_strings[x_field] if x_field in field_strings.keys() else x_field)
+        plt.ylabel(field_strings[y_field] if y_field in field_strings.keys() else y_field)
+
+        if x_field in field_bounds: plt.xlim(field_bounds[x_field])
+        if y_field in field_bounds: plt.ylim(field_bounds[y_field])
+
         # Work through and plot each unique multiplot trend
-        for j, individual_val in enumerate(multi_plot_field_uniques): 
-            print(individual_val)
+        for j, multi_plot_cur_vals in enumerate(multi_plot_field_unique_combos): 
+            ic(multi_plot_cur_vals)
 
-            fig = plt.figure()
-            fig.suptitle(f"{plot_title_base} ({date_time_str})\n{title_configs}", fontsize=11)
-            plt.xlabel(field_strings[x_field] if x_field in field_strings.keys() else x_field)
-            plt.ylabel(field_strings[y_field] if y_field in field_strings.keys() else y_field)
 
-            if x_field in field_bounds: plt.xlim(field_bounds[x_field])
-            if y_field in field_bounds: plt.ylim(field_bounds[y_field])
+            # plot_local_data = multi_local_data.loc[multi_local_data[fields_for_multiplotting[]] == multi_plot_cur_vals]
+            plot_local_data = multi_local_data.copy(deep=False)
+            label_str = ""
+            for k, field in enumerate(fields_for_multiplotting):
+                val = multi_plot_cur_vals[k]
+                plot_local_data = plot_local_data.loc[plot_local_data[field] == val]
+                label_str += field_strings[field] if field in field_strings else field
+                label_str += "="
+                t = type(val)
+                if t in (bool, np.bool_):
+                    label_str += "T" if val else "F"
+                elif t in (int, np.int32, np.int64):
+                    label_str += str(val)
+                else: 
+                    raise TypeError("Invalid type for multiplot value: "+str(t))
+                if k < len(fields_for_multiplotting) -1: label_str += " | "
 
-            plot_local_data = multi_local_data.loc[multi_local_data[field_for_multiplotting] == individual_val]
-            
             ic(plot_local_data)
             plt.plot(plot_local_data[x_field], 
                      plot_local_data[y_field], 
                      c=colors[j], 
                      marker="o",
-                     label=(
-                        (field_strings[field_for_multiplotting] if field_for_multiplotting in field_strings.keys() else field_for_multiplotting )
-                        +"="+str(individual_val)
-                        )
+                     label=label_str
             )
     
         plt.legend(loc="best")
