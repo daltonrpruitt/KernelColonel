@@ -8,7 +8,7 @@ current.
 
 '''
 
-debug = True
+debug = False
 
 try:
     from icecream import ic
