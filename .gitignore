@@ -26,3 +26,8 @@ output*/
 Average*
 cubin*
 *.sass
+
+# I don't know what info can be shared. 
+# The lack of existence of this file results in an 
+# informative error message and subsequent failure. 
+node_arch_translation.csv
