@@ -98,10 +98,8 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "IndirectCopy";
 
-
-
-
-
+            this->Gsz /= ILP;
+            assert(this->Gsz > 0);
 
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
