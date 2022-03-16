@@ -28,35 +28,24 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it>
+template<typename vt, typename it, int ILP>
 __forceinline__ __host__ __device__        
-void kernel_direct(uint idx, vt* in, vt* out, it* indices){
+void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
     it indirect_idx = indices[idx];
     if(indirect_idx < -1) {return;} // ensure read in indirection 
     out[idx] = in[idx];
 }
 
-template<typename vt, typename it>
-__forceinline__ __host__ __device__        
-void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
-    it indirect_idx = indices[idx];
-    if(indirect_idx < -1) {return;}
-    out[idx] = in[indirect_idx];
-}
 
-template<typename vt, typename it, bool is_indirect>
+template<typename vt, typename it, int ILP>
 __global__        
-void simple_indirection_kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
+void kernel_for_regs_indirect_copy(uint idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
-    if constexpr(is_indirect) {
-        kernel_indirect<vt, it>(idx, in, out, indices);
-    } else {
-        kernel_direct<vt, it>(idx, in, out, indices);
-    }
+    kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);
 }
 
-template<typename vt, typename it, bool is_indirect>
-struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, int ILP>
+struct IndirectCopyContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
@@ -95,18 +84,20 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        SimpleIndirectionKernel(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        IndirectCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
-            if(is_indirect){
-                this->name = "SimpleIndirectionTest_Indirect";
-            } else {
-                this->name = "SimpleIndirectionTest_Direct";
-            }
+            this->name = "IndirectCopy";
+
+
+
+
+
+
             this->total_data_reads = N * data_reads_per_element;
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~SimpleIndirectionKernel(){}
+        ~IndirectCopyContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -146,7 +137,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *simple_indirection_kernel_for_regs<vt,it, is_indirect>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_indirect_copy<vt,it,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
