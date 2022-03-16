@@ -15,11 +15,22 @@
             "name": "Python: Plotting",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/plot_output.py",
+            "program": "${workspaceFolder}/src/postprocessing/plot_output.py",
             "console": "integratedTerminal", 
             "cwd": "${workspaceFolder}",
             "args": [
                 "output/Bayonet/2022-03-01_10-20-52"
+            ]
+        },
+        {
+            "name": "Python: Plotting General",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/postprocessing/plot_general.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "output/Bayonet/2022-03-10_12-20-04"
             ]
         },
         {

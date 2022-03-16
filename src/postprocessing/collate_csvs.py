@@ -9,28 +9,7 @@ from pandas.io.parsers import read_csv
 import re
 # from icecream import ic
 
-kernel_extra_configs = {
-    "copy": [""],  "direct": [""], "indirect": [""], 
-    "overlapped": ["degree"], 
-    "computational_intensity": ["comp-intens"], 
-    "interleaved_copy": ["block_life","elements"],
-    "interleaved_copy_full_life": ["elements"],
-    "uncoalesced_reuse_general_single": ["preload", "avoid_bank_conflicts", "shuffle_size"]
-    }
-
-kernel_type_names = {
-    "copy": "ArrayCopy",  
-    "direct": "SimpleIndirectionTest_Direct", 
-    "indirect":"SimpleIndirectionTest_Indirect", 
-    "overlapped": "OverlappedIdxDataAccessKernel", 
-    "computational_intensity": "ComputationalIntensity", 
-    "interleaved_copy": "InterleavedCopy",
-    "interleaved_copy_full_life": "InterleavedCopyFullLife",
-    "uncoalesced_reuse_general_single": "UncoalescedReuseGeneralSingleElement"
-    }
-
-
-
+from kernel_postprocessing_info import *
 
 
 def collate_csv(base_folder, kernel):
@@ -39,9 +18,20 @@ def collate_csv(base_folder, kernel):
 
     configs = kernel_extra_configs[kernel]
 
+    # First pass for collated files
     for filename in os.listdir(base_folder):
-        if ".csv" not in filename: continue 
-        if kernel not in filename: continue
+        if ".csv" not in filename: continue
+        kernel_type = get_specific_kernel_type(filename)
+        if kernel_type != kernel: continue
+        if "collated" in filename:
+            print("Collated file for", kernel,"already exists in",base_folder,"!")
+            collated = os.path.join(base_folder, filename)
+            return collated
+
+    for filename in os.listdir(base_folder):
+        if ".csv" not in filename: continue
+        kernel_type = get_specific_kernel_type(filename)
+        if kernel_type != kernel: continue
         if "collated" in filename: continue
         post_fix = "_driver.csv"
         data = pd.read_csv(base_folder + "/" + filename,header=0)
@@ -67,9 +57,15 @@ def collate_csv(base_folder, kernel):
                 data[cfg] = val
             # kernel_and_configs = kernel_and_configs[:-int(np.log10(value))-2]
         main_df = main_df.append(data)
-        
+
+    if(len(main_df) == 0):
+        print("Could not find any data for ", kernel,"!", sep="")
+        return ""
+
     # print(main_df)
-    main_df.to_csv(os.path.join(base_folder, kernel+"_collated.csv"))
+    new_filename = os.path.join(base_folder, kernel+"_collated.csv")
+    main_df.to_csv(new_filename, index=False)
+    return new_filename
 
 def main():
     base_folder = sys.argv[-1]

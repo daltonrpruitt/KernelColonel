@@ -20,6 +20,8 @@ from pandas.io.parsers import read_csv
 import re
 from icecream import ic
 
+from kernel_postprocessing_info import *
+
 #assuming current folder only
 base_folder = sys.argv[1] 
 
@@ -32,18 +34,6 @@ if "output" not in os.path.abspath(base_folder):
     print("Error: Base directory to process must be within the 'output' directory!")
     exit(-1)
 
-kernel_extra_configs = {"copy": "",  "direct": "", "indirect":"",
-                        "overlapped": "degree", 
-                        "computational_intensity": "comp-intens",
-                        "interleaved_copy": ["block_life", "elements"] 
-}
-
-kernel_type_names = {"copy": "ArrayCopy",  
-                    "direct": "SimpleIndirectionTest_Direct", 
-                    "indirect":"SimpleIndirectionTest_Indirect", 
-                    "overlapped": "OverlappedIdxDataAccessKernel", 
-                    "computational_intensity": "ComputationalIntensity", 
-                    "interleaved_copy":"InterleavedCopy"}
 
 
 data_headers   = ["kernel_type", "array_size", "tpb", "occupancy", "min", "med", "max", "avg", "stddev"]
@@ -98,7 +88,7 @@ def check_data(data):
     
 
 def process_comp_intens(df):
-    kernel_name = kernel_type_names["computational_intensity"]
+    kernel_name = kernel_class_names["computational_intensity"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["computational_intensity"]
     
@@ -119,7 +109,7 @@ def process_comp_intens(df):
         plt.savefig(images_dir+"/"+kernel_name+"_"+config_name+"-"+str(int(intens))+".png")
 
 def process_overlapped_access(df):
-    kernel_name = kernel_type_names["overlapped"]
+    kernel_name = kernel_class_names["overlapped"]
     data = df[df["kernel_type"]==kernel_name]
     config_name = kernel_extra_configs["overlapped"]
 
@@ -155,7 +145,7 @@ def process_overlapped_access(df):
     plt.savefig(images_dir+"/"+kernel_name+"_combined.png")
 
 def process_interleaved_kernel(df):
-    kernel_name = kernel_type_names["interleaved"]
+    kernel_name = kernel_class_names["interleaved"]
     data = df[df["kernel_type"]==kernel_name]
     config_names = kernel_extra_configs["interleaved"]
 
