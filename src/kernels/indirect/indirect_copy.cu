@@ -1,14 +1,15 @@
 #pragma once
 /**
- * @file simple_indirection.cu
+ * @file indirect_copy.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief 
  * @version 0.1
- * @date 2022-02-08
+ * @date 2022-03-16
  * 
- * Based on copy.cu 
- * Most of what needs to be changed (or not) is listed.
- * Do not modify function signatures unless obvious (comment in signature).
+ * Based on simple_indirection.cu 
+ * Meant to be used to test various access patterns in an indirect manner. 
+ * This allows for the pattern to be discerned at runtime to reflect actual 
+ * irregular application conditions.
  */
 
 #include <iostream>
