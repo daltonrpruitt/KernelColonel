@@ -115,9 +115,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
         }
 
         void init_indices(bool& pass) override {
-            for(int i=0; i<N; ++i){
-                indices.push_back(i);
-            }
+            cout << "Implement!" << endl;
         }
 
         void set_dev_ptrs() override {
