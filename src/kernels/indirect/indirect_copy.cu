@@ -31,11 +31,21 @@ using std::vector;
 template<typename vt, typename it, int ILP>
 __forceinline__ __host__ __device__        
 void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
-    it indirect_idx = indices[idx];
-    if(indirect_idx < -1) {return;} // ensure read in indirection 
-    out[idx] = in[idx];
-}
+    it indxs[ILP];
+    uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);
+    for(int i=0; i < ILP; ++i) {
+        indxs[i] = indices[idx + blockDim.x*i];
+    }
 
+    vt arr[ILP];
+    for(int i=0; i < ILP; ++i) {
+        arr[i] = in[indxs[i]];
+    }
+
+    for(int i=0; i < ILP; ++i) {
+        out[idx + blockDim.x*i] = arr[i];
+    }
+}
 
 template<typename vt, typename it, int ILP>
 __global__        
