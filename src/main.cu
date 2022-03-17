@@ -358,8 +358,8 @@ int main() {
     if (!UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).get_total_runs(); }
 
+/*
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 1)
-///*
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 1)
