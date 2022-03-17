@@ -34,7 +34,7 @@ void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
     it indxs[ILP];
     uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);
     for(int i=0; i < ILP; ++i) {
-        indxs[i] = indices[idx + blockDim.x*i];
+        indxs[i] = indices[local_start_idx + blockDim.x*i];
     }
 
     vt arr[ILP];
@@ -43,7 +43,7 @@ void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
     }
 
     for(int i=0; i < ILP; ++i) {
-        out[idx + blockDim.x*i] = arr[i];
+        out[local_start_idx + blockDim.x*i] = arr[i];
     }
 }
 
