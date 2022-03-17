@@ -52,7 +52,7 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
                 uint x = (i * ILP + k) / elements;
                 uint y = (i * ILP + k) % elements;
                 unsigned long long data_idx = start_idx + cycle_offset * x + blockDim.x * y ;
-                // if(data_idx >= N) continue;
+                if(data_idx >= N) continue;
                 vals[k] = gpu_in[data_idx];
             }
             
@@ -61,7 +61,8 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
                 uint y = (i * ILP + k) % elements;
                 unsigned long long data_idx = start_idx + cycle_offset * x + blockDim.x * y ;
                 gpu_out[data_idx] = vals[k];
-                // if(data_idx >= N) {
+                if(data_idx >= N) continue;
+                // {
                 //     gpu_out[idx] = data_idx;
                 //     // return; 
                 // }                    
