@@ -76,16 +76,18 @@ int main() {
         return -1;
     }
 
-    // #include <tests/copy.test>
-    // #include <tests/indirection_simple.test>
-    // #include <tests/overlapped_access.test>
-    // #include <tests/computational_intensity.test>
-    // #include <tests/interleaved_simple.test>
-    // #include <tests/interleaved_full_life.test>
+/*
+    #include <tests/copy.test>
+    #include <tests/indirection_simple.test>
+    #include <tests/overlapped_access.test>
+    #include <tests/computational_intensity.test>
+    #include <tests/interleaved_simple.test>
+    #include <tests/interleaved_full_life.test>
+    #include <tests/uncoalesced_reuse.test>
+    #include <tests/uncoalesced_reuse_general.test>
+    #include <tests/uncoalesced_reuse_general_single.test>
+  */  
     #include <tests/interleaved_full_life_ILP.test>
-    // #include <tests/uncoalesced_reuse.test>
-    // #include <tests/uncoalesced_reuse_general.test>
-    // #include <tests/uncoalesced_reuse_general_single.test>
     #include <tests/uncoalesced_reuse_general_single_ILP.test>
     #include <tests/indirect_copy.test>
 
