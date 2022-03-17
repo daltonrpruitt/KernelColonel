@@ -1,5 +1,5 @@
 // Index array generation functions
-
+#pragma once
 #include <iostream>
 #include <algorithm>
 
