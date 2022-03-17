@@ -85,12 +85,8 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
 
             __device__        
             void operator() (uint idx){
-               extern __shared__ int dummy[];
-                if constexpr(is_indirect) {
-                    kernel_indirect<vt, it>(idx, gpu_in, gpu_out, gpu_indices);
-                } else {
-                    kernel_direct<vt, it>(idx, gpu_in, gpu_out, gpu_indices);
-                }
+                extern __shared__ int dummy[];
+                kernel_indirect_copy<vt, it, ILP>(idx, gpu_in, gpu_out, gpu_indices);
             }
         } ctx ;
 
