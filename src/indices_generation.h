@@ -2,6 +2,7 @@
 #pragma once
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 
 using std::cout;
 using std::endl;
@@ -85,6 +86,27 @@ int strided_no_conflict_indices(int* indxs, unsigned long long N, int block_size
     return 0;
 }
 
+template<typename it, bool avoid_bank_conflicts>
+int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
+    assert(N % shuffle_size == 0);
+    if(output_sample) cout << "uncoalesced indices (shuffle sz="<<shuffle_size<< ","<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
+    int num_warps = shuffle_size / 32;
+    for(int i=0; i < N / shuffle_size; ++i) {
+        int start_idx = i * shuffle_size;
+        for (int j=0; j < shuffle_size; ++j){
+            unsigned long long idx = start_idx + j;
+            uint shuffle_t_idx = idx % shuffle_size;
+            if constexpr(!avoid_bank_conflicts) {
+                indxs[idx] = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
+            } else {
+                indxs[idx] = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % shuffle_size + start_idx;
+            }
+            if(output_sample) print_indices_sample(indxs, shuffle_size, idx);
+        }
+    }
+    if(output_sample) cout << endl;
+    return 0;
+}
 
 int random_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "random indices : ";
