@@ -1,0 +1,6 @@
+{
+typedef MicrobenchmarkDriver<ArrayCopyContext<vt, it>> copy_driver_t;
+copy_driver_t copy_driver(N, bs_vec, output_dir+"copy_kernel_output.csv", &dev_ctx, span_occupancies);
+if (!copy_driver.check_then_run_kernels()) {return -1;} 
+total_runs += copy_driver.get_total_runs();
+}

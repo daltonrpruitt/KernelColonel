@@ -1,0 +1,13 @@
+
+#define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
+
+#define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt, it, B1, B2>> \
+      UNCOAL_REUSE_DRIVER(B1, B2)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_DRIVER(B1, B2) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs(); }
+    
+    UNCOAL_REUSE(false, false)
+    UNCOAL_REUSE(true, false)
+    UNCOAL_REUSE(false, true)
+    UNCOAL_REUSE(true, true)
+
