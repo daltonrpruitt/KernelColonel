@@ -52,7 +52,8 @@
         "numeric": "cpp",
         "thread": "cpp",
         "cfenv": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "*.test": "cpp"
     },
     "cSpell.words": [
         "uncoalesced",
