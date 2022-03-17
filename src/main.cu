@@ -52,13 +52,13 @@ int main() {
     typedef ArrayCopyContext<vt, int> copy_kernel_t;
     typedef MicrobenchmarkDriver<copy_kernel_t> copy_driver_t;
 
-    typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt,it false>> indirection_driver_direct_t;
-    typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt,it true>> indirection_driver_indirect_t;
+    typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt,it,false>> indirection_driver_direct_t;
+    typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt,it,true>> indirection_driver_indirect_t;
     
-    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it 1>> overlapped_access_driver_1_t;
-    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it 2>> overlapped_access_driver_2_t;
-    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it 4>> overlapped_access_driver_4_t;
-    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it 8>> overlapped_access_driver_8_t;
+    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it,1>> overlapped_access_driver_1_t;
+    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it,2>> overlapped_access_driver_2_t;
+    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it,4>> overlapped_access_driver_4_t;
+    typedef MicrobenchmarkDriver<OverlappedIdxDataAccessKernel<vt,it,8>> overlapped_access_driver_8_t;
     */
 
     device_context dev_ctx;
@@ -113,19 +113,19 @@ int main() {
     //                         overlapped_4_driver.get_total_runs() + overlapped_8_driver.get_total_runs();
 
 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 1>> comp_intens_1_driver(N, bs_vec, output_dir+"computational_intensity_1_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,1>> comp_intens_1_driver(N, bs_vec, output_dir+"computational_intensity_1_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_1_driver.check_then_run_kernels()) {return -1;} 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 2>> comp_intens_2_driver(N, bs_vec, output_dir+"computational_intensity_2_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,2>> comp_intens_2_driver(N, bs_vec, output_dir+"computational_intensity_2_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_2_driver.check_then_run_kernels()) {return -1;} 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 4>> comp_intens_4_driver(N, bs_vec, output_dir+"computational_intensity_4_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,4>> comp_intens_4_driver(N, bs_vec, output_dir+"computational_intensity_4_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_4_driver.check_then_run_kernels()) {return -1;} 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 8>> comp_intens_8_driver(N, bs_vec, output_dir+"computational_intensity_8_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,8>> comp_intens_8_driver(N, bs_vec, output_dir+"computational_intensity_8_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_8_driver.check_then_run_kernels()) {return -1;} 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 16>> comp_intens_16_driver(N, bs_vec, output_dir+"computational_intensity_16_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,16>> comp_intens_16_driver(N, bs_vec, output_dir+"computational_intensity_16_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_16_driver.check_then_run_kernels()) {return -1;} 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 32>> comp_intens_32_driver(N, bs_vec, output_dir+"computational_intensity_32_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,32>> comp_intens_32_driver(N, bs_vec, output_dir+"computational_intensity_32_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_32_driver.check_then_run_kernels()) {return -1;} 
-    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it 64>> comp_intens_64_driver(N, bs_vec, output_dir+"computational_intensity_64_kernel_output.csv", &dev_ctx, true);
+    // MicrobenchmarkDriver<ComputationalIntensityContext<vt,it,64>> comp_intens_64_driver(N, bs_vec, output_dir+"computational_intensity_64_kernel_output.csv", &dev_ctx, true);
     // if (!comp_intens_64_driver.check_then_run_kernels()) {return -1;} 
 
     // total_runs += comp_intens_1_driver.get_total_runs() + comp_intens_2_driver.get_total_runs() + 
@@ -137,7 +137,7 @@ int main() {
 
 /*
 #define INTER_DRIVER(X, Y) interleaved_copy_ ## X  ## _ ## Y ## _driver
-#define INTERLEAVED(X, Y) { MicrobenchmarkDriver<InterleavedCopyContext<vt,it X, Y>> \
+#define INTERLEAVED(X, Y) { MicrobenchmarkDriver<InterleavedCopyContext<vt,it,X, Y>> \
       INTER_DRIVER(X, Y)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_DRIVER(X, Y) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_DRIVER(X, Y).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_DRIVER(X, Y).get_total_runs(); }
@@ -174,7 +174,7 @@ int main() {
     INTERLEAVED(32, 16)
 */
 #define INTER_FULL_LIFE_DRIVER(X) interleaved_copy_full_life_ ## X  ## _driver
-#define INTERLEAVED_FULL_LIFE(X) { MicrobenchmarkDriver<InterleavedCopyFullLifeContext<vt,it X>> \
+#define INTERLEAVED_FULL_LIFE(X) { MicrobenchmarkDriver<InterleavedCopyFullLifeContext<vt,it,X>> \
       INTER_FULL_LIFE_DRIVER(X)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FULL_LIFE_DRIVER(X) ) ".csv", &dev_ctx, span_occupancies); \
     if (!INTER_FULL_LIFE_DRIVER(X).check_then_run_kernels()) {return -1;}  \
     total_runs += INTER_FULL_LIFE_DRIVER(X).get_total_runs(); }
@@ -214,7 +214,7 @@ int main() {
 */
 
 #define INTER_FL_ILP_DRIVER(E, ILP) interleaved_fl_ilp_ ## E ## _ ## ILP ## _driver
-#define INTERLEAVED_FL_ILP(E, ILP) { MicrobenchmarkDriver<InterleavedFullLifeILPContext<vt,it E, ILP>> \
+#define INTERLEAVED_FL_ILP(E, ILP) { MicrobenchmarkDriver<InterleavedFullLifeILPContext<vt,it,E, ILP>> \
         INTER_FL_ILP_DRIVER(E, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FL_ILP_DRIVER(E, ILP) ) ".csv", &dev_ctx, span_occupancies); \
         INTER_FL_ILP_DRIVER(E, ILP).set_config_bool(match_ilp); \
         if (!INTER_FL_ILP_DRIVER(E, ILP).check_then_run_kernels()) {cout << "Could not run with this configuration!" << endl;} \
@@ -259,7 +259,7 @@ int main() {
 /*
 #define UNCOAL_REUSE_DRIVER(B1, B2) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _driver
 
-#define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt,it B1, B2>> \
+#define UNCOAL_REUSE(B1, B2) { MicrobenchmarkDriver<UncoalescedReuseContext<vt,it,B1, B2>> \
       UNCOAL_REUSE_DRIVER(B1, B2)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_DRIVER(B1, B2) ) ".csv", &dev_ctx, span_occupancies); \
     if (!UNCOAL_REUSE_DRIVER(B1, B2).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_DRIVER(B1, B2).get_total_runs(); }
@@ -275,7 +275,7 @@ int main() {
 
 #define UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X) uncoalesced_reuse_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
-#define UNCOAL_REUSE_GENERAL(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralContext<vt,it B1, B2, X>> \
+#define UNCOAL_REUSE_GENERAL(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralContext<vt,it,B1, B2, X>> \
       UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X) ) ".csv", &dev_ctx, span_occupancies); \
     if (!UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_GENERAL_DRIVER(B1, B2, X).get_total_runs(); }
@@ -314,7 +314,7 @@ int main() {
 /*
 #define UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _driver
 
-#define UNCOAL_REUSE_GENERAL_SINGLE(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralSingleElementContext<vt,it B1, B2, X>> \
+#define UNCOAL_REUSE_GENERAL_SINGLE(B1, B2, X) { MicrobenchmarkDriver<UncoalescedReuseGeneralSingleElementContext<vt,it,B1, B2, X>> \
       UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X) ) ".csv", &dev_ctx, span_occupancies); \
     if (!UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_GENERAL_SINGLE_DRIVER(B1, B2, X).get_total_runs(); }
@@ -353,7 +353,7 @@ int main() {
 
 #define UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _ ## ILP ## _driver
 
-#define UNCOAL_REUSE_GEN_SINGLE_ILP(B1, B2, X, ILP) { MicrobenchmarkDriver<UncoalescedReuseGenSingleILPContext<vt, it, B1, B2, X, ILP>> \
+#define UNCOAL_REUSE_GEN_SINGLE_ILP(B1, B2, X, ILP) { MicrobenchmarkDriver<UncoalescedReuseGenSingleILPContext<vt, it,B1, B2, X, ILP>> \
       UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP) ) ".csv", &dev_ctx, span_occupancies); \
     if (!UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).check_then_run_kernels()) {return -1;}  \
     total_runs += UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).get_total_runs(); }
@@ -447,7 +447,7 @@ int main() {
 
 #define INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN) uncoalesced_reuse_general_single_ ## SHFSZ ## _ ## ILP ## _ ## IDX_PATTERN ## _driver
 
-#define INDIRECT_COPY(SHFSZ, ILP, IDX_PATTERN) { MicrobenchmarkDriver<IndirectCopyContext<vt, it, SHFSZ, ILP, IDX_PATTERN>> \
+#define INDIRECT_COPY(SHFSZ, ILP, IDX_PATTERN) { MicrobenchmarkDriver<IndirectCopyContext<vt, it,SHFSZ, ILP, IDX_PATTERN>> \
       INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN)(N, bs_vec, output_dir+ XSTRINGIFY( INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN) ) ".csv", &dev_ctx, true); \
     if (!INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN).check_then_run_kernels()) {return -1;}  \
     total_runs += INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN).get_total_runs(); }
