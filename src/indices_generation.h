@@ -2,6 +2,7 @@
 #pragma once
 #include <iostream>
 #include <algorithm>
+#include <vector>
 #include <cassert>
 
 using std::cout;
@@ -126,3 +127,26 @@ int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_
     }
     return 0;
 }
+
+// using it = unsigned long long; // declared in main...
+typedef int func_t(it*, unsigned long long, int, int, bool);
+typedef func_t* pfunc_t;
+
+
+static const std::vector<pfunc_t> index_patterns = {
+    sequential_indices<it>,
+    strided_indices<it>,
+    strided_no_conflict_indices<it>,
+    uncoalesced_access_shuffle_size<it, false>,
+    uncoalesced_access_shuffle_size<it, true>,
+    random_indices<it>
+};
+
+enum indices_pattern {
+    SEQUENTIAL = 0,
+    STRIDED_BSZ = 1,
+    STRIDED_BLOCKSZ_NO_BANK_CONFLICTS = 2,
+    UNCOALESCED_SHUFFLESZ = 3,
+    UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS = 4,
+    RANDOM_BLOCKED_SHUFFLESZ = 5
+};
