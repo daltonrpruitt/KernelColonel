@@ -121,8 +121,8 @@ int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_
         std::random_shuffle(indxs+i, indxs + i + shuffle_size);
     }
 
-    for(int i=0; i < N) {
-        if(output_sample) print_indices_sample(indxs, shuffle_size, idx);
+    for(int i=0; i < N; i++) {
+        if(output_sample) print_indices_sample(indxs, shuffle_size, i);
     }
     return 0;
 }
