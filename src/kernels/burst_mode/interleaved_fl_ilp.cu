@@ -79,7 +79,7 @@ void interleaved_fl_ilp_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsig
         interleaved_fl_ilp_kernel<vt, it, elements, ILP>(idx, gpu_in, gpu_out, N);
 }
 
-template<typename vt, typename it, int elements, int ILP>
+template<typename vt, typename it, int elements, int ILP, bool match_ilp>
 struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
@@ -108,7 +108,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        bool match_ilp;
+        // bool match_ilp;
 
         InterleavedFullLifeILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
@@ -144,7 +144,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         ~InterleavedFullLifeILPContext(){}
 
         void set_config_bool(bool val) override {
-            match_ilp = val;
+            // match_ilp = val;
         }
 
         void init_inputs(bool& pass) override {
