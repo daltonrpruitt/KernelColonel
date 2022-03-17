@@ -94,17 +94,9 @@ int random_indices(int* indxs, int N, int block_size, int shuffle_size, bool out
     for(int i=0; i < N; i+=shuffle_size) {
         std::random_shuffle(indxs+i, indxs + i + shuffle_size);
     }
-    
-    if(output_sample) {
-        for(int i=0; i < 10; i++) {
-            cout << " " << i << ":" << indxs[i];
-        }
-        cout << " ... | ";
-        for(int i=1022; i < 1029; i++) {
-            cout << " " << i << ":" << indxs[i];
-        }
-        cout << " ... ... ... ";
-        cout << endl;
+
+    for(int i=0; i < N) {
+        if(output_sample) print_indices_sample(indxs, shuffle_size, idx);
     }
     return 0;
 }
