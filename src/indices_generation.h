@@ -55,7 +55,8 @@ int sequential_indices(it* indxs, unsigned long long N, int block_size, int shuf
  *      0 32 64 96 ... 71 103 8 40 ... 79 111 16 48 ... ... 31  63  95  127 128 160 192 ... ... 159 191 223 255
  * 
  */
-int strided_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
+template<typename it>
+int strided_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "strided indices (Bsz="<<block_size<<",shuffle sz="<<shuffle_size<< "): ";
     int num_warps = block_size / 32;
     for(unsigned long long i=0; i < N/block_size; i++) {
@@ -71,7 +72,8 @@ int strided_indices(int* indxs, unsigned long long N, int block_size, int shuffl
     return 0;
 }
 
-int strided_no_conflict_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
+template<typename it>
+int strided_no_conflict_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "strided no conflict indices (Bsz="<<block_size<<",shuffle sz="<<shuffle_size<< "): ";
     int num_warps = block_size / 32;
     for(int i=0; i < N/block_size; i++) {
@@ -109,7 +111,8 @@ int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_s
     return 0;
 }
 
-int random_indices(int* indxs, int N, int block_size, int shuffle_size, bool output_sample = false){
+template<typename it>
+int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "random indices : ";
     for(int i=0; i < N; i++) {
         indxs[i] = i;                                                                    
