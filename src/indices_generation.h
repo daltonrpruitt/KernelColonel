@@ -7,19 +7,8 @@
 using std::cout;
 using std::endl;
 
-int sequential_indices(int* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
-
-    if(output_sample) cout << "sequential indices: ";
-    for(unsigned long long i=0; i < N; i++) {
-        indxs[i] = i;
-        if(output_sample && (i < 10 || (i > 1022 && i < 1028)) ) cout << i <<":"<<indxs[i];
-    }
-    if(output_sample) cout << endl;
-    return 0;
-}
-
-
-void print_indices_sample(int* indxs, int block_size, unsigned long long idx) {
+template<typename it>
+void print_indices_sample(it* indxs, int block_size, unsigned long long idx) {
     if(idx % block_size >= block_size / 2 - 2 &&
             idx % block_size <= block_size / 2 + 2 &&
             idx / block_size < 2) {
@@ -36,6 +25,18 @@ void print_indices_sample(int* indxs, int block_size, unsigned long long idx) {
     } else if(idx / block_size == 2 && idx % block_size == 3 ) {
         cout << " ... ... ... ";
     }
+}
+
+template<typename it>
+int sequential_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
+
+    if(output_sample) cout << "sequential indices: ";
+    for(unsigned long long i=0; i < N; i++) {
+        indxs[i] = i;
+        if(output_sample) print_indices_sample(indxs, block_size, i); 
+    }
+    if(output_sample) cout << endl;
+    return 0;
 }
 
 
