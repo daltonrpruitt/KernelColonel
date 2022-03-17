@@ -131,7 +131,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
 
         bool local_check_result() override {
             for(int i=0; i<N; ++i){
-                if(in[i] != out[i]){
+                if(in[indices[i]] != out[i]){
                     cout << "Validation Failed at " << i << ": in="<<in[i] << " out="<< out[i] << endl;
                     return false;
                 }
