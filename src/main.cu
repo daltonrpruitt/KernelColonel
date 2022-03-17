@@ -2,6 +2,11 @@
 // simple driver file for kernel testing
 
 #define DEBUG
+
+using it = unsigned long long;
+#include <indices_generation.h>
+
+
 // local files
 #include <driver.h>
 #include <device_props.h>
@@ -16,6 +21,7 @@
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_gen_single_ILP.cu>
 #include <kernels/burst_mode/interleaved_copy_full_life.cu>
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
+#include <kernels/indirect/indirect_copy.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -438,6 +444,21 @@ int main() {
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  262144, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  262144, 4)
 // */
+
+#define INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN) uncoalesced_reuse_general_single_ ## SHFSZ ## _ ## ILP ## _ ## IDX_PATTERN ## _driver
+
+#define INDIRECT_COPY(SHFSZ, ILP, IDX_PATTERN) { MicrobenchmarkDriver<IndirectCopyContext<vt, it, SHFSZ, ILP, IDX_PATTERN>> \
+      INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN)(N, bs_vec, output_dir+ XSTRINGIFY( INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN) ) ".csv", &dev_ctx, true); \
+    if (!INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN).check_then_run_kernels()) {return -1;}  \
+    total_runs += INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN).get_total_runs(); }
+
+    INDIRECT_COPY(1024, 1, UNCOALESCED_SHUFFLESZ);
+    INDIRECT_COPY(1024, 1, UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS);
+    INDIRECT_COPY(8192, 1, UNCOALESCED_SHUFFLESZ);
+    INDIRECT_COPY(8192, 1, UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS);
+    INDIRECT_COPY(8192, 4, UNCOALESCED_SHUFFLESZ);
+    INDIRECT_COPY(8192, 4, UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS);
+
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
