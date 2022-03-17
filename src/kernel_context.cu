@@ -31,21 +31,21 @@ void compute_kernel(unsigned long long N, kernel_ctx_t ctx) {
     ctx(idx);
 }
 
-template<typename gpu_ctx>
+template<typename kernel_ctx_t>
 inline
-float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, device_context* dev_ctx, gpu_ctx ctx) {
+float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, device_context* dev_ctx, kernel_ctx_t ctx) {
     if(dev_ctx->props_.major >= 7) {
         cudaFuncAttributes attr;
-        cudaFuncGetAttributes(&attr, compute_kernel<gpu_ctx>);
+        cudaFuncGetAttributes(&attr, compute_kernel<kernel_ctx_t>);
         int shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
-        cudaFuncSetAttribute(compute_kernel<gpu_ctx>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
+        cudaFuncSetAttribute(compute_kernel<kernel_ctx_t>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
         cudaPrintLastError();
     }
     cudaEvent_t start, stop;
     cudaEventCreate(&start); cudaEventCreate(&stop);
 
     cudaEventRecord(start);
-    compute_kernel<gpu_ctx><<<Gsz, Bsz, shdmem_usage>>>(N, ctx);
+    compute_kernel<kernel_ctx_t><<<Gsz, Bsz, shdmem_usage>>>(N, ctx);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
     cudaPrintLastError();
