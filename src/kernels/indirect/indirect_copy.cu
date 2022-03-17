@@ -20,6 +20,7 @@
 #include <cuda.h>
 #include <local_cuda_utils.h>
 #include <kernel_context.cu>
+#include <indices_generation.h>
 
 #define DEBUG
 
@@ -54,7 +55,7 @@ void kernel_for_regs_indirect_copy(uint idx, vt* in, vt* out, it* indices){
     kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);
 }
 
-template<typename vt, typename it, int ILP>
+template<typename vt, typename it, int shuffle_size, int ILP, indices_pattern idx_pattern>
 struct IndirectCopyContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
@@ -111,7 +112,15 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
         }
 
         void init_indices(bool& pass) override {
-            cout << "Implement!" << endl;
+            bool debug = false;
+// #ifdef DEBUG
+//             debug = true;
+// #endif
+            indices.reserve(N);
+            if( index_patterns[idx_pattern](indices.data(), N, Bsz, shuffle_size, debug) != 0) {
+                cerr << "Failed to generate indices!"; 
+                this->okay = false;
+            }
         }
 
         void set_dev_ptrs() override {
