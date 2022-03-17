@@ -2,6 +2,11 @@
 // simple driver file for kernel testing
 
 #define DEBUG
+
+using it = unsigned long long;
+#include <indices_generation.h>
+
+
 // local files
 #include <driver.h>
 #include <device_props.h>
@@ -16,6 +21,7 @@
 #include <kernels/uncoalesced_cached_access/uncoalesced_reuse_gen_single_ILP.cu>
 #include <kernels/burst_mode/interleaved_copy_full_life.cu>
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
+#include <kernels/indirect/indirect_copy.cu>
 
 #include <output.h>
 #include <utils.h>
