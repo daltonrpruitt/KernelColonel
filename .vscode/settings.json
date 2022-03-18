@@ -53,7 +53,8 @@
         "thread": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
-        "*.test": "cpp"
+        "*.test": "cpp",
+        "*.htest": "cpp"
     },
     "cSpell.words": [
         "uncoalesced",
