@@ -1,0 +1,6 @@
+#define UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER_CHECK_ONLY(B1, B2, X, ILP) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _ ## ILP ## _driver
+
+#define UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(B1, B2, X, ILP) { MicrobenchmarkDriver<UncoalescedReuseGenSingleILPContext<vt, it, B1, B2, X, ILP>> \
+      UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER_CHECK_ONLY(B1, B2, X, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER_CHECK_ONLY(B1, B2, X, ILP) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER_CHECK_ONLY(B1, B2, X, ILP).check_kernels()) {return -1;}  \
+    total_runs += UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER_CHECK_ONLY(B1, B2, X, ILP).kernel_checks; }

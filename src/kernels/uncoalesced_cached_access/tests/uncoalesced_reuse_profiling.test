@@ -1,0 +1,16 @@
+#include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP_check_only.htest>
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, false, 8192, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  false, 8192, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true,  8192, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  true,  8192, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, false, 32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  false, 32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true,  32768, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  true,  32768, 4)
+
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, false, 65536, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  false, 65536, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true,  65536, 4)
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  true,  65536, 4)

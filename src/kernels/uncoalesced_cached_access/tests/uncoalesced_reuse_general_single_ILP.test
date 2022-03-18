@@ -1,16 +1,11 @@
-#define UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP) uncoalesced_reuse_general_single_ ## B1  ## _ ## B2 ## _ ## X ## _ ## ILP ## _driver
-
-#define UNCOAL_REUSE_GEN_SINGLE_ILP(B1, B2, X, ILP) { MicrobenchmarkDriver<UncoalescedReuseGenSingleILPContext<vt, it, B1, B2, X, ILP>> \
-      UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP)(N, bs_vec, output_dir+ XSTRINGIFY( UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP) ) ".csv", &dev_ctx, span_occupancies); \
-    if (!UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).check_then_run_kernels()) {return -1;}  \
-    total_runs += UNCOAL_REUSE_GEN_SINGLE_ILP_DRIVER(B1, B2, X, ILP).get_total_runs(); }
-
+#include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.htest>
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 1)
 
+/*
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 2)
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 2)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 2)
@@ -90,3 +85,4 @@
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 262144, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  262144, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  262144, 4)
+*/
