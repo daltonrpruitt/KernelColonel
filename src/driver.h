@@ -44,10 +44,11 @@ class MicrobenchmarkDriver {
 
     int N = 0;
     int bs = 0;
+
+   public:
     int kernel_runs = 25;
     int kernel_checks = 1;
 
-   public:
     MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
         output_filename_(output_filename) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
