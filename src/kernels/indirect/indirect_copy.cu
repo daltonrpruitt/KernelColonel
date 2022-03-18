@@ -131,6 +131,13 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             ctx.gpu_indices = d_indices;
         }
 
+        void output_config_info() override {
+            cout << this->name << " with : "
+                 << " shuffle size=" << shuffle_size 
+                 << " ILP=" << ILP << 
+                 << " access pattern=" << index_pattern_strings[idx_pattern] << endl;
+        }
+
         bool local_check_result() override {
             for(int i=0; i<N; ++i){
                 if(in[indices[i]] != out[i]){
