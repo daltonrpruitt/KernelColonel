@@ -3,10 +3,13 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <string>
 #include <cassert>
 
 using std::cout;
 using std::endl;
+using std::vector;
+using std::string;
 
 template<typename it>
 void print_indices_sample(it* indxs, int block_size, unsigned long long idx) {
@@ -133,7 +136,7 @@ typedef int func_t(it*, unsigned long long, int, int, bool);
 typedef func_t* pfunc_t;
 
 
-static const std::vector<pfunc_t> index_patterns = {
+static const vector<pfunc_t> index_patterns = {
     sequential_indices<it>,
     strided_indices<it>,
     strided_no_conflict_indices<it>,
@@ -149,4 +152,13 @@ enum indices_pattern {
     UNCOALESCED_SHUFFLESZ = 3,
     UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS = 4,
     RANDOM_BLOCKED_SHUFFLESZ = 5
+};
+
+static const vector<string> index_pattern_strings {
+    "sequential",
+    "strided_block_size",
+    "strided_block_size_no_bank_conflicts",
+    "uncoalesced_shuffle_size",
+    "uncoalesced_shuffle_size_no_bank_conflicts",
+    "random_blocked_shuffle_size"
 };

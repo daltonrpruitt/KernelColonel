@@ -19,8 +19,11 @@
 #include <cuda.h>
 #include <local_cuda_utils.h>
 #include <kernel_context.cu>
+#include <local_basic_utils.h>
 
 using std::string;
+using std::stringstream;
+using std::to_string;
 using std::cout;
 using std::endl;
 using std::vector;
@@ -219,5 +222,12 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
             }
             this->register_usage = funcAttrib.numRegs;
         }
+
+    string get_extra_config_parameters() override { return "preload,avoid_bank_conflicts,shuffle_size,ILP";}
+    string get_extra_config_values() override { 
+        stringstream out; 
+        out << bool_to_string(preload_for_reuse) << "," << bool_to_string(avoid_bank_conflicts) << "," << to_string(shuffle_size) << "," << to_string(ILP);
+        return out.str();
+    }
 
 };

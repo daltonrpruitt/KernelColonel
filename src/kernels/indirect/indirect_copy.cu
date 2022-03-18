@@ -25,6 +25,8 @@
 #define DEBUG
 
 using std::string;
+using std::stringstream;
+using std::to_string;
 using std::cout;
 using std::endl;
 using std::vector;
@@ -155,5 +157,12 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             }
             this->register_usage = funcAttrib.numRegs;
         }
+
+    string get_extra_config_parameters() override { return "shuffle_size,ILP,access_pattern";}
+    string get_extra_config_values() override { 
+        stringstream out; 
+        out << to_string(shuffle_size) << "," << to_string(ILP) <<","<< index_pattern_strings[idx_pattern];
+        return out.str();
+    }
 
 };

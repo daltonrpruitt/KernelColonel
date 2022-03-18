@@ -22,6 +22,8 @@
 #include <kernel_context.cu>
 
 using std::string;
+using std::stringstream;
+using std::to_string;
 using std::cout;
 using std::endl;
 using std::vector;
@@ -207,4 +209,10 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             this->register_usage = funcAttrib.numRegs;
         }
 
+    string get_extra_config_parameters() override { return "elements,ILP";}
+    string get_extra_config_values() override { 
+        stringstream out; 
+        out << to_string(elements) << "," << to_string(ILP);
+        return out.str();
+    }
 };
