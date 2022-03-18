@@ -311,4 +311,6 @@ struct KernelCPUContext {
         return ( total_data_reads+ total_writes)*sizeof(vt) +  total_index_reads*sizeof(it);
     }
 
+    virtual string get_extra_config_parameters() { return "";}
+    virtual string get_extra_config_values() { return "Error!";}
 };
