@@ -1,0 +1,44 @@
+#define INTER_FL_ILP_DRIVER(E, ILP, MATCH) interleaved_fl_ilp_ ## E ## _ ## ILP ## _driver
+#define INTERLEAVED_FL_ILP(E, ILP, MATCH) { MicrobenchmarkDriver<InterleavedFullLifeILPContext<vt, it, E, ILP, MATCH>> \
+        INTER_FL_ILP_DRIVER(E, ILP, MATCH)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FL_ILP_DRIVER(E, ILP, MATCH) ) ".csv", &dev_ctx, span_occupancies); \
+        if (!INTER_FL_ILP_DRIVER(E, ILP, MATCH).check_then_run_kernels()) {return -1;} \
+        total_runs += INTER_FL_ILP_DRIVER(E, ILP, MATCH).get_total_runs(); }
+        // INTER_FL_ILP_DRIVER(E, ILP, MATCH).set_config_bool(match_ilp); \
+
+    bool tmp_span = span_occupancies; 
+
+    span_occupancies = false;
+    // bool match_ilp = true;
+    INTERLEAVED_FL_ILP(1, 1, true)
+    INTERLEAVED_FL_ILP(1, 2, true)    
+    INTERLEAVED_FL_ILP(1, 4, true)
+    INTERLEAVED_FL_ILP(1, 8, true)
+
+    INTERLEAVED_FL_ILP(8, 1, true)
+    INTERLEAVED_FL_ILP(8, 2, true)
+    INTERLEAVED_FL_ILP(8, 4, true)
+    INTERLEAVED_FL_ILP(8, 8, true)
+
+    INTERLEAVED_FL_ILP(64, 1, true)
+    INTERLEAVED_FL_ILP(64, 2, true)
+    INTERLEAVED_FL_ILP(64, 4, true)
+    INTERLEAVED_FL_ILP(64, 8, true)
+
+    // INTERLEAVED_FL_ILP(1, 4, true)
+    INTERLEAVED_FL_ILP(2, 4, true)
+    INTERLEAVED_FL_ILP(4, 4, true)
+    // INTERLEAVED_FL_ILP(8, 4, true)
+    INTERLEAVED_FL_ILP(16, 4, true)
+    INTERLEAVED_FL_ILP(32, 4, true)
+    // INTERLEAVED_FL_ILP(64, 4, true)
+    INTERLEAVED_FL_ILP(128, 4, true)
+    INTERLEAVED_FL_ILP(256, 4, true)
+    INTERLEAVED_FL_ILP(512, 4, true)
+    INTERLEAVED_FL_ILP(1024, 4, true)
+    INTERLEAVED_FL_ILP(2048, 4, true)
+    // INTERLEAVED_FL_ILP(4096, 4, true)
+
+
+    span_occupancies = tmp_span;
+
+

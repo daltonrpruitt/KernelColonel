@@ -1,0 +1,10 @@
+{
+typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt, it, false>> indirection_driver_direct_t;
+typedef MicrobenchmarkDriver<SimpleIndirectionKernel<vt, it, true>> indirection_driver_indirect_t;
+
+indirection_driver_direct_t direct_driver(N, bs_vec,output_dir+"direct_kernel_output.csv", &dev_ctx, span_occupancies);
+if (!direct_driver.check_then_run_kernels()) {return -1;} 
+indirection_driver_indirect_t indirect_driver(N, bs_vec, output_dir+"indirect_kernel_output.csv", &dev_ctx, span_occupancies);
+if (!indirect_driver.check_then_run_kernels()) {return -1;} 
+total_runs += direct_driver.get_total_runs() + indirect_driver.get_total_runs();
+}

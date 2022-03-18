@@ -31,7 +31,7 @@ template<typename vt, typename it>
 __forceinline__ __host__ __device__        
 void kernel_direct(uint idx, vt* in, vt* out, it* indices){
     it indirect_idx = indices[idx];
-    if(indirect_idx < -1) {return;} // ensure read in indirection 
+    if(!indirect_idx >= 0) {return;} // ensure read in indirection 
     out[idx] = in[idx];
 }
 
@@ -39,7 +39,7 @@ template<typename vt, typename it>
 __forceinline__ __host__ __device__        
 void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
     it indirect_idx = indices[idx];
-    if(indirect_idx < -1) {return;}
+    if(!indirect_idx >= 0) {return;}
     out[idx] = in[indirect_idx];
 }
 
