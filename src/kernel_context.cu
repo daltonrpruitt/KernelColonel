@@ -39,6 +39,7 @@ float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, device_c
         cudaFuncGetAttributes(&attr, compute_kernel<kernel_ctx_t>);
         int shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
         cudaFuncSetAttribute(compute_kernel<kernel_ctx_t>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
+        cudaFuncSetAttribute(compute_kernel<kernel_ctx_t>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
         cudaPrintLastError();
     }
     cudaEvent_t start, stop;
