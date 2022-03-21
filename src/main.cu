@@ -28,6 +28,7 @@ using it = unsigned long long;
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <time.h>
 
 #include <cuda.h>
@@ -89,9 +90,26 @@ int main() {
   */  
     // #include <tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
-    // #include <tests/indirect_copy.test>
+    // #include <kernels/indirect/tests/indirect_copy.test>
     
-    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
+    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
+
+    N = pow(2, 14);
+    std::vector<it> indxs(N), indxs_copy(N);
+
+    uncoalesced_access_shuffle_size<it,true>(indxs.data(), N, 64, 2048, true);
+    
+    std::copy(indxs.begin(), indxs.end(), indxs_copy.begin());
+    std::sort(indxs_copy.begin(), indxs_copy.end());
+    for(int i=0; i < N; ++i) {
+        if(indxs_copy[i] != i) {
+            cout << "Fail at "<<i << ": " << indxs_copy[i]<< endl;
+            for(int j=0; j<10; ++j) {
+                cout << i+j << " : " << indxs_copy[i+j]<<endl;
+            }
+            return -1;
+        }
+    }
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
