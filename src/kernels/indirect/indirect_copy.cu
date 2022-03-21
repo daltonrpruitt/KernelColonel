@@ -156,9 +156,10 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
 #ifdef DEBUG
             for(int i=0; i < shuffle_size*3; i+=shuffle_size/4) {
                 for(int j=0; j < 5; ++j) {
-                    unsigned long long curr_idx = k-2+j;
-                    cout << std::setw(10) << in[curr_idx] << "  |" << std::setw(10) << indices[curr_idx] <<"  |" << std::setw(10) << out[curr_idx] << endl; 
+                    long long curr_idx = i-2+j; if(curr_idx < 0) continue;
+                    cout << std::setw(10) << (long long)(in[curr_idx]) << "  |" << std::setw(10) << indices[curr_idx] <<"  |" << std::setw(10) << (long long)(out[curr_idx]) << endl; 
                 }
+                for(int k=0; k<40; ++k) {cout << "-";} cout << endl;
             }      
 #endif
             return true;
