@@ -30,7 +30,7 @@
             "console": "integratedTerminal", 
             "cwd": "${workspaceFolder}",
             "args": [
-                "output/Bayonet/2022-03-10_12-20-04"
+                "${input:folderName}"
             ]
         },
         {
@@ -63,5 +63,18 @@
                 }
             ]
         }
+    ],
+    "inputs": [
+		{
+			"id": "folderName",
+			"type": "pickString",
+			"default": "${workspaceFolder}/output/Bayonet/2022-03-23_10-40-15",
+			"description": "The folder to plot for.",
+            "options": [
+                "${workspaceFolder}/output/Bayonet/2022-03-18_09-53-36",
+                "${workspaceFolder}/output/Bayonet/2022-03-17_16-31-12",
+                "${workspaceFolder}/output/Bayonet/2022-03-23_10-40-15"
+            ]
+		}
     ]
 }

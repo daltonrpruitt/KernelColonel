@@ -58,7 +58,8 @@ field_strings = {
     "min": "Min Exec Time (ms)",
     "throughput": "Bandwidth (GB/s)",
     "avoid_bank_conflicts": "avd bnk conf",
-    "shuffle_size": "Shuff Sz"
+    "shuffle_size": "Shuff Sz",
+    "access_patten": "idx pattern"
 }
 
 field_bounds = {
@@ -68,26 +69,43 @@ field_bounds = {
     # "throughput": [0, -1]
 }
 
+fields_for_logscale = [
+    "elements",
+    "shuffle_size"
+]
+
+
 kxc = kernel_extra_configs
 
 uncoal = "uncoalesced_reuse_gen_single_ilp"
 
 # Reference for inputs...
-# all_data, kernel_name, x_field, y_field, 
+# kernel_name, x_field, y_field, 
 #   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
 plot_configs = [
+    ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
+            ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
+            ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    
+    [uncoal, "occupancy", "fraction_of_max_bandwidth", 
+        ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "occupancy", "fraction_of_max_bandwidth",
+            ["shuffle_size","ILP"], ["avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
+             ["ILP","occupancy"], "avoid_bank_conflicts", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    
+    
     # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
     #     ["preload", "avoid_bank_conflicts", "ILP"], "shuffle_size", kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."],
-    # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth",
-    #         ["shuffle_size","ILP"], ["preload", "avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
     # ["interleaved_fl_ilp", "occupancy", "fraction_of_max_bandwidth",
     #         "elements", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
     # ["interleaved_fl_ilp", "occupancy", "fraction_of_max_bandwidth",
     #         "ILP", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
-    ["interleaved_fl_ilp", "ILP", "fraction_of_max_bandwidth",
-            "kernel_type", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
-    ["interleaved_fl_ilp", "elements", "fraction_of_max_bandwidth",
-            "kernel_type", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    # ["interleaved_fl_ilp", "ILP", "fraction_of_max_bandwidth",
+    #         "kernel_type", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    # ["interleaved_fl_ilp", "elements", "fraction_of_max_bandwidth",
+    #         "kernel_type", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
 ]
 
 def get_config_combos(d, fields):
@@ -96,7 +114,7 @@ def get_config_combos(d, fields):
         uniques.append(data[f].unique())
     product = itertools.product(*uniques)
     product_list = [i for i in product]
-    ic(product_list)
+    ic(fields,product_list)
     return product_list
 
 
@@ -119,7 +137,12 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
     # else:                                
     #     raise TypeError("Invalid type for fields to keep constant: "+str(type(fields_to_keep_constant)))
 
-    if len(unique_combos) > 32: 
+    if len(unique_combos) > 100: 
+        print("Error: Plotting", kernel_name, "for combos of", fields_to_keep_constant, "would generate", len(unique_combos), "unique plots.")
+        print("    Not continuing!")
+        return
+        
+    elif len(unique_combos) > 32: 
         print("Warning: Plotting", kernel_name, "with current configuration is about to generate", len(unique_combos), "unique plots...")
         print("Continue?...(y/n)", end="")
         if input().lower() != "y": 
@@ -134,10 +157,13 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
     for i, constants in enumerate(unique_combos):
         title_configs = ""
         filename_configs = ""
-        for j in range(len(fields_to_keep_constant)):
-            title_configs += fields_to_keep_constant[j]+"="+str(constants[j]) + (", " if j < len(fields_to_keep_constant) - 1 else "")
-            filename_configs += fields_to_keep_constant[j]+"-"+str(constants[j]) + ("_" if j < len(fields_to_keep_constant) - 1 else "")
-        filename = f"{architecture_str}_{filename_base}_{filename_configs}"
+        if len(constants) == 1 and len(unique_combos) == 1:
+            ic("Only need 1 chart; not adding config info to title or filename.")
+        else:
+            for j in range(len(fields_to_keep_constant)):
+                title_configs += fields_to_keep_constant[j]+"="+str(constants[j]) + (", " if j < len(fields_to_keep_constant) - 1 else "")
+                filename_configs += fields_to_keep_constant[j]+"-"+str(constants[j]) + ("_" if j < len(fields_to_keep_constant) - 1 else "")
+        filename = f"{architecture_str}_{filename_base}" + (f"_{filename_configs}" if filename_configs != "" else "")
         ic(title_configs)
         
         plt.close("all")
@@ -177,6 +203,9 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         if x_field in field_bounds: plt.xlim(field_bounds[x_field])
         if y_field in field_bounds: plt.ylim(field_bounds[y_field])
 
+        if x_field in fields_for_logscale: plt.xscale("log", basex=2)
+        if y_field in fields_for_logscale: plt.yscale("log", basey=2)
+
         # Work through and plot each unique multiplot trend
         for j, multi_plot_cur_vals in enumerate(multi_plot_field_unique_combos): 
             ic(multi_plot_cur_vals)
@@ -193,7 +222,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
                 t = type(val)
                 if t in (bool, np.bool_):
                     label_str += "T" if val else "F"
-                elif t in (int, np.int32, np.int64):
+                elif t in (int, np.int32, np.int64, np.float32, np.float64, str):
                     label_str += str(val)
                 else: 
                     raise TypeError("Invalid type for multiplot value: "+str(t))
@@ -207,7 +236,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
                      label=label_str
             )
     
-        plt.legend(loc="best")
+        plt.legend(loc="best", fontsize=6)
         plt.savefig(os.path.join(images_dir, filename) + ".png")
         plt.close()
 
