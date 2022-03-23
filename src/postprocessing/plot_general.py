@@ -134,10 +134,13 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
     for i, constants in enumerate(unique_combos):
         title_configs = ""
         filename_configs = ""
-        for j in range(len(fields_to_keep_constant)):
-            title_configs += fields_to_keep_constant[j]+"="+str(constants[j]) + (", " if j < len(fields_to_keep_constant) - 1 else "")
-            filename_configs += fields_to_keep_constant[j]+"-"+str(constants[j]) + ("_" if j < len(fields_to_keep_constant) - 1 else "")
-        filename = f"{architecture_str}_{filename_base}_{filename_configs}"
+        if len(constants) == 1 and len(unique_combos) == 1:
+            ic("Only need 1 chart; not adding config info to title or filename.")
+        else:
+            for j in range(len(fields_to_keep_constant)):
+                title_configs += fields_to_keep_constant[j]+"="+str(constants[j]) + (", " if j < len(fields_to_keep_constant) - 1 else "")
+                filename_configs += fields_to_keep_constant[j]+"-"+str(constants[j]) + ("_" if j < len(fields_to_keep_constant) - 1 else "")
+        filename = f"{architecture_str}_{filename_base}" + "_{filename_configs}" if filename_configs != "" else ""
         ic(title_configs)
         
         plt.close("all")
