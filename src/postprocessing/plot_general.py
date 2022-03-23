@@ -210,7 +210,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
                 t = type(val)
                 if t in (bool, np.bool_):
                     label_str += "T" if val else "F"
-                elif t in (int, np.int32, np.int64):
+                elif t in (int, np.int32, np.int64, np.float32, np.float64, str):
                     label_str += str(val)
                 else: 
                     raise TypeError("Invalid type for multiplot value: "+str(t))
