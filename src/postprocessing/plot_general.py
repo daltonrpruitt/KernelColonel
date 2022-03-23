@@ -58,7 +58,8 @@ field_strings = {
     "min": "Min Exec Time (ms)",
     "throughput": "Bandwidth (GB/s)",
     "avoid_bank_conflicts": "avd bnk conf",
-    "shuffle_size": "Shuff Sz"
+    "shuffle_size": "Shuff Sz",
+    "access_patten": "idx pattern"
 }
 
 field_bounds = {
