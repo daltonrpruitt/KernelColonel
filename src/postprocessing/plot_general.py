@@ -83,18 +83,29 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 # kernel_name, x_field, y_field, 
 #   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
 plot_configs = [
+    ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
+            ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
+            ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    
+    [uncoal, "occupancy", "fraction_of_max_bandwidth", 
+        ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "occupancy", "fraction_of_max_bandwidth",
+            ["shuffle_size","ILP"], ["avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
+             ["ILP","occupancy"], "avoid_bank_conflicts", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    
+    
     # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
     #     ["preload", "avoid_bank_conflicts", "ILP"], "shuffle_size", kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."],
-    # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth",
-    #         ["shuffle_size","ILP"], ["preload", "avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
     # ["interleaved_fl_ilp", "occupancy", "fraction_of_max_bandwidth",
     #         "elements", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
     # ["interleaved_fl_ilp", "occupancy", "fraction_of_max_bandwidth",
     #         "ILP", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
-    ["interleaved_fl_ilp", "ILP", "fraction_of_max_bandwidth",
-            "kernel_type", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
-    ["interleaved_fl_ilp", "elements", "fraction_of_max_bandwidth",
-            "kernel_type", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    # ["interleaved_fl_ilp", "ILP", "fraction_of_max_bandwidth",
+    #         "kernel_type", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    # ["interleaved_fl_ilp", "elements", "fraction_of_max_bandwidth",
+    #         "kernel_type", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
 ]
 
 def get_config_combos(d, fields):
