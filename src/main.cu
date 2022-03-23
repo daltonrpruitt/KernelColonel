@@ -91,8 +91,9 @@ int main() {
     // #include <tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
     // #include <kernels/indirect/tests/indirect_copy.test>
-    
+
     #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
+    #include <kernels/indirect/tests/indirect_copy_profiling.test>
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
