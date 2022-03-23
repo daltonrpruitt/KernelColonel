@@ -135,7 +135,8 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             cout << this->name << " with : "
                  << " shuffle size=" << shuffle_size 
                  << " ILP=" << ILP 
-                 << " access pattern=" << index_pattern_strings[idx_pattern] << endl;
+                 << " access pattern=" << index_pattern_strings[idx_pattern]
+                 << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
         bool local_check_result() override {

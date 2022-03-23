@@ -119,7 +119,8 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
         void output_config_info() override {
             cout << "InterleavedCopyFullLife with : "
                  << " Elements/cycle=" << elements 
-                 << " Blocks used="<< this->Gsz << endl;
+                 << " Blocks used="<< this->Gsz 
+                 << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
         float local_execute() override {

@@ -128,7 +128,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
                  <<" preloading?=" << preload_for_reuse 
                  << " avoiding bank conflicts?=" << avoid_bank_conflicts 
                  << " shuffle size=" << shuffle_size 
-                 << endl;
+                 << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
         float local_execute() override {

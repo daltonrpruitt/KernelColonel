@@ -182,7 +182,8 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
                  <<" preloading?=" << preload_for_reuse 
                  << " avoiding bank conflicts?=" << avoid_bank_conflicts 
                  << " shuffle size=" << shuffle_size 
-                 << " ILP=" << ILP << endl;
+                 << " ILP=" << ILP 
+                 << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
         float local_execute() override {

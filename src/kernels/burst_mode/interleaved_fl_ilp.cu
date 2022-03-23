@@ -168,7 +168,8 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             cout << "InterleavedCopyFullLife with : "
                  << " Elements/cycle=" << elements 
                  << " ILP=" << ILP 
-                 << " Blocks used="<< this->Gsz << endl;
+                 << " Blocks used="<< this->Gsz 
+                 << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
         float local_execute() override {
