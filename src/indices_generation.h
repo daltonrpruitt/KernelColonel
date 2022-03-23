@@ -123,7 +123,7 @@ int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_s
 
                     it final_idx = shuffle_block_start_idx + scan_local_start_idx + warp_local_idx_offset;
                     indxs[global_t_idx] = final_idx;
-                    if(output_sample) print_indices_sample(indxs, shuffle_size, idx);
+                    if(output_sample) print_indices_sample(indxs, shuffle_size, global_t_idx);
                 }
             }
         }
