@@ -224,7 +224,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
                      label=label_str
             )
     
-        plt.legend(loc="best")
+        plt.legend(loc="best", fontsize=6)
         plt.savefig(os.path.join(images_dir, filename) + ".png")
         plt.close()
 
