@@ -26,7 +26,7 @@ try:
     data = data.reset_index()
 
     for index, row in data.iterrows():    
-        node_gpu_info[row["node_name"].lower()] = row["architecture"]
+        node_gpu_info[row["node_name"]] = row["architecture"]
 
     ic(node_gpu_info)
 except FileNotFoundError as e:
