@@ -102,7 +102,7 @@ def get_config_combos(d, fields):
         uniques.append(data[f].unique())
     product = itertools.product(*uniques)
     product_list = [i for i in product]
-    ic(product_list)
+    ic(fields,product_list)
     return product_list
 
 
