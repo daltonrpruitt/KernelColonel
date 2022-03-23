@@ -36,26 +36,35 @@ def collate_csv(base_folder, kernel):
         post_fix = "_driver.csv"
         data = pd.read_csv(base_folder + "/" + filename,header=0)
     
+        has_configs = True
+        for cfg in configs:
+            if cfg not in data.columns:
+                has_configs = False
+                break
+        
+        if not has_configs:
+            print(filename, "does not have correct configs in contents!\nProcessing filenames for configs...")
+            
+            kernel_and_configs = filename[:filename.find(post_fix)]
+            # print(filename[len(kernel_type) + len(post_fix)])
 
-        kernel_and_configs = filename[:filename.find(post_fix)]
-        # print(filename[len(kernel_type) + len(post_fix)])
-
-        has_extra_config = len(kernel_and_configs) - len(kernel) > 1 # filename[len(kernel_type)-1].isdigit()
-        # print(kernel_and_configs, filename[filename.find(post_fix):])
-        # ic(filename[len(kernel_and_configs)-1])
-        if(has_extra_config):
-            search_start = len(kernel)
-            possible_vals = [v[1:] for v in re.findall(r'(_\d+|_[^_]+)', kernel_and_configs[search_start:])]
-            # print(possible_vals)
-            # exit()
-            assert(len(possible_vals) == len(configs))
-            for i, cfg in enumerate(configs):
-                val = None
-                if possible_vals[i] == "true": val = True
-                elif possible_vals[i] == "false": val = False
-                elif possible_vals[i].isdigit(): val = int(possible_vals[i])
-                data[cfg] = val
-            # kernel_and_configs = kernel_and_configs[:-int(np.log10(value))-2]
+            has_extra_config = len(kernel_and_configs) - len(kernel) > 1 # filename[len(kernel_type)-1].isdigit()
+            # print(kernel_and_configs, filename[filename.find(post_fix):])
+            # ic(filename[len(kernel_and_configs)-1])
+            if(has_extra_config):
+                search_start = len(kernel)
+                possible_vals = [v[1:] for v in re.findall(r'(_\d+|_[^_]+)', kernel_and_configs[search_start:])]
+                # print(possible_vals)
+                # exit()
+                assert(len(possible_vals) == len(configs))
+                for i, cfg in enumerate(configs):
+                    val = None
+                    if possible_vals[i] == "true": val = True
+                    elif possible_vals[i] == "false": val = False
+                    elif possible_vals[i].isdigit(): val = int(possible_vals[i])
+                    data[cfg] = val
+                # kernel_and_configs = kernel_and_configs[:-int(np.log10(value))-2]
+                
         main_df = main_df.append(data)
 
     if(len(main_df) == 0):
