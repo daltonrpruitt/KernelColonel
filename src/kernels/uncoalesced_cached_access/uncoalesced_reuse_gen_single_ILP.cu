@@ -36,35 +36,49 @@ __forceinline__ __host__ __device__
 void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
     // idx = blockIdx.x * blockDim.x + threadIdx.x; 
 
-    uint Sz = shuffle_size; 
-    uint num_warps = shuffle_size / 32;
+    // uint Sz = shuffle_size; 
+    uint warp_size = 32; // I do not think the algorithm I have is acutally general enough for different warp sizes
+    // uint num_warps = shuffle_size / 32;
+    uint warps_per_shuffle = shuffle_size / warp_size;
+    uint warps_per_shuffle_scan = warps_per_shuffle / warp_size;
+    // uint scans_per_shuffle = warp_size;
 
-    uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);  
+    uint warp_t_idx = threadIdx.x % warp_size;
+    uint logical_start_t_idx = idx + blockIdx.x * blockDim.x * (ILP-1);  
 
     for(int i=0; i < ILP; ++i) {
 
         // Preload data
         if constexpr(preload_for_reuse) {
-            vt tmp = gpu_in[local_start_idx + i*blockDim.x];
+            vt tmp = gpu_in[logical_start_t_idx + i*blockDim.x];
             if(tmp < 0) return; // all values should be > 0; this is just to ensure this write is not removed
         }
 
     }
 
 #ifdef SEPARATE_IDX_COMPUTATIONS_FROM_READS
-    unsigned long long access_idxs[ILP];
+    it access_idxs[ILP];
     for(int i=0; i < ILP; ++i) {
-        unsigned long long local_idx = local_start_idx + i*blockDim.x;
-        uint shuffle_b_idx = local_idx / Sz;
-        uint shuffle_t_idx = local_idx % Sz;
-        uint start_idx = shuffle_b_idx * Sz;
+        unsigned long long local_logical_t_idx = logical_start_t_idx + i*blockDim.x;
+        uint shuffle_block_idx = local_logical_t_idx / shuffle_size;
+        // uint shuffle_t_idx = local_logical_t_idx % shuffle_size;
+        // uint start_idx = shuffle_b_idx * Sz;
+        uint shuffle_warp_idx = ( local_logical_t_idx % shuffle_size ) / warp_size;
+        uint shuffle_scan_id = shuffle_warp_idx / warps_per_shuffle_scan;
+        uint shuffle_scan_warp_id = shuffle_warp_idx % warps_per_shuffle_scan;
+        uint scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
+        
+        it shuffle_block_start_idx = shuffle_block_idx * shuffle_size;
 
-
+        int warp_local_logical_t_idx_offset;
         if constexpr(!avoid_bank_conflicts) {
-            access_idxs[i] = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
+            warp_local_logical_t_idx_offset = ( shuffle_scan_id ) % warp_size + warp_t_idx*warp_size;
         } else {
-            access_idxs[i] = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
+            warp_local_logical_t_idx_offset = (warp_t_idx + shuffle_scan_id) % warp_size + warp_t_idx*warp_size;
         }
+        it final_idx = shuffle_block_start_idx + scan_local_start_idx + warp_local_logical_t_idx_offset;
+
+        access_idxs[i] = final_idx;
     }
 #endif
 
@@ -75,24 +89,25 @@ void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
 #ifdef SEPARATE_IDX_COMPUTATIONS_FROM_READS
         data_vals[i] = gpu_in[access_idxs[i]];
 #else
-        unsigned long long local_idx = local_start_idx + i*blockDim.x;
-        uint shuffle_b_idx = local_idx / Sz;
-        uint shuffle_t_idx = local_idx % Sz;
-        unsigned long long access_idx;
-        uint start_idx = shuffle_b_idx * Sz;
-        unsigned long long access_idx; 
-        if constexpr(!avoid_bank_conflicts) {
-            access_idx = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
-        } else {
-            access_idx = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
-        }
-        data_vals[i] = gpu_in[access_idx];
+        return;
+        // unsigned long long local_logical_t_idx = logical_start_t_idx + i*blockDim.x;
+        // uint shuffle_b_idx = local_logical_t_idx / Sz;
+        // uint shuffle_t_idx = local_logical_t_idx % Sz;
+        // unsigned long long access_idx;
+        // uint start_idx = shuffle_b_idx * Sz;
+        // unsigned long long access_idx; 
+        // if constexpr(!avoid_bank_conflicts) {
+        //     access_idx = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
+        // } else {
+        //     access_idx = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % Sz + start_idx;
+        // }
+        // data_vals[i] = gpu_in[access_idx];
 #endif
 
     }
 
     for(int i=0; i < ILP; ++i) {
-        gpu_out[local_start_idx + i*blockDim.x] = data_vals[i];
+        gpu_out[logical_start_t_idx + i*blockDim.x] = data_vals[i];
     }
 }
 
