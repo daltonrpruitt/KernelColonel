@@ -176,35 +176,52 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
 
         bool local_check_result() override {
             bool pass = true;
-            int num_warps = shuffle_size / 32;
-            unsigned long long global_tidx = 0;
-            for(int i=0; i < this->N / shuffle_size; ++i) {
-                int start_idx = i * shuffle_size;
-                for (int j=0; j < shuffle_size; ++j){
-                    global_tidx = start_idx + j;
+            // int num_warps = shuffle_size / 32;
+            it global_t_idx = 0;
+            int warps_per_shuffle = shuffle_size / warp_size;
+            int warps_per_shuffle_scan = warps_per_shuffle / warp_size;
+            int scans_per_shuffle = warp_size;
+            for(int shuffle_block_idx=0; shuffle_block_idx < N / shuffle_size; ++shuffle_block_idx) {
+                if(!pass) break;
+                int shuffle_block_start_idx = shuffle_block_idx * shuffle_size;
+            
+                for(int shuffle_scan_id=0; shuffle_scan_id<scans_per_shuffle; shuffle_scan_id++) {
+                    if(!pass) break;
+                    
+                    for(int shuffle_scan_warp_id=0; shuffle_scan_warp_id<warps_per_shuffle_scan; shuffle_scan_warp_id++) {
+                        if(!pass) break;
+                        it scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
 
-                    uint shuffle_t_idx = global_tidx % shuffle_size;
-                    vt val = 0;
-                    if constexpr(!avoid_bank_conflicts) {
-                        val = in[( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx];
-                    } else {
-                        val = in[( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % shuffle_size + start_idx];
+                        for(int warp_t_idx=0; warp_t_idx<warp_size; ++warp_t_idx) {
+                            global_t_idx = shuffle_block_start_idx + (shuffle_scan_id * warps_per_shuffle_scan + shuffle_scan_warp_id)*warp_size + warp_t_idx; 
+                            
+                            int warp_local_idx_offset;
+                            if constexpr(!avoid_bank_conflicts) {
+                                warp_local_idx_offset = ( shuffle_scan_id ) % warp_size + warp_t_idx*warp_size;
+                            } else {
+                                warp_local_idx_offset = (warp_t_idx + shuffle_scan_id) % warp_size + warp_t_idx*warp_size;
+                            }
+                            
+                            it final_idx = shuffle_block_start_idx + scan_local_start_idx + warp_local_idx_offset;
+                            // indxs[global_t_idx] = final_idx;
+                            if (out[global_t_idx] != in[final_idx]) {
+                                cout << "Validation Failed at " << "t_idx=" << global_t_idx << ", accesses at "<< final_idx 
+                                    << " : in="<<in[final_idx] << " out="<< out[global_t_idx] << endl;
+                                pass = false;
+                                break;
+                            }
 
-                    }
-                    if (out[global_tidx] != val) {
-                        cout << "Validation Failed at " << global_tidx << ": in="<<in[global_tidx] << " out="<< out[global_tidx] << endl;
-                        pass = false;
-                        break;
+                            // if(output_sample) print_indices_sample(indxs, shuffle_size, idx);
+                        }
                     }
                 }
-                if(!pass) break;
             }
 
             if(!pass) {
                 cout << "Debug dump of in and out array: " << endl;
                 cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "OUT " << endl; 
                 int output_size = 10;
-                unsigned long long j = max((int)0, (int)(global_tidx - output_size/2));
+                unsigned long long j = max((int)0, (int)(global_t_idx - output_size/2));
                 for(int k=0; k < output_size; ++k, ++j) { 
                     cout << std::setw(10) << in[j] <<"  |" <<std::setw(10)<<out[j] << endl; 
                 }
