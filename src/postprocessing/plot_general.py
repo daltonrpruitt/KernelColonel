@@ -125,7 +125,12 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
     # else:                                
     #     raise TypeError("Invalid type for fields to keep constant: "+str(type(fields_to_keep_constant)))
 
-    if len(unique_combos) > 32: 
+    if len(unique_combos) > 100: 
+        print("Error: Plotting", kernel_name, "for combos of", fields_to_keep_constant, "would generate", len(unique_combos), "unique plots.")
+        print("    Not continuing!")
+        return
+        
+    elif len(unique_combos) > 32: 
         print("Warning: Plotting", kernel_name, "with current configuration is about to generate", len(unique_combos), "unique plots...")
         print("Continue?...(y/n)", end="")
         if input().lower() != "y": 
