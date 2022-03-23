@@ -28,6 +28,7 @@ using it = unsigned long long;
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <time.h>
 
 #include <cuda.h>
@@ -89,7 +90,7 @@ int main() {
   */  
     // #include <tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
-    // #include <tests/indirect_copy.test>
+    // #include <kernels/indirect/tests/indirect_copy.test>
     
     #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
 

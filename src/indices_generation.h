@@ -11,6 +11,8 @@ using std::endl;
 using std::vector;
 using std::string;
 
+int warp_size = 32;
+
 template<typename it>
 void print_indices_sample(it* indxs, int block_size, unsigned long long idx) {
     if(idx % block_size >= block_size / 2 - 2 &&
@@ -97,18 +99,33 @@ template<typename it, bool avoid_bank_conflicts>
 int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     assert(N % shuffle_size == 0);
     if(output_sample) cout << "uncoalesced indices (shuffle sz="<<shuffle_size<< ","<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
-    int num_warps = shuffle_size / 32;
-    for(int i=0; i < N / shuffle_size; ++i) {
-        int start_idx = i * shuffle_size;
-        for (int j=0; j < shuffle_size; ++j){
-            unsigned long long idx = start_idx + j;
-            uint shuffle_t_idx = idx % shuffle_size;
-            if constexpr(!avoid_bank_conflicts) {
-                indxs[idx] = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
-            } else {
-                indxs[idx] = ( (shuffle_t_idx % 32) * 32 + (shuffle_t_idx % 32 + shuffle_t_idx / num_warps ) % 32) % shuffle_size + start_idx;
+
+    int warps_per_shuffle = shuffle_size / warp_size;
+    int warps_per_shuffle_scan = warps_per_shuffle / warp_size;
+    int scans_per_shuffle = warp_size;
+    for(int shuffle_block_idx=0; shuffle_block_idx < N / shuffle_size; ++shuffle_block_idx) {
+        int shuffle_block_start_idx = shuffle_block_idx * shuffle_size;
+        
+        for(int shuffle_scan_id=0; shuffle_scan_id<scans_per_shuffle; shuffle_scan_id++) {
+            
+            for(int shuffle_scan_warp_id=0; shuffle_scan_warp_id<warps_per_shuffle_scan; shuffle_scan_warp_id++) {
+                it scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
+
+                for(int warp_t_idx=0; warp_t_idx<warp_size; ++warp_t_idx) {
+                    it global_t_idx = shuffle_block_start_idx + (shuffle_scan_id * warps_per_shuffle_scan + shuffle_scan_warp_id)*warp_size + warp_t_idx; 
+                    
+                    int warp_local_idx_offset;
+                    if constexpr(!avoid_bank_conflicts) {
+                        warp_local_idx_offset = ( shuffle_scan_id ) % warp_size + warp_t_idx*warp_size;
+                    } else {
+                        warp_local_idx_offset = (warp_t_idx + shuffle_scan_id) % warp_size + warp_t_idx*warp_size;
+                    }
+
+                    it final_idx = shuffle_block_start_idx + scan_local_start_idx + warp_local_idx_offset;
+                    indxs[global_t_idx] = final_idx;
+                    if(output_sample) print_indices_sample(indxs, shuffle_size, global_t_idx);
+                }
             }
-            if(output_sample) print_indices_sample(indxs, shuffle_size, idx);
         }
     }
     if(output_sample) cout << endl;

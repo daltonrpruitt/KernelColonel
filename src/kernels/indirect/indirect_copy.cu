@@ -141,7 +141,15 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
         bool local_check_result() override {
             for(int i=0; i<N; ++i){
                 if(in[indices[i]] != out[i]){
-                    cout << "Validation Failed at " << i << ": in="<<in[i] << " out="<< out[i] << endl;
+                    cout << "Validation Failed at " << i << ": in="<<in[i] << " idx=" << indices[i] << " out="<< out[i] << endl;
+                    
+                    cout << "Debug dump of in and out array: " << endl;
+                    cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
+                    int output_size = 20;
+                    unsigned long long j = max((int)0, (int)(i - output_size/2));
+                    for(int k=0; k < output_size; ++k, ++j) { 
+                        cout << std::setw(10) << in[j] << "  |" << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
+                    }      
                     return false;
                 }
             }

@@ -31,3 +31,6 @@ cubin*
 # The lack of existence of this file results in an 
 # informative error message and subsequent failure. 
 node_arch_translation.csv
+
+# Debug output
+*[debug|test]*.txt
