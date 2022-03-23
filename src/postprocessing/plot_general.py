@@ -80,7 +80,7 @@ kxc = kernel_extra_configs
 uncoal = "uncoalesced_reuse_gen_single_ilp"
 
 # Reference for inputs...
-# all_data, kernel_name, x_field, y_field, 
+# kernel_name, x_field, y_field, 
 #   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
 plot_configs = [
     # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
