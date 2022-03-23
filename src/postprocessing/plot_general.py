@@ -68,6 +68,10 @@ field_bounds = {
     # "throughput": [0, -1]
 }
 
+fields_for_logscale = {
+    "interleaved_fl_ilp": ["elements"],
+}
+
 kxc = kernel_extra_configs
 
 uncoal = "uncoalesced_reuse_gen_single_ilp"
@@ -179,6 +183,9 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
 
         if x_field in field_bounds: plt.xlim(field_bounds[x_field])
         if y_field in field_bounds: plt.ylim(field_bounds[y_field])
+
+        if x_field in fields_for_logscale[kernel_name]: plt.xscale("log", basex=2)
+        if y_field in fields_for_logscale[kernel_name]: plt.yscale("log", basey=2)
 
         # Work through and plot each unique multiplot trend
         for j, multi_plot_cur_vals in enumerate(multi_plot_field_unique_combos): 
