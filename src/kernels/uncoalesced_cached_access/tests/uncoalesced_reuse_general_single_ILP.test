@@ -1,88 +1,82 @@
 #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.htest>
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 1)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 1)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 1)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 1)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 1)
 
-/*
+
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 2)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 2)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 2)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 2)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 2)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 2)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 1024, 8)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 8)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 1024, 8)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  1024, 8)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 8)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  1024, 8)
     
 
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 1)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 1)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 1)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 1)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 1)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 1)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 2)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 2)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 2)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 2)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 2)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 2)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 8192, 8)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 8)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 8192, 8)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  8192, 8)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 8)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  8192, 8)
 
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 2048, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 2048, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 2048, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  2048, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  2048, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  2048, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 4096, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 4096, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 4096, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  4096, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  4096, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  4096, 4)
 
     // 8192 above
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 16384, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 16384, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 16384, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  16384, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  16384, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  16384, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 32768, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 32768, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 32768, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  32768, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  32768, 4)
-
-    UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 32768, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 32768, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  32768, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  32768, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  32768, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 65536, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 65536, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 65536, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  65536, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  65536, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  65536, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 131072, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 131072, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 131072, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  131072, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  131072, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  131072, 4)
 
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, false, 262144, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 262144, 4)
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  false, 262144, 4)
     UNCOAL_REUSE_GEN_SINGLE_ILP(false, true,  262144, 4)
-    UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  262144, 4)
-*/
+    // UNCOAL_REUSE_GEN_SINGLE_ILP(true,  true,  262144, 4)
