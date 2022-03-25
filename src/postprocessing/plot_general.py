@@ -185,7 +185,12 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         multi_plot_field_unique_combos = None
         
         # if type(fields_for_multiplotting) is list:
-        multi_plot_field_unique_combos = get_config_combos(multi_local_data, fields_for_multiplotting)
+        if len(fields_for_multiplotting) == 1:
+            multi_local_data.sort_values(fields_for_multiplotting[0], inplace=True, kind="stable")
+            tmp_list = multi_local_data[fields_for_multiplotting[0]].unique()
+            multi_plot_field_unique_combos = [ [i] for i in tmp_list]
+        else: 
+            multi_plot_field_unique_combos = get_config_combos(multi_local_data, fields_for_multiplotting)
         # elif type(fields_for_multiplotting) is str:
         #     multi_plot_field_unique_combos = multi_local_data[fields_for_multiplotting].unique()
         # else:                                
