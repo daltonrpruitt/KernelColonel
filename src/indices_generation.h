@@ -202,6 +202,8 @@ static const vector<pfunc_t> index_patterns = {
     strided_no_conflict_indices<it>,
     uncoalesced_access_shuffle_size<it, false>,
     uncoalesced_access_shuffle_size<it, true>,
+    sector_based_uncoalesced_access<vt, it, false>,
+    sector_based_uncoalesced_access<vt, it, true>,
     random_indices<it>
 };
 
@@ -211,7 +213,9 @@ enum indices_pattern {
     STRIDED_BLOCKSZ_NO_BANK_CONFLICTS = 2,
     UNCOALESCED_SHUFFLESZ = 3,
     UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS = 4,
-    RANDOM_BLOCKED_SHUFFLESZ = 5
+    SECTOR_BASED_UNCOALESCED_SHUFFLESZ = 5,
+    SECTOR_BASED_UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS = 6,
+    RANDOM_BLOCKED_SHUFFLESZ = 7
 };
 
 static const vector<string> index_pattern_strings {
@@ -220,5 +224,7 @@ static const vector<string> index_pattern_strings {
     "strided_block_size_no_bank_conflicts",
     "uncoalesced_shuffle_size",
     "uncoalesced_shuffle_size_no_bank_conflicts",
+    "sector_based_uncoalesced_access",
+    "sector_based_uncoalesced_access_no_bank_conflicts",
     "random_blocked_shuffle_size"
 };
