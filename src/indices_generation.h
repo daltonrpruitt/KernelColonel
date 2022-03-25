@@ -132,11 +132,17 @@ int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_s
     return 0;
 }
 
-template<typename it, bool avoid_bank_conflicts>
-int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
+template<typename vt, typename it, bool avoid_bank_conflicts>
+int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute_capability_major, int shuffle_size, bool output_sample = false){
     assert(N % shuffle_size == 0);
-    if(output_sample) cout << "uncoalesced indices (shuffle sz="<<shuffle_size<< ","<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
+    int sector_size = 32; // Bytes
+    int sectors_per_transaction = 1; // Before Volta
+    if(compute_capability_major >= 7) { sectors_per_transaction = 2;} // Volta and after
+    int stride = sector_size * sectors_per_transaction / 
 
+    if(output_sample) cout << "sector-based uncoalesced pattern (shuffle sz="<<shuffle_size<< ", stride="<<stride
+        << ", "<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
+    
     int warps_per_shuffle = shuffle_size / warp_size;
     int warps_per_shuffle_scan = warps_per_shuffle / warp_size;
     int scans_per_shuffle = warp_size;
