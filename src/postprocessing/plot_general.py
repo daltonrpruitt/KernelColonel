@@ -83,11 +83,11 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 # kernel_name, x_field, y_field, 
 #   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
 plot_configs = [
-    # ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
-    #         ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
+            ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
 
-    # ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
-    #         ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
+            ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
 
     ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
             ["access_pattern","occupancy"], "ILP", "indirect", "Indirect BW vs Occup."],
@@ -95,14 +95,14 @@ plot_configs = [
     ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
             ["access_pattern","ILP"], "shuffle_size", "indirect", "Indirect BW vs Occup."],
     
-    # [uncoal, "occupancy", "fraction_of_max_bandwidth", 
-    #     ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "occupancy", "fraction_of_max_bandwidth", 
+        ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
 
-    # [uncoal, "occupancy", "fraction_of_max_bandwidth",
-    #         ["shuffle_size","ILP"], ["avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "occupancy", "fraction_of_max_bandwidth",
+            ["shuffle_size","ILP"], ["avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
 
-    # [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
-    #          ["ILP","occupancy"], "avoid_bank_conflicts", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+    [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
+             ["ILP","occupancy"], "avoid_bank_conflicts", "uncoal_ilp", "Uncoalesced BW vs Occup."],
 
     [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
             ["avoid_bank_conflicts","occupancy"], "ILP", "uncoal_ilp", "Uncoalesced BW vs Occup."],
