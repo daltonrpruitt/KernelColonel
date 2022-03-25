@@ -144,8 +144,8 @@ int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute
         << ", "<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
     
     int warps_per_shuffle = shuffle_size / warp_size;
-    int warps_per_shuffle_scan = warps_per_shuffle / warp_size;
-    int scans_per_shuffle = warp_size;
+    int warps_per_shuffle_scan = warps_per_shuffle / stride;
+    int scans_per_shuffle = stride;
     for(int shuffle_block_idx=0; shuffle_block_idx < N / shuffle_size; ++shuffle_block_idx) {
         int shuffle_block_start_idx = shuffle_block_idx * shuffle_size;
         
@@ -159,9 +159,9 @@ int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute
                     
                     int warp_local_idx_offset;
                     if constexpr(!avoid_bank_conflicts) {
-                        warp_local_idx_offset = ( shuffle_scan_id ) % warp_size + warp_t_idx*warp_size;
+                        warp_local_idx_offset = ( shuffle_scan_id ) % stride + warp_t_idx*stride;
                     } else {
-                        warp_local_idx_offset = (warp_t_idx + shuffle_scan_id) % warp_size + warp_t_idx*warp_size;
+                        warp_local_idx_offset = (warp_t_idx + shuffle_scan_id) % stride + warp_t_idx*stride;
                     }
 
                     it final_idx = shuffle_block_start_idx + scan_local_start_idx + warp_local_idx_offset;
