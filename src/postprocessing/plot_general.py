@@ -83,18 +83,32 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 # kernel_name, x_field, y_field, 
 #   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
 plot_configs = [
-    ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
-            ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    # ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
+    #         ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+
+    # ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
+    #         ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+
     ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
-            ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+            ["access_pattern","occupancy"], "ILP", "indirect", "Indirect BW vs Occup."],
+
+    ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
+            ["access_pattern","ILP"], "shuffle_size", "indirect", "Indirect BW vs Occup."],
     
+    # [uncoal, "occupancy", "fraction_of_max_bandwidth", 
+    #     ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+
+    # [uncoal, "occupancy", "fraction_of_max_bandwidth",
+    #         ["shuffle_size","ILP"], ["avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
+
+    # [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
+    #          ["ILP","occupancy"], "avoid_bank_conflicts", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+
+    [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
+            ["avoid_bank_conflicts","occupancy"], "ILP", "uncoal_ilp", "Uncoalesced BW vs Occup."],
+
     [uncoal, "occupancy", "fraction_of_max_bandwidth", 
         ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
-    [uncoal, "occupancy", "fraction_of_max_bandwidth",
-            ["shuffle_size","ILP"], ["avoid_bank_conflicts"], "uncoal_ilp", "Uncoalesced BW vs Occup."],
-    [uncoal, "shuffle_size", "fraction_of_max_bandwidth",
-             ["ILP","occupancy"], "avoid_bank_conflicts", "uncoal_ilp", "Uncoalesced BW vs Occup."],
-    
     
     # ["uncoalesced_reuse_gen_single_ilp", "occupancy", "fraction_of_max_bandwidth", 
     #     ["preload", "avoid_bank_conflicts", "ILP"], "shuffle_size", kxc[uncoal][-1], "uncoal_ilp", "Uncoalesced BW vs Occup."],
@@ -175,7 +189,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         if len(multi_local_data) == 0: 
             print(f"Configuration of {title_configs} does not have enough data to plot!")
             continue
-        elif len(multi_local_data) <= 4: 
+        elif len(multi_local_data) < 2:
             print(f"Configuration of {title_configs} only has {len(multi_local_data)} values to plot!")
             print("Plot anyway? (y/n)")
             inpt = input()
@@ -185,7 +199,12 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         multi_plot_field_unique_combos = None
         
         # if type(fields_for_multiplotting) is list:
-        multi_plot_field_unique_combos = get_config_combos(multi_local_data, fields_for_multiplotting)
+        if len(fields_for_multiplotting) == 1:
+            multi_local_data.sort_values(fields_for_multiplotting[0], inplace=True, kind="stable")
+            tmp_list = multi_local_data[fields_for_multiplotting[0]].unique()
+            multi_plot_field_unique_combos = [ [i] for i in tmp_list]
+        else: 
+            multi_plot_field_unique_combos = get_config_combos(multi_local_data, fields_for_multiplotting)
         # elif type(fields_for_multiplotting) is str:
         #     multi_plot_field_unique_combos = multi_local_data[fields_for_multiplotting].unique()
         # else:                                
@@ -216,7 +235,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
             label_str = ""
             for k, field in enumerate(fields_for_multiplotting):
                 val = multi_plot_cur_vals[k]
-                plot_local_data = plot_local_data.loc[plot_local_data[field] == val]
+                plot_local_data = (plot_local_data.loc[plot_local_data[field] == val]).sort_values(x_field, kind="stable")
                 label_str += field_strings[field] if field in field_strings else field
                 label_str += "="
                 t = type(val)
