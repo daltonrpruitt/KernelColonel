@@ -221,7 +221,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
             label_str = ""
             for k, field in enumerate(fields_for_multiplotting):
                 val = multi_plot_cur_vals[k]
-                plot_local_data = plot_local_data.loc[plot_local_data[field] == val]
+                plot_local_data = (plot_local_data.loc[plot_local_data[field] == val]).sort_values(x_field, kind="stable")
                 label_str += field_strings[field] if field in field_strings else field
                 label_str += "="
                 t = type(val)
