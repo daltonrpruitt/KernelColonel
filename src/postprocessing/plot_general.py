@@ -175,7 +175,7 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         if len(multi_local_data) == 0: 
             print(f"Configuration of {title_configs} does not have enough data to plot!")
             continue
-        elif len(multi_local_data) <= 4: 
+        elif len(multi_local_data) < 2:
             print(f"Configuration of {title_configs} only has {len(multi_local_data)} values to plot!")
             print("Plot anyway? (y/n)")
             inpt = input()
