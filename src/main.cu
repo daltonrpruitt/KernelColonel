@@ -3,6 +3,7 @@
 
 #define DEBUG
 
+using vt = double;
 using it = unsigned long long;
 #include <indices_generation.h>
 
@@ -38,7 +39,6 @@ using it = unsigned long long;
 #define STRINGIFY( x ) #x
 
 
-using vt = double;
 using std::cout;
 using std::endl;
 using std::string;
