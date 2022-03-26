@@ -132,6 +132,49 @@ int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_s
     return 0;
 }
 
+template<typename vt, typename it, bool avoid_bank_conflicts>
+int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute_capability_major, int shuffle_size, bool output_sample = false){
+    assert(N % shuffle_size == 0);
+    int sector_size = 32; // Bytes
+    int sectors_per_transaction = 1; // Before Volta
+    if(compute_capability_major >= 7) { sectors_per_transaction = 2;} // Volta and after
+    int stride = sector_size * sectors_per_transaction / sizeof(vt); 
+
+    if(output_sample) cout << "sector-based uncoalesced pattern (shuffle sz="<<shuffle_size<< ", stride="<<stride
+        << ", "<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
+    
+    int warps_per_shuffle = shuffle_size / warp_size;
+    int warps_per_shuffle_scan = warps_per_shuffle / stride;
+    int scans_per_shuffle = stride;
+    for(int shuffle_block_idx=0; shuffle_block_idx < N / shuffle_size; ++shuffle_block_idx) {
+        int shuffle_block_start_idx = shuffle_block_idx * shuffle_size;
+        
+        for(int shuffle_scan_id=0; shuffle_scan_id<scans_per_shuffle; shuffle_scan_id++) {
+            
+            for(int shuffle_scan_warp_id=0; shuffle_scan_warp_id<warps_per_shuffle_scan; shuffle_scan_warp_id++) {
+                it scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
+
+                for(int warp_t_idx=0; warp_t_idx<warp_size; ++warp_t_idx) {
+                    it global_t_idx = shuffle_block_start_idx + (shuffle_scan_id * warps_per_shuffle_scan + shuffle_scan_warp_id)*warp_size + warp_t_idx; 
+                    
+                    int warp_local_idx_offset;
+                    if constexpr(!avoid_bank_conflicts) {
+                        warp_local_idx_offset = ( shuffle_scan_id ) % stride + warp_t_idx*stride;
+                    } else {
+                        warp_local_idx_offset = (warp_t_idx + shuffle_scan_id) % stride + warp_t_idx*stride;
+                    }
+
+                    it final_idx = shuffle_block_start_idx + scan_local_start_idx + warp_local_idx_offset;
+                    indxs[global_t_idx] = final_idx;
+                    if(output_sample) print_indices_sample(indxs, shuffle_size, global_t_idx);
+                }
+            }
+        }
+    }
+    if(output_sample) cout << endl;
+    return 0;
+}
+
 template<typename it>
 int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "random indices : ";
@@ -159,6 +202,8 @@ static const vector<pfunc_t> index_patterns = {
     strided_no_conflict_indices<it>,
     uncoalesced_access_shuffle_size<it, false>,
     uncoalesced_access_shuffle_size<it, true>,
+    sector_based_uncoalesced_access<vt, it, false>,
+    sector_based_uncoalesced_access<vt, it, true>,
     random_indices<it>
 };
 
@@ -168,7 +213,9 @@ enum indices_pattern {
     STRIDED_BLOCKSZ_NO_BANK_CONFLICTS = 2,
     UNCOALESCED_SHUFFLESZ = 3,
     UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS = 4,
-    RANDOM_BLOCKED_SHUFFLESZ = 5
+    SECTOR_BASED_UNCOALESCED_SHUFFLESZ = 5,
+    SECTOR_BASED_UNCOALESCED_SHUFFLESZ_NO_BANK_CONFLICTS = 6,
+    RANDOM_BLOCKED_SHUFFLESZ = 7
 };
 
 static const vector<string> index_pattern_strings {
@@ -177,5 +224,7 @@ static const vector<string> index_pattern_strings {
     "strided_block_size_no_bank_conflicts",
     "uncoalesced_shuffle_size",
     "uncoalesced_shuffle_size_no_bank_conflicts",
+    "sector_based_uncoalesced_access",
+    "sector_based_uncoalesced_access_no_bank_conflicts",
     "random_blocked_shuffle_size"
 };

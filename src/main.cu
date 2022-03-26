@@ -3,6 +3,7 @@
 
 #define DEBUG
 
+using vt = double;
 using it = unsigned long long;
 #include <indices_generation.h>
 
@@ -38,7 +39,6 @@ using it = unsigned long long;
 #define STRINGIFY( x ) #x
 
 
-using vt = double;
 using std::cout;
 using std::endl;
 using std::string;
@@ -90,10 +90,11 @@ int main() {
   */  
     // #include <tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
-    // #include <kernels/indirect/tests/indirect_copy.test>
+    // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
+    #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
 
-    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
-    #include <kernels/indirect/tests/indirect_copy_profiling.test>
+    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
+    // #include <kernels/indirect/tests/indirect_copy_profiling.test>
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
