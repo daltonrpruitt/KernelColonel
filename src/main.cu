@@ -90,8 +90,8 @@ int main() {
   */  
     // #include <tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
-    #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
     #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
+    #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
 
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
