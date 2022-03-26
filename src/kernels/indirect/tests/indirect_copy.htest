@@ -1,0 +1,10 @@
+#ifndef INDIRECT_COPY_DRIVER
+#define INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN) indirect_copy_ ## SHFSZ ## _ ## ILP ## _ ## IDX_PATTERN ## _driver
+#endif
+
+#ifndef INDIRECT_COPY
+#define INDIRECT_COPY(SHFSZ, ILP, IDX_PATTERN) { MicrobenchmarkDriver<IndirectCopyContext<vt, it, SHFSZ, ILP, IDX_PATTERN>> \
+      INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN)(N, bs_vec, output_dir+ XSTRINGIFY( INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN).check_then_run_kernels()) {return -1;}  \
+    total_runs += INDIRECT_COPY_DRIVER(SHFSZ, ILP, IDX_PATTERN).get_total_runs(); }
+#endif
