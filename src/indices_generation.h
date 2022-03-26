@@ -138,7 +138,7 @@ int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute
     int sector_size = 32; // Bytes
     int sectors_per_transaction = 1; // Before Volta
     if(compute_capability_major >= 7) { sectors_per_transaction = 2;} // Volta and after
-    int stride = sector_size * sectors_per_transaction; 
+    int stride = sector_size * sectors_per_transaction / sizeof(vt); 
 
     if(output_sample) cout << "sector-based uncoalesced pattern (shuffle sz="<<shuffle_size<< ", stride="<<stride
         << ", "<< (avoid_bank_conflicts?"no bank conflicts":"with bank conflicts")<<"): ";
