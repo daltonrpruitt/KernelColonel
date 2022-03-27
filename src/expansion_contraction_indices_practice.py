@@ -59,11 +59,35 @@ def main():
     use_warp_locality = False
 
     expansion_contraction_indices(indices, N, use_warp_locality, stream_size, reads_per_8_writes)
-    for i in range(reads_per_8_writes*4):
-        print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
-    indices = np.sort(indices)
-    for i in range(reads_per_8_writes*4):
-        print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
+    sorted_indices = np.sort(indices)
+    unique, counts = np.unique(sorted_indices, return_counts=True)
+    start, stop = 0, 10
+    print(f"indices[{start}:{10}] = \n{np.reshape(indices, newshape=(-1, 32))[start:10]}")
+    # for i in range(0,reads_per_8_writes*4, reads_per_8_writes):
+    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
+    # indices = np.sort(indices)
+    # for i in range(reads_per_8_writes*4):
+    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
+   
+    # assert np.all(unique == np.linspace(0,len(unique),dtype=np.int32)), "Missed a value!"
+    for i in range(len(unique)):
+        if i != unique[i]:
+            print("Missed a value!")
+            print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
+            return
+    for i in range(len(counts)):
+        if 8 / reads_per_8_writes != counts[i]:
+            print("Missed a value!")
+            print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
+            return
+    # assert np.all(counts == 8 / reads_per_8_writes), "Wrong count of a value!"
+
+
+    # for i in range(reads_per_8_writes*4):
+    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
+    # indices = np.sort(indices)
+    # for i in range(reads_per_8_writes*4):
+    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
 
     # expansion_contraction_indices(indices, N, False, 1024, 1)
     
