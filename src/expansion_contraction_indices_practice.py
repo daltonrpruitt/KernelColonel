@@ -79,19 +79,9 @@ def check_contraction(N, stream_size, degree_of_contraction, debug=False):
     expansion_contraction_indices(indices, N, stream_size, degree_of_contraction*8)
     sorted_indices = np.sort(indices)
     unique, counts = np.unique(sorted_indices, return_counts=True)
-    start, stop = 0, 10
+    start, stop = 0, 12
     if(debug): print(f"indices[{start}:{stop}] = \n{np.reshape(indices, newshape=(-1, 32))[start:stop]}")
-    # for i in range(len(unique)):
-    #     if i != unique[i]:
-    #         print("Missed a value!")
-    #         print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
-    #         return False
-    # for i in range(len(counts)):
-    #     if degree_of_contraction != counts[i]:
-    #         print("Missed a value!")
-    #         print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
-    #         return False
-
+    assert np.max(indices) == N-1
 
 
 np.set_printoptions(linewidth=np.inf)
