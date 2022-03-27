@@ -16,9 +16,10 @@ def expansion_indices(indices, N, use_warp_locality, stream_size, degree_of_expa
     warps_per_stream = stream_size // warp_size
     for i in range(N):
         warp_id = i // warp_size
-        warp_stream_id = warp_id % warps_per_stream
+        stream_warp_id = warp_id % warps_per_stream
+        stream_id = warp_id // (warps_per_stream * degree_of_expansion)
         thread_idx = i % warp_size
-        access_idx = warp_id // (warps_per_stream * degree_of_expansion) * stream_size + warp_stream_id * stream_size + thread_idx
+        access_idx = stream_id * stream_size  + stream_warp_id * warp_size + thread_idx
         indices[i] = int(access_idx)
 
 
