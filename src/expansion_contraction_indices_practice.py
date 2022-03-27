@@ -24,14 +24,25 @@ def expansion_indices(indices, N, stream_size, degree_of_expansion):
 
 def contraction_indices(indices, N, stream_size, degree_of_contraction):
     assert(N % stream_size == 0)
+    degree_of_contraction = int(degree_of_contraction)
     warps_per_stream = stream_size // warp_size
-    for i in range(N):
-        warp_id = i // warp_size
+    reads_per_stream = degree_of_contraction
+
+    for i in range(N):  
         thread_idx = i % warp_size
-        start_idx = warp_id // warps_per_stream * stream_size
-        for j in range(degree_of_contraction):
-            access_idx = start_idx + j*stream_size+ thread_idx
-            indices[i*degree_of_contraction*warp_size + j*warp_size] = access_idx
+        write_warp_id = i // warp_size
+        actual_warp_id = write_warp_id // reads_per_stream
+        local_actual_warp_id = actual_warp_id % warps_per_stream
+        stream_id = actual_warp_id // warps_per_stream
+        stream_start_idx = stream_id * (stream_size * degree_of_contraction)
+        
+        warp_offset = local_actual_warp_id * warp_size
+
+        read_id = write_warp_id % reads_per_stream
+        read_offset = read_id * stream_size
+
+        idx = stream_start_idx + warp_offset + read_offset + thread_idx
+        indices[i] = idx
 
 
 def expansion_contraction_indices(indices, N, stream_size, reads_per_8_writes):
