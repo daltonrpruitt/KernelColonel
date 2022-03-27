@@ -45,47 +45,53 @@ def expansion_contraction_indices(indices, N, stream_size, reads_per_8_writes):
         print("Error!")
 
 
-np.set_printoptions(linewidth=np.inf)
-def main():
-
-    N = 2**20
+def check_expansion(N, stream_size, degree_of_expansion, debug=False):
     indices = np.zeros(N, dtype=np.int32)
-    reads_per_8_writes = 4
-    stream_size = 1024
-    use_warp_locality = False
-
-    expansion_contraction_indices(indices, N, use_warp_locality, stream_size, reads_per_8_writes)
+    expansion_contraction_indices(indices, N, stream_size, 8/degree_of_expansion)
     sorted_indices = np.sort(indices)
     unique, counts = np.unique(sorted_indices, return_counts=True)
     start, stop = 0, 10
-    print(f"indices[{start}:{10}] = \n{np.reshape(indices, newshape=(-1, 32))[start:10]}")
-    # for i in range(0,reads_per_8_writes*4, reads_per_8_writes):
-    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
-    # indices = np.sort(indices)
-    # for i in range(reads_per_8_writes*4):
-    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
-   
-    # assert np.all(unique == np.linspace(0,len(unique),dtype=np.int32)), "Missed a value!"
+    if(debug): print(f"indices[{start}:{stop}] = \n{np.reshape(indices, newshape=(-1, 32))[start:stop]}")
     for i in range(len(unique)):
         if i != unique[i]:
             print("Missed a value!")
             print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
-            return
+            return False
     for i in range(len(counts)):
-        if 8 / reads_per_8_writes != counts[i]:
+        if degree_of_expansion != counts[i]:
             print("Missed a value!")
             print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
-            return
-    # assert np.all(counts == 8 / reads_per_8_writes), "Wrong count of a value!"
+            return False
+
+def check_contraction(N, stream_size, degree_of_contraction, debug=False):
+    indices = np.zeros(N, dtype=np.int32)
+    expansion_contraction_indices(indices, N, stream_size, degree_of_contraction*8)
+    sorted_indices = np.sort(indices)
+    unique, counts = np.unique(sorted_indices, return_counts=True)
+    start, stop = 0, 10
+    if(debug): print(f"indices[{start}:{stop}] = \n{np.reshape(indices, newshape=(-1, 32))[start:stop]}")
+    # for i in range(len(unique)):
+    #     if i != unique[i]:
+    #         print("Missed a value!")
+    #         print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
+    #         return False
+    # for i in range(len(counts)):
+    #     if degree_of_contraction != counts[i]:
+    #         print("Missed a value!")
+    #         print(f"indices[{max(0,i-5)}:{i+5}] = \n{unique[max(0,i-5):i+5]}")   
+    #         return False
 
 
-    # for i in range(reads_per_8_writes*4):
-    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
-    # indices = np.sort(indices)
-    # for i in range(reads_per_8_writes*4):
-    #     print(f"indices[{i*stream_size}:{i*stream_size + 4}] = \n{np.reshape(indices, newshape=(-1, 32))[i*stream_size:i*stream_size + 4]}")
 
-    # expansion_contraction_indices(indices, N, False, 1024, 1)
+np.set_printoptions(linewidth=np.inf)
+def main():
+
+    N = 2**20
+    # indices = np.zeros(N, dtype=np.int32)
+    # reads_per_8_writes = 4
+    # stream_size = 128
+    # check_expansion(N, 128, 2, True)
+    check_contraction(N, 64, 4, True)
     
 
 
