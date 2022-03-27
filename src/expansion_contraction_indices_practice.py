@@ -4,14 +4,12 @@ from icecream import ic
 
 warp_size = 32
 
-def sequential_indices(indices, N, use_warp_locality, stream_size):
+def sequential_indices(indices, N, stream_size):
     for i in range(N):
         indices[i] = i
 
 
-def expansion_indices(indices, N, use_warp_locality, stream_size, degree_of_expansion):
-    if use_warp_locality:
-        stream_size = warp_size #(32)
+def expansion_indices(indices, N, stream_size, degree_of_expansion):
     assert(N % stream_size == 0)
     warps_per_stream = stream_size // warp_size
     for i in range(N):
@@ -24,9 +22,7 @@ def expansion_indices(indices, N, use_warp_locality, stream_size, degree_of_expa
 
 
 
-def contraction_indices(indices, N, use_warp_locality, stream_size, degree_of_contraction):
-    if use_warp_locality:
-        stream_size = warp_size #(32)
+def contraction_indices(indices, N, stream_size, degree_of_contraction):
     assert(N % stream_size == 0)
     warps_per_stream = stream_size // warp_size
     for i in range(N):
@@ -38,13 +34,13 @@ def contraction_indices(indices, N, use_warp_locality, stream_size, degree_of_co
             indices[i*degree_of_contraction*warp_size + j*warp_size] = access_idx
 
 
-def expansion_contraction_indices(indices, N, use_warp_locality, stream_size, reads_per_8_writes):
+def expansion_contraction_indices(indices, N, stream_size, reads_per_8_writes):
     if reads_per_8_writes == 8:
-        return sequential_indices(indices, N, use_warp_locality, stream_size)
+        return sequential_indices(indices, N, stream_size)
     elif reads_per_8_writes < 8:
-        return expansion_indices(indices, N, use_warp_locality, stream_size, 8/reads_per_8_writes)
-    elif reads_per_8_writes < 8:
-        return contraction_indices(indices, N, use_warp_locality, stream_size, reads_per_8_writes/8)
+        return expansion_indices(indices, N, stream_size, 8/reads_per_8_writes)
+    elif reads_per_8_writes > 8:
+        return contraction_indices(indices, N, stream_size, reads_per_8_writes/8)
     else:
         print("Error!")
 
