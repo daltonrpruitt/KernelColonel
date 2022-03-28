@@ -31,9 +31,9 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int ILP>
+template<typename vt, typename it, int degree_of_contraction, int ILP>
 __forceinline__ __host__ __device__        
-void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
+void kernel_contraction(uint idx, vt* in, vt* out, it* indices){
     it indxs[ILP];
     uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);
     for(int i=0; i < ILP; ++i) {
@@ -50,15 +50,15 @@ void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
     }
 }
 
-template<typename vt, typename it, int ILP>
+template<typename vt, typename it, int reads_per_8_writes, int stream_size, int ILP>
 __global__        
-void kernel_for_regs_indirect_copy(uint idx, vt* in, vt* out, it* indices){
+void kernel_for_regs_expansion_contraction(uint idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);
 }
 
-template<typename vt, typename it, int shuffle_size, int ILP, indices_pattern idx_pattern>
-struct IndirectCopyContext : public KernelCPUContext<vt, it> {
+template<typename vt, typename it, int reads_per_8_writes, int stream_size, int ILP>
+struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
         // name = "Array_Copy";
@@ -93,7 +93,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        IndirectCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        ExpansionContractionContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "IndirectCopy";
 
@@ -104,7 +104,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             this->total_index_reads = N * index_reads_per_element;
             this->total_writes = N * writes_per_element;
         }
-        ~IndirectCopyContext(){}
+        ~ExpansionContractionContext(){}
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){
@@ -166,7 +166,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_indirect_copy<vt,it,ILP>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_expansion_contraction<vt,it,reads_per_8_writes,stream_size,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
