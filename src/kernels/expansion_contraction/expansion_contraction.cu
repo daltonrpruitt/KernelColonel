@@ -104,7 +104,8 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
 
         ExpansionContractionContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
-            this->name = "IndirectCopy";
+            this->name = "ExpansionContraction";
+
 
             this->Gsz /= ILP;
             assert(this->Gsz > 0);
