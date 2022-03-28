@@ -21,6 +21,7 @@
 #include <local_cuda_utils.h>
 #include <kernel_context.cu>
 #include <indices_generation.h>
+#include <kernels/indirect/indirect_copy.cu>
 
 #define DEBUG
 
@@ -54,7 +55,11 @@ template<typename vt, typename it, int reads_per_8_writes, int stream_size, int 
 __global__        
 void kernel_for_regs_expansion_contraction(uint idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
-    kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);
+    if constexpr(reads_per_8_writes > 8) {
+        kernel_contraction<vt, it, reads_per_8_writes/8,  ILP>(idx, in, out, indices);
+    } else {
+        kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);    
+    }
 }
 
 template<typename vt, typename it, int reads_per_8_writes, int stream_size, int ILP>
@@ -89,7 +94,11 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             __device__        
             void operator() (uint idx){
                 extern __shared__ int dummy[];
-                kernel_indirect_copy<vt, it, ILP>(idx, gpu_in, gpu_out, gpu_indices);
+                if constexpr(reads_per_8_writes > 8) {
+                    kernel_contraction<vt, it, reads_per_8_writes/8,  ILP>(idx, in, out, indices);
+                } else {
+                    kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);    
+                }
             }
         } ctx ;
 
