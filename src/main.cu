@@ -46,11 +46,15 @@ using std::to_string;
 
 // #define N (32*32*32 * 32 * 8)
 
-int main() {
+int main(int argc, char** argv) {
     timespec mainStart, mainEnd;
     clock_gettime(CLOCK_MONOTONIC, &mainStart);
     int total_runs = 0;
 
+    std::vector<int> inputs;
+    for(int i=1; i<argc; ++i){
+        inputs.push_back(atoi(argv[i]));
+    } 
 
 
     device_context dev_ctx;
