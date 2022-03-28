@@ -180,7 +180,7 @@ struct KernelCPUContext {
                 if(indices_size != 0) cout << " indices_sz="<<indices_size;
                 cerr << " !" << endl;
             }
-            initialized = true;
+            if(pass) initialized = true;
             return pass;
         }
 
