@@ -150,21 +150,44 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
         }
 
         bool local_check_result() override {
-            for(int i=0; i<N; ++i){
-                if(in[indices[i]] != out[i]){
-                    cout << "Validation Failed at " << i << ": in="<<in[i] << " idx=" << indices[i] << " out="<< out[i] << endl;
-                    
-                    cout << "Debug dump of in and out array: " << endl;
-                    cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
-                    int output_size = 20;
-                    unsigned long long j = max((int)0, (int)(i - output_size/2));
-                    for(int k=0; k < output_size; ++k, ++j) { 
-                        cout << std::setw(10) << in[j] << "  |" << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
-                    }      
-                    return false;
+            bool pass = true;
+            unsigned long long i=0;
+            if(degree_of_contraction > 0){
+                for(i=0; i<this->input_size; ++i){
+                    unsigned long long warp_id = i / warp_size;
+                    vt tmp=0;
+                    for(int j=0; j<degree_of_contraction; ++j) {
+                        tmp += indices[warp_id * degree_of_contraction * warp_size + warp_size * j + i%warp_size];
+                    }
+                    if(tmp != out[i]) {
+                        pass = false; 
+                        break;
+                    }
+
+                }
+            } else {
+                for(i=0; i<this->output_size; ++i){
+                    if(in[indices[i]] != out[i]){
+                        pass = false;
+                        break;
+                    }
                 }
             }
-            return true;
+            if (!pass) {
+                cout << "Validation Failed at " << i << ": in="<<in[i] << " idx=" << indices[i] << " out="<< out[i] << endl;
+                
+                cout << "Debug dump of in and out array: " << endl;
+                cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
+                int output_size = 20;
+                unsigned long long j = max((int)0, (int)(i - output_size/2));
+                for(int k=0; k < output_size; ++k, ++j) { 
+                    cout << std::setw(10) << in[j] << "  |" << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
+                }    
+                    }      
+                }    
+            // }
+            }
+            return pass;
         }
 
         // No change
