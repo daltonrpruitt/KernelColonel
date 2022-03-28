@@ -23,6 +23,7 @@ using it = unsigned long long;
 #include <kernels/burst_mode/interleaved_copy_full_life.cu>
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
 #include <kernels/indirect/indirect_copy.cu>
+#include <kernels/expansion_contraction/expansion_contraction.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -95,10 +96,13 @@ int main(int argc, char** argv) {
     // #include <tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
-    #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
+    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
 
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
+
+    #include <kernels/expansion_contraction/tests/expansion_contraction.test>
+
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
