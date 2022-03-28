@@ -1,15 +1,15 @@
 #pragma once
 /**
- * @file indirect_copy.cu
+ * @file expansion_contraction.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief 
  * @version 0.1
- * @date 2022-03-16
+ * @date 2022-03-28
  * 
- * Based on simple_indirection.cu 
- * Meant to be used to test various access patterns in an indirect manner. 
- * This allows for the pattern to be discerned at runtime to reflect actual 
- * irregular application conditions.
+ * Based on indirect_copy.cu 
+ * Meant to test different amounts of "expansion" and "contraction" as
+ * defined with respect to reads and writes that a kernel does. 
+ * Only tests basic copy and/or reduce. No complex arithmetic chains used. 
  */
 
 #include <iostream>
