@@ -133,9 +133,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
 
         void output_config_info() override {
             cout << this->name << " with : "
-                 << " shuffle size=" << shuffle_size 
+                 << " reads/write =" << float(reads_per_8_writes/8)
+                 << " stream size=" << stream_size 
                  << " ILP=" << ILP 
-                 << " access pattern=" << index_pattern_strings[idx_pattern]
                  << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
@@ -174,10 +174,10 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             this->register_usage = funcAttrib.numRegs;
         }
 
-    string get_extra_config_parameters() override { return "shuffle_size,ILP,access_pattern";}
+    string get_extra_config_parameters() override { return "reads_per_write,stream_size,ILP";}
     string get_extra_config_values() override { 
         stringstream out; 
-        out << to_string(shuffle_size) << "," << to_string(ILP) <<","<< index_pattern_strings[idx_pattern];
+        out << to_string(float(reads_per_8_writes/8)) << "," << to_string(stream_size) << "," << to_string(ILP);
         return out.str();
     }
 
