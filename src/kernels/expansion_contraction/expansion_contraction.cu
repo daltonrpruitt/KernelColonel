@@ -115,7 +115,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             unsigned long long total_size = 2 * N; 
             
             // max = 64 * 8 * 108 = 55296 ~ 0.6% of 8388608 elements of A100
-            int minimum_division = stream_size * (this->Bsz / warp_size) * dev_ctx->props_.multiProcessorCount; 
+            int minimum_division = stream_size * dev_ctx->props_.multiProcessorCount; 
 
             if(reads_per_8_writes == 8) {
                 this->input_size = N; 
@@ -123,7 +123,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 this->indices_size = N;
             } else if(reads_per_8_writes < 8) {
                 degree_of_expansion = 8 / reads_per_8_writes;
-
+                minimum_division *= degree_of_expansion;
                 float tmp = float(total_size) / float(1 + 1.0/degree_of_expansion); 
                 unsigned long long write_size = ( ((unsigned long long)tmp + minimum_division - 1) / minimum_division) * minimum_division; 
 
@@ -132,6 +132,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 this->indices_size = write_size;
             } else if(reads_per_8_writes > 8) {
                 degree_of_contraction = reads_per_8_writes / 8;
+                minimum_division *= degree_of_contraction;
 
                 float tmp = float(total_size) / float(1 + degree_of_contraction); 
                 unsigned long long write_size = ( ((unsigned long long)tmp + minimum_division - 1) / minimum_division) * minimum_division; 
