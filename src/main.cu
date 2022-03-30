@@ -96,8 +96,6 @@ int main(int argc, char** argv) {
     // #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
 
-    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
-
     // Profiling
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
     
@@ -112,7 +110,7 @@ int main(int argc, char** argv) {
      *      - Comment out the `set(CUDA_FLAGS ...)` line in `CMakeLists.txt`
      *      - Uncomment Group 1 test below
      *      - recompile and submit
-     * 2. Run warp_based_coalescing with L1 enabled 
+     * 2. Run warp_based_uncoalescing and sector_based_uncoalescing with L1 enabled 
      *      - Change submit script back to original execution
      *      - Comment Group 1 test and uncomment group 2 test
      *      - recompile and submit
@@ -120,7 +118,6 @@ int main(int argc, char** argv) {
      *      - Uncomment the `set(CUDA_FLAGS ...)` line in `CMakeLists.txt` to disable L1 again
      *      - Comment Group 2 test and Uncomment group 3 tests
      *      - recompile and submit
-
      */
 
 
@@ -129,6 +126,7 @@ int main(int argc, char** argv) {
 
     // Group 2
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
+    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
 
     // Group 3
     // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
