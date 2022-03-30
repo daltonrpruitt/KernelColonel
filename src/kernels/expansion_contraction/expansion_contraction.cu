@@ -35,20 +35,23 @@ using std::vector;
 template<typename vt, typename it, int degree_of_contraction>
 __forceinline__ __host__ __device__        
 void kernel_contraction(uint idx, vt* in, vt* out, it* indices){
-    it indxs[ILP];
-    uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);
-    for(int i=0; i < ILP; ++i) {
-        indxs[i] = indices[local_start_idx + blockDim.x*i];
+    it indxs[degree_of_contraction];
+
+    uint indices_start_idx = idx + blockIdx.x * blockDim.x * (degree_of_contraction-1) + (threadIdx.x / warpSize) * warpSize * (degree_of_contraction-1);
+    for(int i=0; i < degree_of_contraction; ++i) {
+        indxs[i] = indices[indices_start_idx + warpSize*i];
     }
 
-    vt arr[ILP];
-    for(int i=0; i < ILP; ++i) {
+    vt arr[degree_of_contraction];
+    for(int i=0; i < degree_of_contraction; ++i) {
         arr[i] = in[indxs[i]];
     }
 
-    for(int i=0; i < ILP; ++i) {
-        out[local_start_idx + blockDim.x*i] = arr[i];
+    vt tmp = 0;
+    for(int i=0; i < degree_of_contraction; ++i) {
+        tmp += arr[i];
     }
+    out[idx]  = tmp;
 }
 
 template<typename vt, typename it, int reads_per_8_writes, int stream_size>
