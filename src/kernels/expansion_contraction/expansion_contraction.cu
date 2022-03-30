@@ -222,7 +222,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
 
         // No change
         float local_execute() override {
-            return local_execute_template<gpu_ctx>(N, Gsz, Bsz, this->shared_memory_usage, this->dev_ctx, ctx);
+            return local_execute_template<gpu_ctx>(this->output_size, Gsz, Bsz, this->shared_memory_usage, this->dev_ctx, ctx);
         }
 
         // No change
