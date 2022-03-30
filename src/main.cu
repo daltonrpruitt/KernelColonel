@@ -102,21 +102,34 @@ int main(int argc, char** argv) {
     
 
     // ###############
-    // Staging
+    // Staging Directions
     /** 
-     * 1. Run profiler for first group (profiling.test) with L1 disabling flag removed 
-     * 2. Run regularly for second group (warpsize_uncoalescing) with L1 disabling flag removed
+     * For all, leave `span_occupancies` in this file (`main.cu`) set to `true`
+     * 
+     * 1. Profile with L1 enabled:
+     *      - Change submit script to run profiler and not the usual execution 
+     *      - Comment out the `set(CUDA_FLAGS ...)` line in `CMakeLists.txt`
+     *      - Uncomment Group 1 test below
+     *      - recompile and submit
+     * 2. Run warp_based_coalescing with L1 enabled 
+     *      - Change submit script back to original execution
+     *      - Comment Group 1 test and uncomment group 2 test
+     *      - recompile and submit
      * 3. Run regularly for third group with flag added back in
+     *      - Uncomment the `set(CUDA_FLAGS ...)` line in `CMakeLists.txt` to disable L1 again
+     *      - Comment Group 2 test and Uncomment group 3 tests
+     *      - recompile and submit
+
      */
 
 
-    // Run profiler on this one (just one kernel)
+    // Group 1
     #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
 
-    // Run with cuda_flag line in Cmakelists.txt removed; and then run with flags along with kernels below
+    // Group 2
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
 
-    // Run with above
+    // Group 3
     // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
     // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
 
