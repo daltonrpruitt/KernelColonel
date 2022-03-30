@@ -85,7 +85,7 @@
                 "${workspaceFolder}/output/Bayonet/2022-03-18_09-53-36",
                 "${workspaceFolder}/output/Bayonet/2022-03-17_16-31-12",
             ]
-		},
+        },
         {
             "id": "fileName",
             "type": "pickString",
