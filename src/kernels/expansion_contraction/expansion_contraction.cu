@@ -32,7 +32,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-template<typename vt, typename it, int degree_of_contraction, int ILP>
+template<typename vt, typename it, int degree_of_contraction>
 __forceinline__ __host__ __device__        
 void kernel_contraction(uint idx, vt* in, vt* out, it* indices){
     it indxs[ILP];
@@ -51,18 +51,18 @@ void kernel_contraction(uint idx, vt* in, vt* out, it* indices){
     }
 }
 
-template<typename vt, typename it, int reads_per_8_writes, int stream_size, int ILP>
+template<typename vt, typename it, int reads_per_8_writes, int stream_size>
 __global__        
 void kernel_for_regs_expansion_contraction(uint idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     if constexpr(reads_per_8_writes > 8) {
-        kernel_contraction<vt, it, reads_per_8_writes/8,  ILP>(idx, in, out, indices);
+        kernel_contraction<vt, it, reads_per_8_writes/8>(idx, in, out, indices);
     } else {
-        kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);    
+        kernel_indirect_copy<vt, it, 8/reads_per_8_writes>(idx, in, out, indices);    
     }
 }
 
-template<typename vt, typename it, int reads_per_8_writes, int stream_size, int ILP>
+template<typename vt, typename it, int reads_per_8_writes, int stream_size>
 struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
     public:
         typedef KernelCPUContext<vt, it> super;
@@ -95,9 +95,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             void operator() (uint idx){
                 extern __shared__ int dummy[];
                 if constexpr(reads_per_8_writes > 8) {
-                    kernel_contraction<vt, it, reads_per_8_writes/8,  ILP>(idx, in, out, indices);
+                    kernel_contraction<vt, it, reads_per_8_writes/8>(idx, in, out, indices);
                 } else {
-                    kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);    
+                    kernel_indirect_copy<vt, it, 8/reads_per_8_writes>(idx, in, out, indices);    
                 }
             }
         } ctx ;
@@ -108,7 +108,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             unsigned long long total_size = 2 * N; 
             
             // max = 64 * 8 * 108 = 55296 ~ 0.6% of 8388608 elements of A100
-            int minimum_division = stream_size * ILP * dev_ctx->props_.multiProcessorCount; 
+            int minimum_division = stream_size * dev_ctx->props_.multiProcessorCount; 
 
             if(reads_per_8_writes == 8) {
                 this->input_size = N; 
@@ -134,7 +134,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 this->indices_size = write_size * degree_of_contraction;
             }
             this->Gsz = this->output_size / this->Bsz;
-            this->Gsz /= ILP;
+            // this->Gsz /= ILP;
             assert(this->Gsz > 0);
 
             this->total_data_reads = this->input_size;
@@ -172,7 +172,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             cout << this->name << " with : "
                  << " reads/write =" << float(reads_per_8_writes)/8.0
                  << " stream size=" << stream_size 
-                 << " ILP=" << ILP 
+                //  << " ILP=" << ILP 
                  << " occupancy=" << this->get_occupancy() <<  endl;
         }
 
@@ -226,7 +226,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_expansion_contraction<vt,it,reads_per_8_writes,stream_size,ILP>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_expansion_contraction<vt,it,reads_per_8_writes,stream_size>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
@@ -234,10 +234,10 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             this->register_usage = funcAttrib.numRegs;
         }
 
-    string get_extra_config_parameters() override { return "reads_per_write,stream_size,ILP";}
+    string get_extra_config_parameters() override { return "reads_per_write,stream_size";}
     string get_extra_config_values() override { 
         stringstream out; 
-        out << to_string(float(reads_per_8_writes)/8.0) << "," << to_string(stream_size) << "," << to_string(ILP);
+        out << to_string(float(reads_per_8_writes)/8.0) << "," << to_string(stream_size);
         return out.str();
     }
 
