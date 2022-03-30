@@ -1,6 +1,9 @@
 #include <kernels/general/tests/copy.test>
+#include <kernels/indirect/tests/indirect_copy.htest>
 #include <kernels/expansion_contraction/tests/expansion_contraction.htest>
 
+    INDIRECT_COPY(1024, 1, SEQUENTIAL);   
+    
     // Basic copy
     EXPANSION_CONTRACTION(8, 32);
     EXPANSION_CONTRACTION(8, 2048);

@@ -115,7 +115,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             unsigned long long total_size = 2 * N; 
             
             // max = 64 * 8 * 108 = 55296 ~ 0.6% of 8388608 elements of A100
-            int minimum_division = stream_size * dev_ctx->props_.multiProcessorCount; 
+            int minimum_division = stream_size * (this->Bsz / warp_size) * dev_ctx->props_.multiProcessorCount; 
 
             if(reads_per_8_writes == 8) {
                 this->input_size = N; 
@@ -141,7 +141,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 this->indices_size = write_size * degree_of_contraction;
             }
             this->Gsz = this->output_size / this->Bsz;
-            // this->Gsz /= ILP;
+            if(degree_of_expansion > 0) {
+                this->Gsz /= degree_of_expansion;
+            }
             assert(this->Gsz > 0);
 
             this->total_data_reads = this->input_size;
@@ -164,7 +166,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
 // #ifdef DEBUG
 //             debug = true;
 // #endif
-            indices.reserve(this->indices_size);
+            for(int i=0; i<this->indices_size; ++i){
+                indices.push_back(0);
+            }
             if( expansion_contraction_indices(indices.data(), this->indices_size, reads_per_8_writes, stream_size, debug) != 0) {
                 cerr << "Failed to generate indices!"; 
                 this->okay = false;
@@ -210,14 +214,14 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 }
             }
             if (!pass) {
-                cout << "Validation Failed at " << i << ": in="<<in[i] << " idx=" << indices[i] << " out="<< out[i] << endl;
+                cout << "Validation Failed at " << i << ":" << " idx=" << indices[i] << " out="<< out[i] << endl;
                 
                 cout << "Debug dump of in and out array: " << endl;
-                cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
+                cout << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
                 int output_size = 20;
                 unsigned long long j = max((int)0, (int)(i - output_size/2));
                 for(int k=0; k < output_size; ++k, ++j) { 
-                    cout << std::setw(10) << in[j] << "  |" << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
+                    cout << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
                 }    
 #ifdef DEBUG
 #ifdef DEBUG_LEVEL1
