@@ -115,7 +115,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             unsigned long long total_size = 2 * N; 
             
             // max = 64 * 8 * 108 = 55296 ~ 0.6% of 8388608 elements of A100
-            int minimum_division = stream_size * dev_ctx->props_.multiProcessorCount; 
+            int minimum_division = stream_size * (this->Bsz / warp_size) * dev_ctx->props_.multiProcessorCount; 
 
             if(reads_per_8_writes == 8) {
                 this->input_size = N; 
