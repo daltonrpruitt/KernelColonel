@@ -141,7 +141,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 this->indices_size = write_size * degree_of_contraction;
             }
             this->Gsz = this->output_size / this->Bsz;
-            // this->Gsz /= ILP;
+            if(degree_of_expansion > 0) {
+                this->Gsz /= degree_of_expansion;
+            }
             assert(this->Gsz > 0);
 
             this->total_data_reads = this->input_size;
