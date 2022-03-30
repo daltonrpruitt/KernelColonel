@@ -1,0 +1,10 @@
+#ifndef EXPANSION_CONTRACTION_DRIVER
+#define EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ) expansion_contraction_ ## RDS_PER_8_WRTS ## STRMSZ ## _ ## ILP ## _driver
+#endif
+
+#ifndef EXPANSION_CONTRACTION
+#define EXPANSION_CONTRACTION(RDS_PER_8_WRTS, STRMSZ) { MicrobenchmarkDriver<ExpansionContractionContext<vt, it, RDS_PER_8_WRTS, STRMSZ>> \
+      EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ)(N, bs_vec, output_dir+ XSTRINGIFY( EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ) ) ".csv", &dev_ctx, span_occupancies); \
+    if (!EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ).check_then_run_kernels()) {return -1;}  \
+    total_runs += EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ).get_total_runs(); }
+#endif

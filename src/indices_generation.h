@@ -191,6 +191,74 @@ int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_
     return 0;
 }
 
+template<typename it>
+int expansion_indices(it* indxs, unsigned long long N, int degree_of_expansion, int stream_size, bool output_sample = false){
+    int warps_per_stream = stream_size / warp_size;
+    
+    if(output_sample) cout << "expansion access pattern (degree of expansion="<<degree_of_expansion
+        << ", "<< "stream sz="<<stream_size<< ") :";
+
+    
+    for(int i=0; i < N; ++i) {
+        int warp_id = i / warp_size;
+        int stream_warp_id = warp_id % warps_per_stream;
+        int stream_id = warp_id / (warps_per_stream * degree_of_expansion);
+        int thread_idx = i % warp_size;
+        it access_idx = stream_id * stream_size  + stream_warp_id * warp_size + thread_idx;
+        indxs[i] = access_idx;
+        if(output_sample) print_indices_sample(indxs, warp_size * 4, i);
+
+    }
+    if(output_sample) cout << endl;
+
+    return 0;
+}
+
+
+template<typename it>
+int contraction_indices(it* indxs, unsigned long long N, int degree_of_contraction, int stream_size, bool output_sample = false){
+    int warps_per_stream = stream_size / warp_size;
+    int reads_per_stream = degree_of_contraction;
+    
+    if(output_sample) cout << "contraction access pattern (degree of contraction="<<degree_of_contraction
+        << ", "<< "stream sz="<<stream_size<< ") :";
+
+    for(int i=0; i < N; ++i) {
+        int thread_idx = i % warp_size;
+        int write_warp_id = i / warp_size;
+        int actual_warp_id = write_warp_id / reads_per_stream;
+        int local_actual_warp_id = actual_warp_id % warps_per_stream;
+        int stream_id = actual_warp_id / warps_per_stream;
+        int stream_start_idx = stream_id * (stream_size * degree_of_contraction);
+        
+        int warp_offset = local_actual_warp_id * warp_size;
+
+        int read_id = write_warp_id % reads_per_stream;
+        int read_offset = read_id * stream_size;
+
+        it idx = stream_start_idx + warp_offset + read_offset + thread_idx;
+        indxs[i] = idx;
+        if(output_sample) print_indices_sample(indxs, warp_size * 4, i);
+    }
+    if(output_sample) cout << endl;
+
+    return 0;
+}
+
+template<typename it>
+int expansion_contraction_indices(it* indxs, unsigned long long N, int reads_per_8_writes, int stream_size, bool output_sample = false){
+    assert(N % stream_size == 0);
+    assert(ceil(log2(reads_per_8_writes)) == floor(log2(reads_per_8_writes))); // Is power of 2?
+    if(reads_per_8_writes == 8){
+        return sequential_indices(indxs, N, warp_size * 4, 0, output_sample);
+    } else if (reads_per_8_writes < 8) {
+        return expansion_indices(indxs, N, 8 / reads_per_8_writes, stream_size, output_sample );
+    } else if (reads_per_8_writes > 8) {
+        return contraction_indices(indxs, N, reads_per_8_writes/8, stream_size, output_sample );
+    } 
+    return -1;
+}
+
 // using it = unsigned long long; // declared in main...
 typedef int func_t(it*, unsigned long long, int, int, bool);
 typedef func_t* pfunc_t;
