@@ -83,17 +83,17 @@ int main(int argc, char** argv) {
     }
 
 /*
-    #include <tests/copy.test>
-    #include <tests/indirection_simple.test>
-    #include <tests/overlapped_access.test>
-    #include <tests/computational_intensity.test>
-    #include <tests/interleaved_simple.test>
-    #include <tests/interleaved_full_life.test>
-    #include <tests/uncoalesced_reuse.test>
-    #include <tests/uncoalesced_reuse_general.test>
-    #include <tests/uncoalesced_reuse_general_single.test>
+    #include <kernels/general/tests/copy.test>
+    #include <kernels/general/tests/indirection_simple.test>
+    #include <kernels/general/tests/overlapped_access.test>
+    #include <kernels/general/tests/computational_intensity.test>
+    #include <kernels/burst_mode/tests/interleaved_simple.test>
+    #include <kernels/burst_mode/tests/interleaved_full_life.test>
+    #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse.test>
+    #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse_general.test>
+    #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse_general_single.test>
   */  
-    // #include <tests/interleaved_full_life_ILP.test>
+    // #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
     // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
