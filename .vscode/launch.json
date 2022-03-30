@@ -34,6 +34,17 @@
             ]
         },
         {
+            "name": "Python: Plotting Profile Data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/postprocessing/plot_profile_results.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "${input:fileName}"
+            ]
+        },
+        {
             "name": "Python: Collating CSVs",
             "type": "python",
             "request": "launch",
@@ -69,12 +80,20 @@
 			"id": "folderName",
 			"type": "pickString",
 			"default": "${workspaceFolder}/output/Bayonet/2022-03-23_10-40-15",
-			"description": "The folder to plot for.",
+			"description": "The folder to plot various configurations.",
             "options": [
                 "${workspaceFolder}/output/Bayonet/2022-03-18_09-53-36",
                 "${workspaceFolder}/output/Bayonet/2022-03-17_16-31-12",
-                "${workspaceFolder}/output/Bayonet/2022-03-23_10-40-15"
             ]
-		}
+		},
+        {
+            "id": "fileName",
+            "type": "pickString",
+            "default": "${workspaceFolder}/output/v100/66522.pbspl4.nas.nasa.gov/ncu_output.csv",
+            "description": "The profile data file to use.",
+            "options": [
+                "${workspaceFolder}/output/v100/66522.pbspl4.nas.nasa.gov/ncu_output.csv"
+            ]
+        }
     ]
 }
