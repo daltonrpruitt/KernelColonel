@@ -183,7 +183,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             bool pass = true;
             unsigned long long i=0;
             if(degree_of_contraction > 0){
-                for(i=0; i<this->input_size; ++i){
+                for(i=0; i<this->output_size; ++i){
                     unsigned long long warp_id = i / warp_size;
                     vt tmp=0;
                     for(int j=0; j<degree_of_contraction; ++j) {
