@@ -24,6 +24,7 @@
 #include <kernels/indirect/indirect_copy.cu>
 
 #define DEBUG
+// #define DEBUG_LEVEL1
 
 using std::string;
 using std::stringstream;
@@ -218,9 +219,38 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 for(int k=0; k < output_size; ++k, ++j) { 
                     cout << std::setw(10) << in[j] << "  |" << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
                 }    
-                    }      
-                }    
-            // }
+#ifdef DEBUG
+#ifdef DEBUG_LEVEL1
+                cout << "Actual output of " << this->name <<":"<<endl;
+                for(i=0; i < 1024*2; i+= 1024 ) {
+                    for(int j=0; j<64; ++j) {
+                        cout << "  " << i+j << ":" << (unsigned long long)out[i+j]; 
+                        if(j%16==15) cout << endl;
+                        if(j%32==15) cout << "\t";
+                    }
+                }
+                for(i=0; i<128; ++i) cout <<  "-";
+                cout << endl;
+                for(i=this->output_size - (1024 + 64); i < this->output_size; i+= 1024 ) {
+                    for(int j=0; j<64; ++j) {
+                        cout << "  " << i+j << ":" <<  (unsigned long long)out[i+j]; 
+                        if(j%16==15) cout << endl;
+                        if(j%32==15) cout << "\t";
+                    }
+                }
+                for(i=1024; i < this->output_size; ++i) {
+                    if(out[i] == 0) {
+                        cout << "Failed at " << i << ":" << out[i] << endl;
+                        for(int j=-32; j<32; ++j) {
+                            cout << "  " << i+j << ":" <<  (unsigned long long)out[i+j]; 
+                            if(j%16==15) cout << endl;
+                        }
+                        pass = false; 
+                        break;
+                    }
+                }
+#endif
+#endif
             }
             return pass;
         }
