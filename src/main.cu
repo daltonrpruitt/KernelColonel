@@ -98,15 +98,23 @@ int main(int argc, char** argv) {
 
 
     // Profiling
-    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
     
 
     // ###############
     // Staging
+    /** 
+     * 1. Run profiler for first group (profiling.test) with L1 disabling flag removed 
+     * 2. Run regularly for second group (warpsize_uncoalescing) with L1 disabling flag removed
+     * 3. Run regularly for third group with flag added back in
+     */
+
+
+    // Run profiler on this one (just one kernel)
+    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
 
     // Run with cuda_flag line in Cmakelists.txt removed; and then run with flags along with kernels below
-    #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
+    // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
 
     // Run with above
     // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
