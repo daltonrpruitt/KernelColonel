@@ -90,9 +90,10 @@ class MicrobenchmarkDriver {
     bool check_kernels() {
         bool pass = true;
 #ifdef DEBUG
-        cout << "Beginning checks" << endl;
+        cout << "Beginning check" << endl;
 #endif
-        for (auto ctx : contexts) {
+        // for (auto ctx : contexts) {
+            auto ctx = contexts.back();
             if(!ctx->okay) {return false;}
 #ifdef DEBUG
             ctx->output_config_info();
@@ -103,13 +104,13 @@ class MicrobenchmarkDriver {
                 if (!pass) break;
             }
             ctx->uninit();
-            if (!pass) break;
-        }
+            // if (!pass) break;
+        // }
         if (!pass) {
-            cerr << "One or more kernels failed check!" << endl;
+            cerr << "Kernel failed check!" << endl;
         } else {
 #ifdef DEBUG
-            cout << "All kernels passed checks!" << endl;
+            cout << "Kernel passed check!" << endl;
 #endif
         }
         return pass;
@@ -198,7 +199,7 @@ class MicrobenchmarkDriver {
         // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename_.c_str());
-        output_file << "kernel_type,array_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" ;
+        output_file << "kernel_type,array_size,value_size,index_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" ;
         if(contexts[0]->get_extra_config_parameters().compare("") != 0) {
             output_file << "," << contexts[0]->get_extra_config_parameters() ;
         }
@@ -215,7 +216,7 @@ class MicrobenchmarkDriver {
         copy(data.begin(), data.end(), std::ostream_iterator<T>(s, ","));  // https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
         string wo_last_comma = s.str();
         wo_last_comma.pop_back();  // https://stackoverflow.com/questions/2310939/remove-last-character-from-c-string
-        output_file << ctx->name << "," << ctx->N << "," << ctx->Bsz << ","  << ctx->get_occupancy() << "," << wo_last_comma;
+        output_file << ctx->name << "," << ctx->N << "," << ctx->vt_size << "," << ctx->it_size << "," << ctx->Bsz << ","  << ctx->get_occupancy() << "," << wo_last_comma;
         if(ctx->get_extra_config_parameters().compare("") != 0) {
             output_file << "," << ctx->get_extra_config_values();
         }
