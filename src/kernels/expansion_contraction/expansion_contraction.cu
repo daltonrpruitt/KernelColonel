@@ -147,8 +147,10 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
         ~ExpansionContractionContext(){}
 
         void init_inputs(bool& pass) override {
-            for(int i=0; i<N; ++i){
+            for(int i=0; i<this->input_size; ++i){
                 in.push_back(i);
+            }
+            for(int i=0; i<this->output_size; ++i){
                 out.push_back(0);
             }
         }
