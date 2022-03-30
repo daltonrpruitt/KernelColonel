@@ -210,14 +210,14 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
                 }
             }
             if (!pass) {
-                cout << "Validation Failed at " << i << ": in="<<in[i] << " idx=" << indices[i] << " out="<< out[i] << endl;
+                cout << "Validation Failed at " << i << ":" << " idx=" << indices[i] << " out="<< out[i] << endl;
                 
                 cout << "Debug dump of in and out array: " << endl;
-                cout << std::setw(10) << "IN" << "  |" << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
+                cout << std::setw(10) << "IDX" << "  |" << std::setw(10) << "OUT" << endl; 
                 int output_size = 20;
                 unsigned long long j = max((int)0, (int)(i - output_size/2));
                 for(int k=0; k < output_size; ++k, ++j) { 
-                    cout << std::setw(10) << in[j] << "  |" << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
+                    cout << std::setw(10) << indices[j] <<"  |" << std::setw(10) << out[j] << endl; 
                 }    
 #ifdef DEBUG
 #ifdef DEBUG_LEVEL1
