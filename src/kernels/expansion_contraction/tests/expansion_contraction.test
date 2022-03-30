@@ -1,4 +1,4 @@
-// #include <kernels/general/tests/copy.test>
+#include <kernels/general/tests/copy.test>
 #include <kernels/expansion_contraction/tests/expansion_contraction.htest>
 
     // Basic copy
