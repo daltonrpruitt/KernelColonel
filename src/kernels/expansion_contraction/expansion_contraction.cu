@@ -170,7 +170,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
 
         void output_config_info() override {
             cout << this->name << " with : "
-                 << " reads/write =" << float(reads_per_8_writes/8)
+                 << " reads/write =" << float(reads_per_8_writes)/8.0
                  << " stream size=" << stream_size 
                  << " ILP=" << ILP 
                  << " occupancy=" << this->get_occupancy() <<  endl;
@@ -237,7 +237,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
     string get_extra_config_parameters() override { return "reads_per_write,stream_size,ILP";}
     string get_extra_config_values() override { 
         stringstream out; 
-        out << to_string(float(reads_per_8_writes/8)) << "," << to_string(stream_size) << "," << to_string(ILP);
+        out << to_string(float(reads_per_8_writes)/8.0) << "," << to_string(stream_size) << "," << to_string(ILP);
         return out.str();
     }
 
