@@ -1,5 +1,5 @@
 #ifndef EXPANSION_CONTRACTION_DRIVER
-#define EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ) expansion_contraction_ ## RDS_PER_8_WRTS ## STRMSZ ## _ ## ILP ## _driver
+#define EXPANSION_CONTRACTION_DRIVER(RDS_PER_8_WRTS, STRMSZ) expansion_contraction_ ## RDS_PER_8_WRTS ## _ ## STRMSZ ## _driver
 #endif
 
 #ifndef EXPANSION_CONTRACTION
