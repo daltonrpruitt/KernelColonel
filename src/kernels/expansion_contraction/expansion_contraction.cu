@@ -82,9 +82,12 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
         it* & d_indices = super::device_indices_ptrs[0];
         
 
-        int data_reads_per_element = 1; // Actual number 
-        int writes_per_element = 1; // Actual number
-        int index_reads_per_element = 1; // Actual number
+        // int data_reads_per_element = 1; // Actual number 
+        // int writes_per_element = 1; // Actual number
+        // int index_reads_per_element = 1; // Actual number
+
+        int degree_of_expansion = -1;
+        int degree_of_contraction = -1;
 
         struct gpu_ctx {
             vt * gpu_in; 
