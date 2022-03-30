@@ -164,7 +164,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
 // #ifdef DEBUG
 //             debug = true;
 // #endif
-            indices.reserve(this->indices_size);
+            for(int i=0; i<this->indices_size; ++i){
+                indices.push_back(0);
+            }
             if( expansion_contraction_indices(indices.data(), this->indices_size, reads_per_8_writes, stream_size, debug) != 0) {
                 cerr << "Failed to generate indices!"; 
                 this->okay = false;
