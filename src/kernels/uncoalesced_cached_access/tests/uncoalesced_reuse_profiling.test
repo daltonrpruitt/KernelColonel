@@ -1,10 +1,11 @@
 #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP_check_only.htest>
 
-    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, false, 8192, 4)   // 0-4
-    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true, 8192, 4)    // 5-9
-    
+    bool tmp = span_occupancies;
     span_occupancies = false;
-
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, false, 8192, 4)   // 0-4
+    
+/*
+    UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true, 8192, 4)    // 5-9
     UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true, 1024, 1)    // 10
     UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true, 1024, 2)    // 11
     UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(false, true, 1024, 4)    // 12
@@ -42,4 +43,4 @@
     UNCOAL_REUSE_GEN_SINGLE_ILP_CHECK_ONLY(true,  true,  32768, 4)
 
 */
-    span_occupancies = true;
+    span_occupancies = tmp;
