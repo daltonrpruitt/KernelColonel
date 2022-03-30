@@ -90,9 +90,10 @@ class MicrobenchmarkDriver {
     bool check_kernels() {
         bool pass = true;
 #ifdef DEBUG
-        cout << "Beginning checks" << endl;
+        cout << "Beginning check" << endl;
 #endif
-        for (auto ctx : contexts) {
+        // for (auto ctx : contexts) {
+            auto ctx = contexts.back();
             if(!ctx->okay) {return false;}
 #ifdef DEBUG
             ctx->output_config_info();
@@ -103,13 +104,13 @@ class MicrobenchmarkDriver {
                 if (!pass) break;
             }
             ctx->uninit();
-            if (!pass) break;
-        }
+            // if (!pass) break;
+        // }
         if (!pass) {
-            cerr << "One or more kernels failed check!" << endl;
+            cerr << "Kernel failed check!" << endl;
         } else {
 #ifdef DEBUG
-            cout << "All kernels passed checks!" << endl;
+            cout << "Kernel passed check!" << endl;
 #endif
         }
         return pass;
