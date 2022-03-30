@@ -96,6 +96,7 @@ int main(int argc, char** argv) {
     // #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
     // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
 
+    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
 
     // Profiling
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
@@ -130,7 +131,6 @@ int main(int argc, char** argv) {
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
 
     // Group 3
-    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
     // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
 
 
