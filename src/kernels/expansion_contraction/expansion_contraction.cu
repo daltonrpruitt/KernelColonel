@@ -102,9 +102,9 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             void operator() (uint idx){
                 extern __shared__ int dummy[];
                 if constexpr(reads_per_8_writes > 8) {
-                    kernel_contraction<vt, it, reads_per_8_writes/8>(idx, in, out, indices);
+                    kernel_contraction<vt, it, reads_per_8_writes/8>(idx, gpu_in, gpu_out, gpu_indices);
                 } else {
-                    kernel_indirect_copy<vt, it, 8/reads_per_8_writes>(idx, in, out, indices);    
+                    kernel_indirect_copy<vt, it, 8/reads_per_8_writes>(idx, gpu_in, gpu_out, gpu_indices);    
                 }
             }
         } ctx ;
