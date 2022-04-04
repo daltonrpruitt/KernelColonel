@@ -30,7 +30,8 @@ kernel_config_info = [
                                                 "preload", "avoid_bank_conflicts", "shuffle_size"],
     ["uncoalesced_reuse_gen_single_ilp",    "UncoalescedReuseGenSingleILP", 
                                                 "preload", "avoid_bank_conflicts", "shuffle_size", "ILP"],
-    ["indirect_copy", "IndirectCopy",   "shuffle_size", "ILP", "access_pattern"]
+    ["indirect_copy", "IndirectCopy",   "shuffle_size", "ILP", "access_pattern"],
+    ["expansion_contraction", "ExpansionContraction",   "reads_per_write", "stream_size"]
 ]
 
 kernel_class_names = {k[0]: k[1] for k in kernel_config_info}
