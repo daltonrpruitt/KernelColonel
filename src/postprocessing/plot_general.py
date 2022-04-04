@@ -82,18 +82,31 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 # Reference for inputs...
 # kernel_name, x_field, y_field, 
 #   fields_to_keep_constant, field_for_multiplotting, filename_base, plot_title_base
+plot_filename_base_suffix = ""
+plot_title_suffix = "" 
+
 plot_configs = [
+    ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
+        ["reads_per_write"], "stream_size", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
+    ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
+        ["stream_size"], "reads_per_write", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
+    ["expansion_contraction", "stream_size", "fraction_of_max_bandwidth",
+        ["occupancy"], "reads_per_write", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
+    ["expansion_contraction", "reads_per_write", "fraction_of_max_bandwidth",
+        ["occupancy"], "stream_size", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
+
     ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
-            ["ILP","shuffle_size"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+            ["ILP","shuffle_size"], "access_pattern", "indirect"+plot_filename_base_suffix, "Indirect BW vs Occup." + plot_title_suffix],
 
-    ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
-            ["ILP","occupancy"], "access_pattern", "indirect", "Indirect BW vs Occup."],
+    # ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
+    #         ["access_pattern","ILP"], "shuffle_size", "indirect"+plot_filename_base_suffix, "Indirect BW vs Occup."+ plot_title_suffix],
 
-    ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
-            ["access_pattern","occupancy"], "ILP", "indirect", "Indirect BW vs Occup."],
+    # ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
+    #         ["ILP","occupancy"], "access_pattern", "indirect"+plot_filename_base_suffix, "Indirect BW vs Shuffle Size."+ plot_title_suffix],
 
-    ["indirect_copy", "occupancy", "fraction_of_max_bandwidth",
-            ["access_pattern","ILP"], "shuffle_size", "indirect", "Indirect BW vs Occup."],
+    # ["indirect_copy", "shuffle_size", "fraction_of_max_bandwidth",
+    #         ["access_pattern","occupancy"], "ILP", "indirect"+plot_filename_base_suffix, "Indirect BW vs Shuffle Size."+ plot_title_suffix],
+
     
     [uncoal, "occupancy", "fraction_of_max_bandwidth", 
         ["avoid_bank_conflicts", "ILP"], "shuffle_size", "uncoal_ilp", "Uncoalesced BW vs Occup."],
