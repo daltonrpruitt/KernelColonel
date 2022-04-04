@@ -71,7 +71,9 @@ field_bounds = {
 
 fields_for_logscale = [
     "elements",
-    "shuffle_size"
+    "shuffle_size",
+    "stream_size",
+    "reads_per_write"
 ]
 
 
