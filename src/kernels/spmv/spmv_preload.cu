@@ -1,14 +1,14 @@
 #pragma once
 /**
- * @file template.cu
+ * @file spmv_preload.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from KernelCPUContext; what to start with when making new kernel
+ * @brief Derived from TemplateKernelContext
  * @version 0.1
  * @date 2022-02-08
  * 
- * Based on copy.cu 
- * Most of what needs to be changed (or not) is listed.
- * Do not modify function signatures unless obvious (comment in signature).
+ * This application is for performing sparse matrix-vector 
+ * multiplication (SpMV) operations.
+ *
  */
 
 #include <iostream>
