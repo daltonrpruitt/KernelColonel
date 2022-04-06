@@ -24,6 +24,7 @@ using it = unsigned long long;
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
 #include <kernels/indirect/indirect_copy.cu>
 #include <kernels/expansion_contraction/expansion_contraction.cu>
+#include <kernels/spmv/spmv_preload.cu>
 
 #include <output.h>
 #include <utils.h>
@@ -122,7 +123,7 @@ int main(int argc, char** argv) {
 
 
     // Group 1
-    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
+    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
 
     // Group 2
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
@@ -130,6 +131,10 @@ int main(int argc, char** argv) {
 
     // Group 3
     // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
+
+
+    SpmvKernel spmv_kernel(0, 64, &dev_ctx, 0, 1, 0);
+
 
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
