@@ -33,8 +33,8 @@ using std::stringstream;
 using std::setw;
 
 
-template <typename kernel_ctx_t>
-class MicrobenchmarkDriver {
+template <typename kernel_ctx_t=SpmvKernel<int, double>>
+class SpmvDriver {
    private:
     string output_filename_;
     ofstream output_file;
