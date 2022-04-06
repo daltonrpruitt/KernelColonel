@@ -188,16 +188,19 @@ class SpmvDriver {
         struct stat output_file_buffer;
         int i = 0;
         string original_filename = output_filename_;
-        while (stat(output_filename_.c_str(), &output_file_buffer) == 0)
+        if(stat(output_filename_.c_str(), &output_file_buffer) == 0)
         {
-            cerr << "The file '" << output_filename_ << "' already exists in the output directory!" << endl;
-            ++i;
-            output_filename_ = original_filename+"("+to_string(i)+")";
+            cerr << "The file '" << output_filename_ << "' already exists in the output directory; appending to it!" << endl;
+            output_file.open(output_filename_.c_str(), ofstream::app);
+            output_file_started = true;
+            return;
+            // ++i;
+            // output_filename_ = original_filename+"("+to_string(i)+")";
         }
 
         // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
-        output_file.open(output_filename_.c_str());
+        output_file.open(output_filename_.c_str(), ofstream::out | ofstream::app);
                                 // array_size,value_size,index_size,
         output_file << "kernel_type,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" ;
         if(contexts[0]->get_extra_config_parameters().compare("") != 0) {
