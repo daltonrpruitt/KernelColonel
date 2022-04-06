@@ -15,8 +15,10 @@
  */
 #pragma once
 
-
+#pragma GCC diagnostic push 
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #include <mmio.c>
+#pragma GCC diagnostic pop
 
 #include <iostream>
 #include <string>
