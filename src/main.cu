@@ -76,6 +76,7 @@ int main(int argc, char** argv) {
     // bs_vec.push_back(128);
     // bs_vec.push_back(1024);
     bool span_occupancies = true;
+    if(span_occupancies && !span_occupancies) return -1;
 
     Output output_dir;
     if(output_dir.empty()) {
