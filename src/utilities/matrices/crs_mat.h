@@ -58,16 +58,21 @@ class CRSMat {
         offsets = nullptr;
     }
 
-    CRSMat(string filename_input) : filename(filename_input){
-        if(!read_coo_to_crs_matrix(filename, *this)){
-            nnz = -1;
-        }
+    CRSMat(string filename_input){
+        from_file(filename_input);
     }
     
     ~CRSMat() {
         if(values) { delete values; values = nullptr; }
         if(indices) { delete indices; indices = nullptr; }
         if(offsets) { delete offsets; offsets = nullptr; }
+    }
+
+    void from_file(string filename_input) {
+        filename = filename_input;
+        if(!read_coo_to_crs_matrix(filename, *this)){
+            nnz = -1;
+        }
     }
 
     // void from_file(string filename_input) {
