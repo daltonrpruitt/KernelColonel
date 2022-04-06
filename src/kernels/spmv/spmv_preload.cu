@@ -544,7 +544,9 @@ class SpmvKernel {
     }
 
     unsigned long long get_total_bytes_processed() {
-        //  return ( total_data_reads+ total_writes)*sizeof(vt) +  total_index_reads*sizeof(it);
+        int values_processed  = host_matrix.nnz + host_matrix.m; // Matrix values + vector values
+        int indices_processed = host_matrix.nnz + host_matrix.m+1; // indices (1 per value) + offsets
+         return values_processed*sizeof(double) +  indices_processed*sizeof(int);
         return 0;
     }
 
