@@ -141,26 +141,24 @@ class SpmvKernel {
     //     }
     // } ctx;
 
-    SpmvKernel(int n, int bs, device_context* d_ctx, int shd_mem_alloc = 0, int run_times = 25, int matrix_file_id=0) 
-    : Bsz(bs), Gsz( (n+bs-1)/bs ), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc), host_matrix(matrix_filenames[matrix_file_id]) {
+    SpmvKernel(int bs, device_context* d_ctx, int shd_mem_alloc = 0, int matrix_file_id=0) 
+    : Bsz(bs), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc), matrix_id(matrix_file_id) {
         //  : super(2, 1, 2, n, bs, dev_ctx, shd_mem_alloc) {
         //this->name = "SpMV";
         // this->total_data_reads = N * data_reads_per_element;
         // this->total_index_reads = N * index_reads_per_element;
         // this->total_writes = N * writes_per_element;
 
-        if(!check() ) {return;}
-
-
+        // if(!check() ) {return;}
     }
     ~SpmvKernel() { uninit(); }
 
-    void init(bool& pass)  {
+    bool init()  {
         // Init Matrix here (host arrays/data)
-        // host_matrix = CRSMat();
+        host_matrix.from_filename(matrix_filenames[matrix_id]);
+
         if(host_matrix.nnz < 0) {
-            pass = false; 
-            return;
+            return false;
         }
         #ifdef DEBUG
         host_matrix.dump();
@@ -174,7 +172,8 @@ class SpmvKernel {
         for(int i=0; i < host_matrix.m; ++i) { host_vector[i] = (vt)i; }
         host_results.reserve(host_matrix.m);
         for(int i=0; i < host_matrix.m; ++i) { host_results[i] = (vt)0; }
-
+        
+        bool pass = true;
         /* !!!!!!!!!!!!!!!!!!!!!!!*/
         // Allocate gpu arrays/copy host to gpu
         cudaErrChk(cudaMalloc((void **)&gpu_matrix.values,gpu_matrix.nnz * sizeof(double)),"gpu_matrix.values mem allocation", pass);
@@ -227,11 +226,11 @@ class SpmvKernel {
 
         if (!pass) {
             cerr << "Could not initialize " << name << "!" << endl;
-            return;
+            return false;
         }
 
         initialized = true;
-        return;
+        return true;
     }
 
     void uninit() {
@@ -317,17 +316,29 @@ class SpmvKernel {
         */
         return true;
     }
+    bool check_result() {
+        if(!okay){
+            cout << "Cannot check "<< name << " due to previous failure!" << endl;
+            return false;
+        };
+        return local_check_result(); 
+    }
     
-    bool check() {
-        if(!initialized) {
-            bool pass = true;
-            init(pass);
-            if(!pass) return false;
+    void output_config_info() {
+        int stride = 4;
+        if(dev_ctx->props_.major >= 7) {
+            stride = 8;
         }
-        if(execute() < 0) return false;
-        float time = local_check_result(); 
-        uninit();
-        return time;
+        int preload_blocks = host_matrix.m / (Bsz / warp_size * stride) + 1; 
+        int spmv_blocks = host_matrix.m / (Bsz / warp_size) + 1;
+
+        cout << "SpMV with : "
+                << " Bsz=" << Bsz 
+                << " Blocks used (preload)="<< preload_blocks 
+                << " Blocks used (spmv)="<< spmv_blocks
+                << " matrix file="<< matrix_filenames[matrix_id]
+                << " occupancy=" << this->get_occupancy() << endl;
+
     }
 
     float local_execute() {
@@ -404,11 +415,14 @@ class SpmvKernel {
 
     float run() {
         if(!initialized) {
-            bool pass = true;
-            init(pass);
-            if(!pass) return -1.0;
+            if(!init()) return -1.0;
         }
         return execute();
+    }
+
+    bool run_and_check() {
+        run(); // ignore time
+        return check_result();     
     }
 
     // No change
@@ -533,4 +547,12 @@ class SpmvKernel {
         //  return ( total_data_reads+ total_writes)*sizeof(vt) +  total_index_reads*sizeof(it);
         return 0;
     }
+
+    string get_extra_config_parameters() { return "matrix_file,m,n,nnz";}
+    string get_extra_config_values() { 
+        std::stringstream out; 
+        out << matrix_filenames[matrix_id] << "," << host_matrix.m << "," << host_matrix.n << "," << host_matrix.nnz;     
+        return out.str();
+    }
+
 };
