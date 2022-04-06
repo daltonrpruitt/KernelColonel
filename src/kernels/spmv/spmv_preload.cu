@@ -531,5 +531,6 @@ class SpmvKernel {
 
     unsigned long long get_total_bytes_processed() {
         //  return ( total_data_reads+ total_writes)*sizeof(vt) +  total_index_reads*sizeof(it);
+        return 0;
     }
 };
