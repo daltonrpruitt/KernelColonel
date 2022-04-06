@@ -43,37 +43,36 @@ class SpmvDriver {
     vector<kernel_ctx_t*> contexts;
 
     int N = 0;
-    int bs = 0;
+    int Bsz = 0;
 
    public:
     int kernel_runs = 25;
     int kernel_checks = 1;
 
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
-        output_filename_(output_filename) {
+    SpmvDriver(int matrix_file_id, int bs, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
+        Bsz(bs), output_filename_(output_filename) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
         dev_ctx_ = dev_ctx;
 
-        for (int bs : bs_vec) {
-            kernel_ctx_t* curr_ctx = new kernel_ctx_t(N, bs, dev_ctx);
-            curr_ctx->print_register_usage();
-            if(span_occupancies) {
-                vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
+        kernel_ctx_t* curr_ctx = new kernel_ctx_t(Bsz, dev_ctx, 0, matrix_file_id);
+        curr_ctx->print_register_usage();
+        if(span_occupancies) {
+            vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
 #ifdef DEBUG
-                cout << "Valid ShdMem alloc amounts for "<< curr_ctx->name <<": ";
-                for(int x : shdmem_allocs) {cout << " " << x;}
-                cout << endl;
+            cout << "Valid ShdMem alloc amounts for "<< curr_ctx->name <<": ";
+            for(int x : shdmem_allocs) {cout << " " << x;}
+            cout << endl;
 #endif
-                if(shdmem_allocs.size() > 0) {
-                    for(int i=0; i < shdmem_allocs.size(); ++i){
-                        contexts.push_back(new kernel_ctx_t(N, bs, dev_ctx, shdmem_allocs[i]));
-                    }
+            if(shdmem_allocs.size() > 0) {
+                for(int i=0; i < shdmem_allocs.size(); ++i){
+                    contexts.push_back(new kernel_ctx_t(Bsz, dev_ctx, shdmem_allocs[i], matrix_file_id));
                 }
             }
-            contexts.push_back(curr_ctx);
         }
+        contexts.push_back(curr_ctx);
     }
-    ~MicrobenchmarkDriver() {
+
+    ~SpmvDriver() {
         for (auto ctx : contexts) {
             if (ctx)
                 delete ctx;
