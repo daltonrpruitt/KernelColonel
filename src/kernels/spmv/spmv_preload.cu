@@ -54,7 +54,7 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     uint warp_id = g_t_id / warpSize;
     if(warp_id >= matrix.m) return;
     // uint stride = 2 * 32 / sizeof(vt);
-
+    uint lane = threadIdx.x % warpSize; 
     // assume vector is preloaded into cache
 
     // uint row_id = warp_id;
@@ -62,24 +62,24 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     uint stop =  0; //matrix.offsets[warp_id + 1];
     uint vals_processed = 0; // stop - start;
 
-    // if (threadIdx.x % warpSize == 0) {
-    //     product[warp_id] = warp_id;  // Single thread writing single value...
+    // if (lane == 0) {
+    //     product[warp_id] =  (vals_processed / warpSize) + 1;
     // }
     // return;
 
     vt t_sum = 0;
     // assume n >> blockDim.x (5000 >> 128 or 256-ish)
     for (int i = 0; i < (vals_processed / warpSize) + 1; ++i) {
-        if (threadIdx.x + i * warpSize >= vals_processed) break;
-        vt val = matrix.values[start + i * warpSize + threadIdx.x];
-        it col = matrix.indices[start + i * warpSize + threadIdx.x];
+        if (lane + i * warpSize >= vals_processed) break;
+        vt val = matrix.values[ start + i * warpSize + lane];
+        it col = matrix.indices[start + i * warpSize + lane];
         t_sum += val * vector[col];
     }
     unsigned m = 0xffffffff;
     for (int offset = 16; offset > 0; offset /= 2) {
         t_sum += __shfl_down_sync(m, t_sum, offset);
     }
-    if (threadIdx.x % warpSize == 0) {
+    if (lane == 0) {
         product[warp_id] = t_sum;  // Single thread writing single value...
     }
     return;
