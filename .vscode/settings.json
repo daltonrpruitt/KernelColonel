@@ -54,7 +54,8 @@
         "cfenv": "cpp",
         "cinttypes": "cpp",
         "*.test": "cpp",
-        "*.htest": "cpp"
+        "*.htest": "cpp",
+        "iterator": "cpp"
     },
     "cSpell.words": [
         "uncoalesced",
