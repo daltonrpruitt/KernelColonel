@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.22 )
 
 
-project(TEST_DRIVER CUDA CXX)
+project(microbenchmarks CUDA CXX)
 
 include(FindCUDAToolkit)
 # find_package(Python 3.1 REQUIRED)
