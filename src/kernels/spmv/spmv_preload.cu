@@ -165,7 +165,7 @@ class SpmvKernel {
 
     bool init()  {
         // Init Matrix here (host arrays/data)
-        host_matrix.from_filename(matrix_filenames[matrix_id]);
+        host_matrix.from_file(matrix_filenames[matrix_id]);
 
         if(host_matrix.nnz < 0) {
             return false;
