@@ -293,7 +293,7 @@ class SpmvKernel {
         for(int i=0; i < host_matrix.m; i++) {
             if(abs(cpu_results[i] - host_results[i])/cpu_results[i] > 1e-3 ) {
                 cout << "Results are incorrect at " << i << ": host=" << std::setprecision(3) << cpu_results[i] 
-                    << " device="  << std::setprecision(3) << host_results[i];  
+                    << " device="  << std::setprecision(3) << host_results[i] << endl;
                 int output_num = 10;
                 int print_start = max(0, i-output_num / 2);
                 int print_end = min(host_matrix.m, i+output_num / 2);
