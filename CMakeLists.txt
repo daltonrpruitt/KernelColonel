@@ -8,6 +8,8 @@ project(TEST_DRIVER CUDA CXX)
 include(FindCUDAToolkit)
 # find_package(Python 3.1 REQUIRED)
 
+add_subdirectory(test)
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/utilities/matrices)
 
