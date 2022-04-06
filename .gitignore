@@ -35,3 +35,6 @@ node_arch_translation.csv
 # Debug output
 *debug*.txt
 *test*.txt
+
+# matrix files
+*.mtx
