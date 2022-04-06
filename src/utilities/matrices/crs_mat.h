@@ -101,7 +101,6 @@ bool compare_pts(pt &a, pt &b) {
 
 bool read_coo_to_crs_matrix(string filename, CRSMat &mat) {
 
-    int ret_code;
     MM_typecode matcode;
     FILE *f;
     // int M, N, nz;   
