@@ -58,9 +58,9 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     // assume vector is preloaded into cache
 
     // uint row_id = warp_id;
-    uint start = 0; // matrix.offsets[warp_id];
-    uint stop =  0; //matrix.offsets[warp_id + 1];
-    uint vals_processed = 0; // stop - start;
+    uint start = matrix.offsets[warp_id];
+    uint stop =  matrix.offsets[warp_id + 1];
+    uint vals_processed = stop - start;
 
     // if (lane == 0) {
     //     product[warp_id] =  (vals_processed / warpSize) + 1;
