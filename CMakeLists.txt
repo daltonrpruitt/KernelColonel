@@ -9,7 +9,8 @@ include(FindCUDAToolkit)
 # find_package(Python 3.1 REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
-# include_directories(${CMAKE_SOURCE_DIR}/src/kernels)
+include_directories(${CMAKE_SOURCE_DIR}/src/utilities/matrices)
+
 
 
 # add_executable(driver src/driver.cu)
