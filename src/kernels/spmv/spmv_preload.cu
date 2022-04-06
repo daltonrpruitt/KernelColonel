@@ -460,8 +460,8 @@ class SpmvKernel {
     }
 
     vector<int> shared_memory_allocations() {
-        return vector<int>(0);
-        /*
+        // return vector<int>(0);
+        
         vector<int> alloc_amounts;
         bool pass = true;
         if (max_blocks_simultaneous_per_sm < 0) compute_max_simultaneous_blocks(pass);
@@ -487,7 +487,7 @@ class SpmvKernel {
             }
         }
         return alloc_amounts;
-        */
+        //*/
     }
 
     float get_occupancy() {
