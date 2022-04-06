@@ -85,8 +85,9 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     return;
 }
 
-std::vector<string> matrix_filenames= {
-    "../../matrices/bcsstk13.mtx"
+vector<string> matrix_filenames= {
+    "../../matrices/bcsstk13.mtx",
+    "../../matrices/bcsstm13.mtx",
 };
 
 
