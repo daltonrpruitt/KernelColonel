@@ -1,13 +1,13 @@
 #pragma once
 /**
- * @file spmv_base.cu
+ * @file spmv_la_1.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Derived from TemplateKernelContext
  * @version 0.1
- * @date 2022-02-08
+ * @date 2022-04-07
  * 
- * This application is for performing sparse matrix-vector 
- * multiplication (SpMV) operations.
+ * This SpMV kernel is to test using a version of latency amortization
+ * that is fairly simple: loading in chunks of the vector into cache. 
  *
  */
 
