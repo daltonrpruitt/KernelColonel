@@ -1,6 +1,6 @@
 #pragma once
 /**
- * @file spmv_preload.cu
+ * @file spmv_base.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Derived from TemplateKernelContext
  * @version 0.1
@@ -60,11 +60,11 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     uint stride = 1 * 32 / sizeof(vt);
 
     // assume m % stride == 0
-    if (g_t_id < matrix.m / stride) {
-        vt tmp_vec;  // = vector[g_t_id*stride];
-        asm volatile("ld.global.f64 %0, [%1];"
-                     : "=d"(tmp_vec) : "l"((double *)(vector + g_t_id * stride)));
-    }
+    // if (g_t_id < matrix.m / stride) {
+    //     vt tmp_vec;  // = vector[g_t_id*stride];
+    //     asm volatile("ld.global.f64 %0, [%1];"
+    //                  : "=d"(tmp_vec) : "l"((double *)(vector + g_t_id * stride)));
+    // }
 
     // uint row_id = warp_id;
     uint start = matrix.offsets[warp_id];
@@ -97,6 +97,7 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
 vector<string> matrix_filenames= {
     "../../matrices/bcsstk13.mtx",
     "../../matrices/bcsstm13.mtx",
+    "../../matrices/Goodwin_127.mtx"
 };
 
 

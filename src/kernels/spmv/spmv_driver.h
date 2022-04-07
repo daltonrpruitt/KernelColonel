@@ -8,7 +8,7 @@
  * 
  */
 
-#include <kernels/spmv/spmv_preload.cu>
+#include <kernels/spmv/spmv_base.cu>
 #include <local_cuda_utils.h>
 #include <stats.h>
 #include <device_props.h>

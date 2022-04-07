@@ -24,7 +24,7 @@ using it = unsigned long long;
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
 #include <kernels/indirect/indirect_copy.cu>
 #include <kernels/expansion_contraction/expansion_contraction.cu>
-#include <kernels/spmv/spmv_preload.cu>
+#include <kernels/spmv/spmv_base.cu>
 #include <kernels/spmv/spmv_driver.h>
 
 #include <output.h>
