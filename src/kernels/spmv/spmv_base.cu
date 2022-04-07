@@ -4,7 +4,7 @@
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Derived from TemplateKernelContext
  * @version 0.1
- * @date 2022-02-08
+ * @date 2022-04-03
  * 
  * This application is for performing sparse matrix-vector 
  * multiplication (SpMV) operations.
