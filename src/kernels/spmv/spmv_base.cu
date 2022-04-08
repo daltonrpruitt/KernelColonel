@@ -337,7 +337,7 @@ class SpmvKernel {
         return local_check_result(); 
     }
     
-    void output_config_info() {
+    virtual void output_config_info() {
         int stride = 4;
         if(dev_ctx->props_.major >= 7) {
             stride = 8;
@@ -354,10 +354,8 @@ class SpmvKernel {
 
     }
 
-    float local_execute() {
+    virtual float local_execute() {
         //  Need to update since will be using two separate kernels.
-
-        //  return  local_execute_template<gpu_ctx>(N, Gsz, Bsz, this->shared_memory_usage, this->dev_ctx, ctx);
    
         if(dev_ctx->props_.major >= 7) {
             cudaFuncAttributes attr;
@@ -439,7 +437,7 @@ class SpmvKernel {
     }
 
     // No change
-    void local_compute_register_usage(bool& pass) {
+    virtual void local_compute_register_usage(bool& pass) {
         // Kernel Registers
         struct cudaFuncAttributes funcAttrib;
         cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel<it, vt>), "getting function attributes (for # registers)", pass);
