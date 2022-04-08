@@ -34,7 +34,8 @@
                 "cwd": "${workspaceFolder}/build/debug"
             },
 			"problemMatcher": [
-				"$gcc"
+				"$gcc",
+                "$nvcc"
 			],
 			"group": "build"
 
