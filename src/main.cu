@@ -24,8 +24,6 @@ using it = unsigned long long;
 #include <kernels/burst_mode/interleaved_fl_ilp.cu>
 #include <kernels/indirect/indirect_copy.cu>
 #include <kernels/expansion_contraction/expansion_contraction.cu>
-#include <kernels/spmv/spmv_base.cu>
-#include <kernels/spmv/spmv_driver.h>
 
 #include <output.h>
 #include <utils.h>
@@ -133,14 +131,6 @@ int main(int argc, char** argv) {
 
     // Group 3
     // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
-
-
-    SpmvKernel spmv_kernel(64, &dev_ctx, 0, 0);
-    for(int i=0; i < matrix_filenames.size(); ++i) {
-        SpmvDriver basic_spmv_driver(i, 64, output_dir+"spmv.csv", &dev_ctx, false);
-        basic_spmv_driver.check_then_run_kernels();
-        total_runs += basic_spmv_driver.get_total_runs();
-    }
 
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
