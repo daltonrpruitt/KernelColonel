@@ -21,6 +21,10 @@ set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --keep -Xptxas -dlcm=cg")
 
+add_executable(spmv src/spmv.cu)
+set_property(TARGET spmv PROPERTY CXX_STANDARD 17)
+# set_property(TARGET spmv PROPERTY CUDA_ARCHITECTURES native)
+set_property(TARGET spmv PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 # message(STATUS "python exec: ${Python_EXECUTABLE}")
 
 # add_custom_target(
