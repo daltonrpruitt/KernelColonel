@@ -30,23 +30,6 @@ using std::endl;
 using std::vector;
 namespace fs = std::filesystem;
 
-template <typename it=int, typename vt=double, int ILP = 1>
-// __forceinline__ __host__ __device__
-__global__ 
-void dense_vector_cache_preload(vt* vector, int m) {
-    uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
-    // uint warp_id = g_t_id / warpSize;
-    uint stride = 1 * 32 / sizeof(vt);
-
-    // assume m % stride == 0
-    if (g_t_id < m / stride) {
-        vt tmp_vec;  // = vector[g_t_id*stride];
-        asm volatile("ld.global.f64 %0, [%1];"
-                     : "=d"(tmp_vec) : "l"((double *)(vector + g_t_id * stride)));
-        //if(tmp_vec == -0.0001) return;  // not needed if asm volatile (?)
-    }
-    return;
-}
 
 template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__ 
@@ -57,7 +40,6 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     if(warp_id >= matrix.m) return;
     // uint stride = 2 * 32 / sizeof(vt);
     uint lane = threadIdx.x % warpSize; 
-    // assume vector is preloaded into cache
 
     uint stride = 1 * 32 / sizeof(vt);
 
@@ -359,19 +341,11 @@ class SpmvKernel {
    
         if(dev_ctx->props_.major >= 7) {
             cudaFuncAttributes attr;
-            cudaFuncGetAttributes(&attr, (void *) dense_vector_cache_preload<int, double>);
-            int shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
-            cudaFuncSetAttribute((void *) dense_vector_cache_preload<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
-            cudaFuncSetAttribute((void *) dense_vector_cache_preload<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
-            cudaPrintLastError();
-
             cudaFuncGetAttributes(&attr, (void *) spmv_kernel<int, double>);
-            shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
+            int shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
             cudaFuncSetAttribute((void *) spmv_kernel<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
             cudaFuncSetAttribute((void *) spmv_kernel<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
             cudaPrintLastError();
-
-
         }
         cudaEvent_t start, stop;
         cudaEventCreate(&start); cudaEventCreate(&stop);
@@ -384,9 +358,6 @@ class SpmvKernel {
         int spmv_blocks = host_matrix.m / (Bsz / warp_size) + 1;
         
         cudaEventRecord(start);
-        // dense_vector_cache_preload<<<preload_blocks, Bsz, shared_memory_usage>>>(gpu_vector, gpu_matrix.m);
-        // cudaDeviceSynchronize();
-        // cudaPrintLastError();
         spmv_kernel<<<spmv_blocks, Bsz, shared_memory_usage>>>(gpu_results, gpu_matrix, gpu_vector);
         cudaEventRecord(stop);
 
