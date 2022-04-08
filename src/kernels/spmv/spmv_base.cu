@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include <cuda.h>
 #include <local_cuda_utils.h>
@@ -27,6 +28,7 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::vector;
+namespace fs = std::filesystem;
 
 template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__
@@ -347,7 +349,7 @@ class SpmvKernel {
                 << " Bsz=" << Bsz 
                 << " Blocks used (preload)="<< preload_blocks 
                 << " Blocks used (spmv)="<< spmv_blocks
-                << " matrix file="<< matrix_filenames[matrix_id]
+                << " matrix file="<< fs::path(matrix_filenames[matrix_id]).filename()
                 << " occupancy=" << this->get_occupancy() << endl;
 
     }
