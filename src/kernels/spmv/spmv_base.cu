@@ -563,10 +563,24 @@ class SpmvKernel {
         return 0;
     }
 
-    string get_extra_config_parameters() { return "matrix_file,m,n,nnz";}
+    virtual string get_local_extra_config_parameters() { return "";}
+    string get_extra_config_parameters() { 
+        string out =  "matrix_file,m,n,nnz";
+        string local_extra_params =  get_local_extra_config_parameters();
+        if(local_extra_params.length() != 0) {
+            out = out + "," + local_extra_params;
+        }
+        return out;
+    }
+
+    virtual string get_local_extra_config_values() { return "";} 
     string get_extra_config_values() { 
         std::stringstream out; 
-        out << matrix_filenames[matrix_id] << "," << host_matrix.m << "," << host_matrix.n << "," << host_matrix.nnz;     
+        out << matrix_filenames[matrix_id] << "," << host_matrix.m << "," << host_matrix.n << "," << host_matrix.nnz;
+        string local_extra_values = get_local_extra_config_values();
+        if(local_extra_values.length() != 0) {
+            out << "," << local_extra_values;
+        }
         return out.str();
     }
 
