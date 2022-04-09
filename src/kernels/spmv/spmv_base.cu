@@ -44,9 +44,9 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     // uint stride = 2 * 32 / sizeof(vt);
     uint lane = threadIdx.x % warpSize; 
 
-    uint stride = 1 * 32 / sizeof(vt);
 
     // assume m % stride == 0
+    // uint stride = 1 * 32 / sizeof(vt);
     // if (g_t_id < matrix.m / stride) {
     //     vt tmp_vec;  // = vector[g_t_id*stride];
     //     asm volatile("ld.global.f64 %0, [%1];"
