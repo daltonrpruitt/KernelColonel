@@ -69,6 +69,12 @@ int main(int argc, char** argv) {
         basic_spmv_driver.check_then_run_kernels();
         total_runs += basic_spmv_driver.get_total_runs();
     }
+    for(int i=0; i < max_matrix_filename_id; ++i) {
+        SpmvDriver<SpmvKernelLAv1<int, double>> basic_spmv_driver(i, 64, output_dir+"spmv.csv", &dev_ctx, false);
+        basic_spmv_driver.check_then_run_kernels();
+        total_runs += basic_spmv_driver.get_total_runs();
+    }
+
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
