@@ -89,7 +89,7 @@ vector<string> matrix_filenames= {
 
 
 template <typename it=int, typename vt=double>
-class SpmvKernel {
+struct SpmvKernel {
    public:
     // typedef KernelCPUContext<vt, it> super;
     string name = "spmv";
