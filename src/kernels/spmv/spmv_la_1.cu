@@ -63,14 +63,11 @@ void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu matrix, vt* vec)
     uint lane = threadIdx.x % WARP_SIZE; 
     // assume vector is preloaded into cache
 
-    uint stride = 1 * 32 / sizeof(vt);
-
-    // assume m % stride == 0
-    // if (g_t_id < matrix.m / stride) {
-    //     vt tmp_vec;  // = vector[g_t_id*stride];
-    //     asm volatile("ld.global.f64 %0, [%1];"
-    //                  : "=d"(tmp_vec) : "l"((double *)(vector + g_t_id * stride)));
-    // }
+#if __CUDA_ARCH__ >= 700
+    uint stride = 2 * WARP_SIZE / sizeof(vt); // 2 sectors
+#else
+    uint stride = 1 * WARP_SIZE / sizeof(vt); // 1 sector
+#endif
 
     // uint row_id = warp_id;
     uint start = matrix.offsets[warp_id];
