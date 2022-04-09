@@ -257,7 +257,7 @@ struct SpmvKernel {
         initialized = false;
     }
 
-    bool local_check_result() {
+    bool local_check_result() { // not acutally "local"
         // Perform matrix multiply here
         bool debug = false;
 #ifdef DEBUG
@@ -273,17 +273,22 @@ struct SpmvKernel {
             int start = host_matrix.offsets[i];
             int end   = host_matrix.offsets[i+1];
             int row_nz = end - start;
+            std::stringstream multiplications;
             for(int j=0; j < row_nz; j++) {
                 int cur_pos = cur_row_start + j; 
                 int col = host_matrix.indices[cur_pos];
                 double val = host_matrix.values[cur_pos];
                 double vec_val = host_vector[col];
                 
-                if(debug && i < 10 && j < 32) cout <<  std::setprecision(2) << val << "*" << std::setprecision(2) << vec_val << ", "; 
+                if(debug && i < 10 && j < 10) { multiplications <<  std::setprecision(2) << val << "*" << std::setprecision(2) << vec_val << ", ";  }
                 result += val * vec_val; 
 
             }
-            if(debug && i < 10) cout <<  "...  = " << std::setprecision(2) << result << endl; 
+            if(debug && i < 10) {
+                cout << std::setprecision(2) << result << " = " << multiplications.str() ;
+                if(row_nz >10) cout << " ...";
+                cout << endl; 
+            }
             cpu_results[i] = result;
             
             cur_row_start += row_nz;
