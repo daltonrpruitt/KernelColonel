@@ -75,19 +75,34 @@ void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu matrix, vt* vec)
     uint stop =  matrix.offsets[warp_id + 1];
     uint vals_processed = stop - start;
 
-    // if (lane == 0) {
-    //     product[warp_id] =  (vals_processed / warpSize) + 1;
-    // }
-    // return;
+    uint chunk_parts = 2;
+    uint chunk_size = WARP_SIZE * chunk_parts;
+    int num_chunks = (vals_processed + chunk_size) / chunk_size;
 
     vt t_sum = 0;
-    // assume n >> blockDim.x (5000 >> 128 or 256-ish)
-    for (int i = 0; i < (vals_processed / warpSize) + 1; ++i) {
-        if (lane + i * warpSize >= vals_processed) break;
-        vt val = matrix.values[ start + i * warpSize + lane];
-        it col = matrix.indices[start + i * warpSize + lane];
-        t_sum += val * vector[col];
+    for(int chunk=0; chunk < num_chunks; chunk++) {
+        uint local_start = start + chunk * chunk_size;
+
+        uint local_start_col_idx = matrix.indices[local_start];
+        uint local_stop_col_idx = max(matrix.indices[min(local_start + chunk_size, stop)-1], local_start_col_idx + 1);
+        uint cur_preload_start_idx = local_start_col_idx;
+        while(cur_preload_start_idx < local_stop_col_idx) {
+            force_global_load<vt>(vec, cur_preload_start_idx + lane*stride, local_stop_col_idx);
+            cur_preload_start_idx += WARP_SIZE * stride;
+        }
+    
+    
+        for(uint part=0; part < chunk_parts; part++) {
+            uint immediate_idx = local_start + part*WARP_SIZE + lane;
+            if(immediate_idx >= stop) break;
+            vt val = matrix.values[immediate_idx];
+            it col = matrix.indices[immediate_idx];
+            t_sum += val * vec[col];
+        }
     }
+    // if (lane == 0) { product[warp_id] = local_stop_col_idx;} return;
+    
+    // Final parallel reduce
     unsigned m = 0xffffffff;
     for (int offset = 16; offset > 0; offset /= 2) {
         t_sum += __shfl_down_sync(m, t_sum, offset);
