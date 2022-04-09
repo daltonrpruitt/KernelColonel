@@ -30,6 +30,9 @@ using std::endl;
 using std::vector;
 namespace fs = std::filesystem;
 
+#ifndef WARP_SIZE
+#define WARP_SIZE (32)
+#endif
 
 template <typename vt=double>
 __forceinline__ __host__ __device__
@@ -54,10 +57,10 @@ template <typename it=int, typename vt=double, int ILP = 1>
 __global__ 
 void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu matrix, vt* vec) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
-    uint warp_id = g_t_id / warpSize;
+    uint warp_id = g_t_id / WARP_SIZE;
     if(warp_id >= matrix.m) return;
     // uint stride = 2 * 32 / sizeof(vt);
-    uint lane = threadIdx.x % warpSize; 
+    uint lane = threadIdx.x % WARP_SIZE; 
     // assume vector is preloaded into cache
 
     uint stride = 1 * 32 / sizeof(vt);
