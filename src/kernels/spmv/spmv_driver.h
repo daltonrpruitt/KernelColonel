@@ -94,10 +94,8 @@ class SpmvDriver {
         // for (auto ctx : contexts) {
             auto ctx = contexts.back();
             if(!ctx->okay) {return false;}
-#ifdef DEBUG
-            ctx->output_config_info();
-#endif
             if(!ctx->init()) {return false;}
+            ctx->output_config_info();
             for (int i = 0; i < kernel_checks; ++i) {
                 pass = (pass && ctx->run_and_check());
                 if (!pass) break;
@@ -121,10 +119,8 @@ class SpmvDriver {
 #endif
         for (auto ctx : contexts) {
             if(!ctx->okay) {return;}
-#ifdef DEBUG
-            ctx->output_config_info();
-#endif
             if(!ctx->init()) {return;}
+            ctx->output_config_info();
             using timing_precision_t = double;
             vector<timing_precision_t> times;
             for (int i = 0; i < kernel_runs; ++i) {
