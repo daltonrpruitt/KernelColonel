@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <typeinfo>   // operator typeid
 #include <filesystem>
 
 #include <cuda.h>
