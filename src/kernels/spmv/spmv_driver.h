@@ -182,7 +182,6 @@ class SpmvDriver {
     void start_output_file(){
         // Guard against overwriting data
         struct stat output_file_buffer;
-        int i = 0;
         string original_filename = output_filename_;
         if(stat(output_filename_.c_str(), &output_file_buffer) == 0)
         {
