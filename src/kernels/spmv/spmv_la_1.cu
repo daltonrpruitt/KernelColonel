@@ -51,7 +51,7 @@ void dense_vector_cache_preload(vt* vector, int m) {
 template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__ 
 __global__ 
-void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_row) {
+void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu matrix, vt* vec) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / warpSize;
     if(warp_id >= matrix.m) return;
@@ -119,10 +119,10 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
     float local_execute() override {  
         if(this->dev_ctx->props_.major >= 7) {
             cudaFuncAttributes attr;
-            cudaFuncGetAttributes(&attr, (void *) dense_vector_cache_preload<int, double>);
-            int shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
-            cudaFuncSetAttribute((void *) dense_vector_cache_preload<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
-            cudaFuncSetAttribute((void *) dense_vector_cache_preload<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
+            cudaFuncGetAttributes(&attr, (void *) spmv_kernel_latency_amortization_1<int, double>);
+            int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
+            cudaFuncSetAttribute((void *) spmv_kernel_latency_amortization_1<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
+            cudaFuncSetAttribute((void *) spmv_kernel_latency_amortization_1<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
             cudaPrintLastError();
         }
         cudaEvent_t start, stop;
@@ -133,7 +133,7 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
         // dense_vector_cache_preload<<<preload_blocks, Bsz, shared_memory_usage>>>(gpu_vector, gpu_matrix.m);
         // cudaDeviceSynchronize();
         // cudaPrintLastError();
-        spmv_kernel<<<spmv_blocks, Bsz, shared_memory_usage>>>(gpu_results, gpu_matrix, gpu_vector);
+        spmv_kernel_latency_amortization_1<it,vt><<<this->Gsz, this->Bsz, this->shared_memory_usage>>>(this->gpu_results, this->gpu_matrix, this->gpu_vector);
         cudaEventRecord(stop);
 
         cudaEventSynchronize(stop);
@@ -150,7 +150,7 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
     void local_compute_register_usage(bool& pass) override {
         // Kernel Registers
         struct cudaFuncAttributes funcAttrib;
-        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel<it, vt>), "getting function attributes (for # registers)", pass);
+        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel_latency_amortization_1<it, vt>), "getting function attributes (for # registers)", pass);
         if (!pass) {
             this->okay = false;
             return;
