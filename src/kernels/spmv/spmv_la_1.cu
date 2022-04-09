@@ -53,7 +53,11 @@ void force_global_load(vt* arr, uint offset, uint m) {
     return;
 }
 
+#define MAX_THREADS_PER_BLOCK 64
+#define MIN_BLOCKS_PER_MP     2
+
 template <typename it=int, typename vt=double, int ILP = 1>
+__launch_bounds__(MAX_THREADS_PER_BLOCK, MIN_BLOCKS_PER_MP)
 // __forceinline__ __host__ __device__ 
 __global__ 
 void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu matrix, vt* vec) {
