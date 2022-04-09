@@ -30,6 +30,9 @@ using std::endl;
 using std::vector;
 namespace fs = std::filesystem;
 
+#ifndef WARP_SIZE
+#define WARP_SIZE (32)
+#endif
 
 template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__ 
@@ -159,6 +162,8 @@ class SpmvKernel {
         host_matrix.dump();
         #endif
 
+        Gsz = host_matrix.m / (Bsz / WARP_SIZE) + 1;
+        
         gpu_matrix.nnz = host_matrix.nnz;
         gpu_matrix.m   = host_matrix.m;
         gpu_matrix.n   = host_matrix.n;
@@ -320,17 +325,9 @@ class SpmvKernel {
     }
     
     virtual void output_config_info() {
-        int stride = 4;
-        if(dev_ctx->props_.major >= 7) {
-            stride = 8;
-        }
-        int preload_blocks = host_matrix.m / (Bsz / warp_size * stride) + 1; 
-        int spmv_blocks = host_matrix.m / (Bsz / warp_size) + 1;
-
         cout << "SpMV with : "
                 << " Bsz=" << Bsz 
-                << " Blocks used (preload)="<< preload_blocks 
-                << " Blocks used (spmv)="<< spmv_blocks
+                << " Blocks used ="<< Gsz
                 << " matrix file="<< fs::path(matrix_filenames[matrix_id]).filename()
                 << " occupancy=" << this->get_occupancy() << endl;
 
@@ -350,15 +347,9 @@ class SpmvKernel {
         cudaEvent_t start, stop;
         cudaEventCreate(&start); cudaEventCreate(&stop);
 
-        int stride = 4;
-        if(dev_ctx->props_.major >= 7) {
-            stride = 8;
-        }
-        int preload_blocks = host_matrix.m / (Bsz / warp_size * stride) + 1; 
-        int spmv_blocks = host_matrix.m / (Bsz / warp_size) + 1;
         
         cudaEventRecord(start);
-        spmv_kernel<<<spmv_blocks, Bsz, shared_memory_usage>>>(gpu_results, gpu_matrix, gpu_vector);
+        spmv_kernel<<<Gsz, Bsz, shared_memory_usage>>>(gpu_results, gpu_matrix, gpu_vector);
         cudaEventRecord(stop);
 
         cudaEventSynchronize(stop);
