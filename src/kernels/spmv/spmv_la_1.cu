@@ -30,20 +30,21 @@ using std::endl;
 using std::vector;
 namespace fs = std::filesystem;
 
-template <typename it=int, typename vt=double, int ILP = 1>
-// __forceinline__ __host__ __device__
-__global__ 
-void dense_vector_cache_preload(vt* vector, int m) {
-    uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
-    // uint warp_id = g_t_id / warpSize;
-    uint stride = 1 * 32 / sizeof(vt);
 
-    // assume m % stride == 0
-    if (g_t_id < m / stride) {
-        vt tmp_vec;  // = vector[g_t_id*stride];
+template <typename vt=double>
+__forceinline__ __host__ __device__
+void force_global_load(vt* arr, uint offset, uint m) {
+    if(offset >= m) return; 
+    vt tmp_vec;
+    // https://www.cplusplus.com/reference/typeinfo/type_info/operator==/
+    if constexpr(std::is_same<vt,double>()) {
         asm volatile("ld.global.f64 %0, [%1];"
-                     : "=d"(tmp_vec) : "l"((double *)(vector + g_t_id * stride)));
-        //if(tmp_vec == -0.0001) return;  // not needed if asm volatile (?)
+                    : "=d"(tmp_vec) : "l"((vt *)(arr + offset)));
+    } else if constexpr(std::is_same<vt,float>()) {
+        asm volatile("ld.global.f32 %0, [%1];"
+                    : "=f"(tmp_vec) : "l"((vt *)(arr + offset)));
+    } else {
+        static_assert(std::is_same<vt,double>()); // Know will fail at this point, but needed to get around ill-formed argument https://stackoverflow.com/questions/38304847/constexpr-if-and-static-assert
     }
     return;
 }
