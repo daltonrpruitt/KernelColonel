@@ -124,24 +124,10 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
             cudaFuncSetAttribute((void *) dense_vector_cache_preload<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
             cudaFuncSetAttribute((void *) dense_vector_cache_preload<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
             cudaPrintLastError();
-
-            cudaFuncGetAttributes(&attr, (void *) spmv_kernel<int, double>);
-            shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
-            cudaFuncSetAttribute((void *) spmv_kernel<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
-            cudaFuncSetAttribute((void *) spmv_kernel<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
-            cudaPrintLastError();
-
-
         }
         cudaEvent_t start, stop;
         cudaEventCreate(&start); cudaEventCreate(&stop);
 
-        int stride = 4;
-        if(dev_ctx->props_.major >= 7) {
-            stride = 8;
-        }
-        int preload_blocks = host_matrix.m / (Bsz / warp_size * stride) + 1; 
-        int spmv_blocks = host_matrix.m / (Bsz / warp_size) + 1;
         
         cudaEventRecord(start);
         // dense_vector_cache_preload<<<preload_blocks, Bsz, shared_memory_usage>>>(gpu_vector, gpu_matrix.m);
