@@ -37,7 +37,7 @@ namespace fs = std::filesystem;
 template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__ 
 __global__ 
-void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_row) {
+void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vec) { //}, int max_nz_row) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / warpSize;
     if(warp_id >= matrix.m) return;
@@ -48,9 +48,9 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
     // assume m % stride == 0
     // uint stride = 1 * 32 / sizeof(vt);
     // if (g_t_id < matrix.m / stride) {
-    //     vt tmp_vec;  // = vector[g_t_id*stride];
+    //     vt tmp_vec;  // = vec[g_t_id*stride];
     //     asm volatile("ld.global.f64 %0, [%1];"
-    //                  : "=d"(tmp_vec) : "l"((double *)(vector + g_t_id * stride)));
+    //                  : "=d"(tmp_vec) : "l"((double *)(vec + g_t_id * stride)));
     // }
 
     // uint row_id = warp_id;
@@ -69,7 +69,7 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vector) { //}, int max_nz_r
         if (lane + i * warpSize >= vals_processed) break;
         vt val = matrix.values[ start + i * warpSize + lane];
         it col = matrix.indices[start + i * warpSize + lane];
-        t_sum += val * vector[col];
+        t_sum += val * vec[col];
     }
     unsigned m = 0xffffffff;
     for (int offset = 16; offset > 0; offset /= 2) {
