@@ -20,7 +20,7 @@
 #include <cuda.h>
 #include <local_cuda_utils.h>
 #include <crs_mat.h>
-#include <kernel_context.cu>
+#include <kernels/spmv/spmv_base.cu>
 
 #define DEBUG
 
