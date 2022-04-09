@@ -363,15 +363,15 @@ class SpmvKernel {
     }
 
     void copy_result_to_host(bool &pass) {
-        cout << "Before copy to host :" ; 
-        for(int i=0; i < 64; ++i) { cout << " " << std::setprecision(2) << host_results[i]; if(i %32 == 31) { cout << endl << "\t";} }
-        cout << endl;
+        // cout << "Before copy to host :" ; 
+        // for(int i=0; i < 64; ++i) { cout << " " << std::setprecision(2) << host_results[i]; if(i %32 == 31) { cout << endl << "\t";} }
+        // cout << endl;
 
         cudaErrChk(cudaMemcpy(host_results.data(), gpu_results, host_matrix.m * sizeof(double), cudaMemcpyDeviceToHost),"copying results from gpu to host", pass);
 
-        cout << "After copy to host :" ; 
-        for(int i=0; i < 64; ++i) { cout << " " << std::setprecision(2) << host_results[i]; if(i %32 == 31) { cout << endl << "\t";} }
-        cout << endl;
+        // cout << "After copy to host :" ; 
+        // for(int i=0; i < 64; ++i) { cout << " " << std::setprecision(2) << host_results[i]; if(i %32 == 31) { cout << endl << "\t";} }
+        // cout << endl;
 
     }   
 
