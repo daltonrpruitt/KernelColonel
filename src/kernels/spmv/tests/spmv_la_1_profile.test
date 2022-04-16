@@ -1,0 +1,26 @@
+#include <kernels/spmv/spmv_la_1.cu>
+#ifndef SPMV_LA_1_DRIVER_profile
+#define SPMV_LA_1_DRIVER_profile(PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS) spmv_la_v1_ ## PRELOAD ## _ ## INCLUDE_PRELOAD_ARITH ## _ ## CHUNK_PARTS ## _driver
+#endif
+
+#ifndef SPMV_LA_1_profile
+#define SPMV_LA_1_profile(PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS) \
+	{ \
+		SpmvDriver<SpmvKernelLAv1<it, vt, PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS>> driver( \
+			64, output_dir+ XSTRINGIFY( SPMV_LA_1_DRIVER_profile(PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS) ) ".csv", \
+			&dev_ctx, mtx_file_string, span_occupancies); \
+		if (!driver.check_kernels()) {return -1;}  \
+		total_runs += 1; \
+	}   
+#endif
+
+    SPMV_LA_1_profile(false, false, 4);
+    SPMV_LA_1_profile(false, true,  4);
+    SPMV_LA_1_profile(true,  true,  4);
+
+    SPMV_LA_1_profile(false, true,  1);
+    SPMV_LA_1_profile(false, true,  2);
+ // SPMV_LA_1_profile(false, true,  4);
+    SPMV_LA_1_profile(false, true,  8);
+
+//*/
