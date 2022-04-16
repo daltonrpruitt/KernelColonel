@@ -51,15 +51,7 @@ int main(int argc, char** argv) {
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
     
-    std::vector<int> bs_vec;
-    // Only one of the next two lines 
-    // for (int bs = 256; bs <= 1024; bs *= 2) { bs_vec.push_back(bs);}
-    int min_block_size = dev_ctx.props_.maxThreadsPerMultiProcessor / dev_ctx.props_.maxBlocksPerMultiProcessor ;
-    bs_vec.push_back(min_block_size);
-    // bs_vec.push_back(128);
-    // bs_vec.push_back(1024);
     bool span_occupancies = true;
-    if(span_occupancies && !span_occupancies) return -1;
 
     Output output_dir;
     if(output_dir.empty()) {
