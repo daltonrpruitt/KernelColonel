@@ -20,13 +20,13 @@
 #include <string>
 #include <filesystem>
 
-namespace fs = std::filesystem;
 using std::ostream;
 using std::string;
 using std::stringstream;
 using std::cout;
 using std::cerr;
 using std::endl;
+namespace fs = std::filesystem;
 
 class Output {
   public: 
