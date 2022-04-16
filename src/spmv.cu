@@ -1,7 +1,7 @@
 // spmv.cu
 // simple driver file for spmv kernel testing
 
-#define DEBUG
+// #define DEBUG
 
 using vt = double;
 using it = uint;

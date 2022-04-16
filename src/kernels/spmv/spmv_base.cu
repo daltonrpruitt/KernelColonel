@@ -22,7 +22,7 @@
 #include <crs_mat.h>
 #include <kernel_context.cu>
 
-#define DEBUG
+// #define DEBUG
 
 using std::string;
 using std::cout;

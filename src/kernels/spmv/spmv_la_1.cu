@@ -24,7 +24,7 @@
 #include <crs_mat.h>
 #include <kernels/spmv/spmv_base.cu>
 
-#define DEBUG
+// #define DEBUG
 
 using std::string;
 using std::cout;
