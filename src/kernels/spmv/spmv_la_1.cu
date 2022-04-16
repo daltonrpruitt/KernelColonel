@@ -70,9 +70,9 @@ void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu<it,vt> matrix, v
     // assume vector is preloaded into cache
 
 #if __CUDA_ARCH__ >= 700
-    uint stride = 2 * WARP_SIZE / sizeof(vt); // 2 sectors
+    uint stride = 2 * 32 / sizeof(vt); // 2 sectors
 #else
-    uint stride = 1 * WARP_SIZE / sizeof(vt); // 1 sector
+    uint stride = 1 * 32 / sizeof(vt); // 1 sector
 #endif
 
     // uint row_id = warp_id;
