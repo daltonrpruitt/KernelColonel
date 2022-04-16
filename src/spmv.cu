@@ -41,6 +41,12 @@ int main(int argc, char** argv) {
     clock_gettime(CLOCK_MONOTONIC, &mainStart);
     int total_runs = 0;
     
+    bool profile = false;
+    if(argc == 2) {
+      if(strcmp(argv[1],"-p") == 0 ){
+        profile = true;
+      }
+    }
 
     device_context dev_ctx;
     if(!dev_ctx.init()) return -1;
