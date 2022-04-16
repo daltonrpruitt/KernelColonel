@@ -12,6 +12,9 @@ for d in ${dirs[@]}; do
     fi
 done
 
+ml python
+python3 download_matrices.py
+
 cd build/debug ;
 if test ! -f "../CMakeCache.txt"; then
     cmake -B . -S ../.. ;
@@ -19,7 +22,5 @@ fi
 
 make
 
-ml python
-python3 download_matrices.py
 
 echo "Run './build/debug/main' or './build/debug/spmv' to test"
