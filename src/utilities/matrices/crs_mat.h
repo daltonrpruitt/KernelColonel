@@ -32,10 +32,8 @@ using std::string;
 using std::min;
 using std::vector;
 
-template <typename it=int, typename vt=double>
-class CRSMat ;
-template <typename it=int, typename vt=double>
-bool read_coo_to_crs_matrix(string, CRSMat<it,vt>&);
+template <typename mat_t>
+bool read_coo_to_crs_matrix(string, mat_t&);
 
 template <typename it=int, typename vt=double>
 struct CRSMat_gpu {
@@ -45,8 +43,7 @@ struct CRSMat_gpu {
     it* offsets;
 };
 
-
-template <typename it, typename vt>
+template <typename it=int, typename vt=double>
 class CRSMat {
     public:
         string filename; 
@@ -106,7 +103,7 @@ bool compare_pts(pt &a, pt &b) {
         return a.c < b.c;  
 };
 
-template<typename it, typename vt>
+template <typename it=int, typename vt=double>
 bool read_coo_to_crs_matrix(string filename, CRSMat<it, vt> &mat) {
 
     MM_typecode matcode;
