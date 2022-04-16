@@ -20,6 +20,7 @@
 
 #include <cuda.h>
 #include <local_cuda_utils.h>
+#include <local_basic_utils.h>
 #include <crs_mat.h>
 #include <kernels/spmv/spmv_base.cu>
 
@@ -193,10 +194,12 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
     }
 
     string get_local_extra_config_parameters() override { 
-        return "";
+        return "preload,include_preload_arith,chunk_parts";
     
     string get_local_extra_config_values() { 
-        return "";
+        stringstream out;
+        out << bool_to_string(preload) << "," << bool_to_string(include_preload_arithmatic) << "," << chunk_parts;
+        return out.str();
     } 
 
 };
