@@ -196,6 +196,7 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
 
     string get_local_extra_config_parameters() override { 
         return "preload,include_preload_arith,chunk_parts";
+    }
     
     string get_local_extra_config_values() { 
         stringstream out;
