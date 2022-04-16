@@ -200,7 +200,7 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
     
     string get_local_extra_config_values() { 
         stringstream out;
-        out << bool_to_string(preload) << "," << bool_to_string(include_preload_arithmatic) << "," << chunk_parts;
+        out << bool_to_string(preload) << "," << bool_to_string(include_preload_arith) << "," << chunk_parts;
         return out.str();
     } 
 
