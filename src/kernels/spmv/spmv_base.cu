@@ -528,7 +528,7 @@ struct SpmvKernel {
         return 0;
     }
 
-    virtual string get_local_extra_config_parameters() { return "";}
+    virtual string get_local_extra_config_parameters() { return ""; }
     string get_extra_config_parameters() { 
         string out =  "matrix_file,m,n,nnz";
         string local_extra_params =  get_local_extra_config_parameters();
