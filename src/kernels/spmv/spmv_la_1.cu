@@ -181,7 +181,8 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
 
     string get_local_extra_config_parameters() override { 
         return "";
-    
+    }
+  
     string get_local_extra_config_values() { 
         return "";
     } 
