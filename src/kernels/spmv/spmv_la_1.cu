@@ -141,11 +141,13 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
 
     void output_config_info() override {
         cout << "SpMV Latency Amortization V1 with : "
-                << " Bsz=" << this->Bsz 
-                << " Blocks used ="<< this->Gsz
-                << " matrix file="<< fs::path(this->matrix_filename).filename()
-                << " occupancy=" << this->get_occupancy() << endl;
-
+                << "\n\t Bsz=" << this->Bsz 
+                << "\n\t Blocks used ="<< this->Gsz
+                << "\n\t matrix file="<< fs::path(this->matrix_filename).filename()
+                << "\n\t occupancy=" << this->get_occupancy()
+                << "\n\t preload=" << bool_to_string(preload)
+                << "\n\t include_preload_arithmetic=" << bool_to_string(include_preload_arith)
+                << "\n\t chunk_parts=" << chunk_parts << endl;
     }
 
     float local_execute() override {  
