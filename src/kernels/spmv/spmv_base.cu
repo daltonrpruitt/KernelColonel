@@ -81,12 +81,12 @@ void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vec) { //}, int max_nz_row)
     return;
 }
 
-vector<string> matrix_filenames= {
+/*vector<string> matrix_filenames= {
     "../../matrices/bcsstk13.mtx",
     "../../matrices/bcsstm13.mtx",
     "../../matrices/Goodwin_127.mtx"
 };
-
+*/
 
 template <typename it=int, typename vt=double>
 struct SpmvKernel {
@@ -103,7 +103,7 @@ struct SpmvKernel {
     device_context* dev_ctx;
 
 
-    uint matrix_id;
+    string matrix_filename;
     CRSMat host_matrix;
     CRSMat_gpu gpu_matrix;
     uint nnz;
@@ -139,8 +139,8 @@ struct SpmvKernel {
     //     }
     // } ctx;
 
-    SpmvKernel(int bs, device_context* d_ctx, int shd_mem_alloc = 0, int matrix_file_id=0) 
-    : Bsz(bs), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc), matrix_id(matrix_file_id) {
+  SpmvKernel(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
+    : Bsz(bs), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc), matrix_filename(mtx_filename) {
         //  : super(2, 1, 2, n, bs, dev_ctx, shd_mem_alloc) {
         //this->name = "SpMV";
         // this->total_data_reads = N * data_reads_per_element;
@@ -153,7 +153,7 @@ struct SpmvKernel {
 
     bool init()  {
         // Init Matrix here (host arrays/data)
-        host_matrix.from_file(matrix_filenames[matrix_id]);
+        host_matrix.from_file(matrix_filename);
 
         if(host_matrix.nnz < 0) {
             return false;
@@ -333,7 +333,7 @@ struct SpmvKernel {
         cout << "SpMV with : "
                 << " Bsz=" << Bsz 
                 << " Blocks used ="<< Gsz
-                << " matrix file="<< fs::path(matrix_filenames[matrix_id]).filename()
+                << " matrix file="<< fs::path(matrix_filename).filename()
                 << " occupancy=" << this->get_occupancy() << endl;
 
     }
@@ -528,7 +528,7 @@ struct SpmvKernel {
         return 0;
     }
 
-    virtual string get_local_extra_config_parameters() { return "";}
+    virtual string get_local_extra_config_parameters() { return ""; }
     string get_extra_config_parameters() { 
         string out =  "matrix_file,m,n,nnz";
         string local_extra_params =  get_local_extra_config_parameters();
@@ -541,7 +541,7 @@ struct SpmvKernel {
     virtual string get_local_extra_config_values() { return "";} 
     string get_extra_config_values() { 
         std::stringstream out; 
-        out << matrix_filenames[matrix_id] << "," << host_matrix.m << "," << host_matrix.n << "," << host_matrix.nnz;
+        out << fs::path(matrix_filename).filename() << "," << host_matrix.m << "," << host_matrix.n << "," << host_matrix.nnz;
         string local_extra_values = get_local_extra_config_values();
         if(local_extra_values.length() != 0) {
             out << "," << local_extra_values;
