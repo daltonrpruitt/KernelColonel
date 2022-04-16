@@ -21,6 +21,7 @@ using it = uint;
 #include <string>
 #include <algorithm>
 #include <time.h>
+#include <filesystem>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
@@ -28,13 +29,11 @@ using it = uint;
 #define XSTRINGIFY( x ) STRINGIFY ( x )
 #define STRINGIFY( x ) #x
 
-
 using std::cout;
 using std::endl;
 using std::string;
 using std::to_string;
-
-// #define N (32*32*32 * 32 * 8)
+namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
     timespec mainStart, mainEnd;
@@ -59,21 +58,40 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    fs::path base_dir = fs::path(output_dir + "");
+    for(int i=0; i < 4; ++i) base_dir = base_dir.parent_path();
+    fs::path matrices_dir = fs::path(base_dir).append("matrices");
+    cout << "Matrices dir =" << matrices_dir << endl;
 
-    int max_matrix_filename_id = matrix_filenames.size();
+    for (auto const& dir_entry : fs::directory_iterator{matrices_dir}) {
+        string mtx_file_string = dir_entry.path().string();
+        if(mtx_file_string.find(string(".mtx")) == string::npos){
+            continue;
+        }
+        cout << "Processing " << mtx_file_string << endl;
 
-    for(int i=0; i < max_matrix_filename_id; ++i) {
-        SpmvDriver basic_spmv_driver(i, 64, output_dir+"spmv.csv", &dev_ctx, false);
-        basic_spmv_driver.check_then_run_kernels();
-        total_runs += basic_spmv_driver.get_total_runs();
-    }
-    for(int i=0; i < max_matrix_filename_id; ++i) {
-        SpmvDriver<SpmvKernelLAv1<int, double>> basic_spmv_driver(i, 64, output_dir+"spmv.csv", &dev_ctx, false);
-        basic_spmv_driver.check_then_run_kernels();
-        total_runs += basic_spmv_driver.get_total_runs();
-    }
+        {
+            SpmvDriver basic_spmv_driver(64, output_dir+"spmv.csv", &dev_ctx, mtx_file_string, span_occupancies);
+            if(profile) {
+                basic_spmv_driver.check_kernels();
+                total_runs += basic_spmv_driver.get_num_contexts();
+            } else {
+                basic_spmv_driver.check_then_run_kernels();
+                total_runs += basic_spmv_driver.get_total_runs();
+            }
+        }
 
-
+        {        
+            SpmvDriver<SpmvKernelLAv1<int, double>> spmv_la_v1_driver(64, output_dir+"spmv.csv", &dev_ctx, mtx_file_string, span_occupancies);
+            if(profile) {
+                spmv_la_v1_driver.check_kernels();
+                total_runs += spmv_la_v1_driver.get_num_contexts();
+            } else {
+                spmv_la_v1_driver.check_then_run_kernels();
+                total_runs += spmv_la_v1_driver.get_total_runs();
+            }
+        }    
+}
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
     
