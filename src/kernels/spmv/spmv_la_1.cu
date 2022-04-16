@@ -88,10 +88,12 @@ void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu<it,vt> matrix, v
     for(int chunk=0; chunk < num_chunks; chunk++) {
         uint local_start = start + chunk * chunk_size;
 
+        uint local_start_col_idx=0, local_stop_col_idx=0, cur_preload_start_idx=local_start_col_idx;
+
         if constexpr(include_preload_arith || preload) {
-            uint local_start_col_idx = matrix.indices[local_start];
-            uint local_stop_col_idx = max(matrix.indices[min(local_start + chunk_size, stop)-1], local_start_col_idx + 1);
-            uint cur_preload_start_idx = local_start_col_idx;
+            local_start_col_idx = matrix.indices[local_start];
+            local_stop_col_idx = max(matrix.indices[min(local_start + chunk_size, stop)-1], local_start_col_idx + 1);
+            cur_preload_start_idx = local_start_col_idx;
         }
         if constexpr(include_preload_arith || preload) {
             while(cur_preload_start_idx < local_stop_col_idx) {
