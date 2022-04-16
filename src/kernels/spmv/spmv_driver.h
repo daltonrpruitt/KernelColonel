@@ -88,9 +88,9 @@ class SpmvDriver {
 
     bool check_kernels() {
         bool pass = true;
-#ifdef DEBUG
-        cout << "Beginning check" << endl;
-#endif
+// #ifdef DEBUG
+        cout << "Beginning check ... " ;
+// #endif
         // for (auto ctx : contexts) {
             auto ctx = contexts.back();
             if(!ctx->okay) {return false;}
@@ -106,17 +106,17 @@ class SpmvDriver {
         if (!pass) {
             cerr << "Kernel failed check!" << endl;
         } else {
-#ifdef DEBUG
+// #ifdef DEBUG
             cout << "Kernel passed check!" << endl;
-#endif
+// #endif
         }
         return pass;
     }
 
     void run_kernels() {
-#ifdef DEBUG
+// #ifdef DEBUG
             cout << "Beginning actual runs" << endl;
-#endif
+// #endif
         for (auto ctx : contexts) {
             if(!ctx->okay) {return;}
             if(!ctx->init()) {return;}
@@ -137,7 +137,7 @@ class SpmvDriver {
             timing_precision_t fraction_theoretical_bw_achieved = throughput / dev_ctx_->theoretical_bw_; 
             timing_stats.push_back(fraction_theoretical_bw_achieved);
 
-#ifdef DEBUG
+// #ifdef DEBUG
 #ifdef DEBUG_LEVEL1
             cout << "Actual runtimes:" << endl;
             for (int i = 0; i < times.size(); ++i) {
@@ -163,7 +163,7 @@ class SpmvDriver {
             }
             cout << endl
                       << endl;
-#endif
+// #endif
             // output to file
             write_data(ctx, timing_stats);
         }
