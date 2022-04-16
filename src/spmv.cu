@@ -69,8 +69,7 @@ int main(int argc, char** argv) {
         if(mtx_file_string.find(string(".mtx")) == string::npos){
             continue;
         }
-        cout << "Processing " << mtx_file_string << endl;
-
+        cout << "Processing " << mtx_file_string << " starting at run " << total_runs << endl;
 
         if(profile) {
             #include <kernels/spmv/tests/spmv_la_1_profile.test>
