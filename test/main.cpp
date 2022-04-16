@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     string filename(argv[1]);
 
-    CRSMat matrix(filename);
+    CRSMat<> matrix(filename);
 
     matrix.dump();
 
