@@ -80,6 +80,7 @@
         "filesystem": "cpp"
     },
     "cSpell.words": [
+        "Spmv",
         "uncoalesced",
         "vals"
     ]
