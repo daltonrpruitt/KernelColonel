@@ -49,12 +49,12 @@ class SpmvDriver {
     int kernel_runs = 25;
     int kernel_checks = 1;
 
-    SpmvDriver(int matrix_file_id, int bs, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
+    SpmvDriver(int bs, string output_filename, device_context* dev_ctx, string mtx_filename, bool span_occupancies=false) :
         Bsz(bs), output_filename_(output_filename) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
         dev_ctx_ = dev_ctx;
 
-        kernel_ctx_t* curr_ctx = new kernel_ctx_t(Bsz, dev_ctx, 0, matrix_file_id);
+        kernel_ctx_t* curr_ctx = new kernel_ctx_t(Bsz, dev_ctx, mtx_filename);
         curr_ctx->print_register_usage();
         if(span_occupancies) {
             vector<int> shdmem_allocs = curr_ctx->shared_memory_allocations();
@@ -65,7 +65,7 @@ class SpmvDriver {
 #endif
             if(shdmem_allocs.size() > 0) {
                 for(int i=0; i < shdmem_allocs.size(); ++i){
-                    contexts.push_back(new kernel_ctx_t(Bsz, dev_ctx, shdmem_allocs[i], matrix_file_id));
+                    contexts.push_back(new kernel_ctx_t(Bsz, dev_ctx, mtx_filename, shdmem_allocs[i]));
                 }
             }
         }

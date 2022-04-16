@@ -123,8 +123,8 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
     typedef SpmvKernel<it, vt> super;
 
 
-    SpmvKernelLAv1(int bs, device_context* d_ctx, int shd_mem_alloc = 0, int matrix_file_id=0) 
-    : super(bs, d_ctx, shd_mem_alloc, matrix_file_id) {
+  SpmvKernelLAv1(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
+    : super(bs, d_ctx, mtx_filename, shd_mem_alloc) {
         this->name = "SpmvKernelLAv1";
     }
     ~SpmvKernelLAv1() {}
@@ -133,6 +133,7 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
         cout << "SpMV Latency Amortization V1 with : "
                 << " Bsz=" << this->Bsz 
                 << " Blocks used ="<< this->Gsz
+                << " matrix file="<< fs::path(this->matrix_filename).filename()
                 << " occupancy=" << this->get_occupancy() << endl;
 
     }
