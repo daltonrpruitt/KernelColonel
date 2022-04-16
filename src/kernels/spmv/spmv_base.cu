@@ -37,7 +37,7 @@ namespace fs = std::filesystem;
 template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__ 
 __global__ 
-void spmv_kernel(vt* product, CRSMat_gpu matrix, vt* vec) { //}, int max_nz_row) {
+void spmv_kernel(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) { //}, int max_nz_row) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / warpSize;
     if(warp_id >= matrix.m) return;
@@ -104,8 +104,8 @@ struct SpmvKernel {
 
 
     string matrix_filename;
-    CRSMat host_matrix;
-    CRSMat_gpu gpu_matrix;
+    CRSMat<it,vt> host_matrix;
+    CRSMat_gpu<it,vt> gpu_matrix;
     uint nnz;
     vector<double> host_vector;
     double *gpu_vector;
@@ -343,10 +343,10 @@ struct SpmvKernel {
    
         if(dev_ctx->props_.major >= 7) {
             cudaFuncAttributes attr;
-            cudaFuncGetAttributes(&attr, (void *) spmv_kernel<int, double>);
+            cudaFuncGetAttributes(&attr, (void *) spmv_kernel<it, vt>);
             int shmem = dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
-            cudaFuncSetAttribute((void *) spmv_kernel<int, double>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
-            cudaFuncSetAttribute((void *) spmv_kernel<int, double>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
+            cudaFuncSetAttribute((void *) spmv_kernel<it, vt>, cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
+            cudaFuncSetAttribute((void *) spmv_kernel<it, vt>, cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
             cudaPrintLastError();
         }
         cudaEvent_t start, stop;

@@ -61,7 +61,7 @@ template <typename it=int, typename vt=double, bool preload=false, bool include_
 __launch_bounds__(MAX_THREADS_PER_BLOCK, MIN_BLOCKS_PER_MP)
 // __forceinline__ __host__ __device__ 
 __global__ 
-void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu matrix, vt* vec) {
+void spmv_kernel_latency_amortization_1(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / WARP_SIZE;
     if(warp_id >= matrix.m) return;
@@ -150,13 +150,13 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
         if(this->dev_ctx->props_.major >= 7) {
             cudaFuncAttributes attr;
             cudaFuncGetAttributes(&attr, 
-                (void *) spmv_kernel_latency_amortization_1<int, double, preload, include_preload_arith, chunk_parts>);
+                (void *) spmv_kernel_latency_amortization_1<it, vt, preload, include_preload_arith, chunk_parts>);
             int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
             cudaFuncSetAttribute(
-                (void *) spmv_kernel_latency_amortization_1<int, double, preload, include_preload_arith, chunk_parts>, 
+                (void *) spmv_kernel_latency_amortization_1<it, vt, preload, include_preload_arith, chunk_parts>, 
                 cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
             cudaFuncSetAttribute(
-                (void *) spmv_kernel_latency_amortization_1<int, double, preload, include_preload_arith, chunk_parts>, 
+                (void *) spmv_kernel_latency_amortization_1<it, vt, preload, include_preload_arith, chunk_parts>, 
                 cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
             cudaPrintLastError();
         }
