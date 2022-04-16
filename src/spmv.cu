@@ -71,27 +71,13 @@ int main(int argc, char** argv) {
         }
         cout << "Processing " << mtx_file_string << endl;
 
-        {
-            SpmvDriver basic_spmv_driver(64, output_dir+"spmv.csv", &dev_ctx, mtx_file_string, span_occupancies);
-            if(profile) {
-                basic_spmv_driver.check_kernels();
-                total_runs += basic_spmv_driver.get_num_contexts();
-            } else {
-                basic_spmv_driver.check_then_run_kernels();
-                total_runs += basic_spmv_driver.get_total_runs();
-            }
+
+        if(profile) {
+            #include <kernels/spmv/tests/spmv_la_1_profile.test>
+        } else {
+            #include <kernels/spmv/tests/spmv_la_1.test>
         }
 
-        {        
-            SpmvDriver<SpmvKernelLAv1<int, double>> spmv_la_v1_driver(64, output_dir+"spmv.csv", &dev_ctx, mtx_file_string, span_occupancies);
-            if(profile) {
-                spmv_la_v1_driver.check_kernels();
-                total_runs += spmv_la_v1_driver.get_num_contexts();
-            } else {
-                spmv_la_v1_driver.check_then_run_kernels();
-                total_runs += spmv_la_v1_driver.get_total_runs();
-            }
-        }    
 }
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
