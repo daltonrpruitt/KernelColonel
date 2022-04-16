@@ -32,25 +32,28 @@ using std::string;
 using std::min;
 using std::vector;
 
+template <typename it=int, typename vt=double>
 class CRSMat ;
-bool read_coo_to_crs_matrix(string, CRSMat&);
+template <typename it=int, typename vt=double>
+bool read_coo_to_crs_matrix(string, CRSMat<it,vt>&);
 
+template <typename it=int, typename vt=double>
 struct CRSMat_gpu {
     int m, n, nnz;
-    double* values;
-    int* indices;
-    int* offsets;
+    vt* values;
+    it* indices;
+    it* offsets;
 };
 
 
-// template <typename it, typename vt>
+template <typename it, typename vt>
 class CRSMat {
     public:
         string filename; 
         int m, n, nnz;
-        double* values;
-        int* indices;
-        int* offsets;
+        vt* values;
+        it* indices;
+        it* offsets;
 
     CRSMat() { 
         values = nullptr;
@@ -103,8 +106,8 @@ bool compare_pts(pt &a, pt &b) {
         return a.c < b.c;  
 };
 
-
-bool read_coo_to_crs_matrix(string filename, CRSMat &mat) {
+template<typename it, typename vt>
+bool read_coo_to_crs_matrix(string filename, CRSMat<it, vt> &mat) {
 
     MM_typecode matcode;
     FILE *f;
@@ -200,9 +203,9 @@ bool read_coo_to_crs_matrix(string filename, CRSMat &mat) {
     // int csr_col[nz]      = { 0 };
     // int csr_row[M + 1]   = { 0 };
 
-    mat.values  = (double *) malloc(mat.nnz * sizeof(double));
-    mat.indices = (int *) malloc(mat.nnz * sizeof(int));
-    mat.offsets = (int *) malloc((mat.m + 1)  * sizeof(int));
+    mat.values  = (vt *) malloc(mat.nnz * sizeof(vt));
+    mat.indices = (it *) malloc(mat.nnz * sizeof(it));
+    mat.offsets = (it *) malloc((mat.m + 1)  * sizeof(it));
 
     for(i=0; i < mat.m +1; i++){
         mat.offsets[i] = 0;
