@@ -24,7 +24,7 @@ matrix_urls = {
     "bcsstm13"      : suitesparse_base_url + "HB/bcsstm13.tar.gz",
     "StocF-1465"    : suitesparse_base_url + "Janna/StocF-1465.tar.gz",
     "Goodwin_127"   : suitesparse_base_url + "Goodwin/Goodwin_127.tar.gz",
-    "RM07R"         : suitesparse_base_url + "Fluorem/RM07R.tar.gz",
+    # "RM07R"         : suitesparse_base_url + "Fluorem/RM07R.tar.gz",
     "rma10"         : suitesparse_base_url + "Bova/rma10.tar.gz",
     "mixtank_new"   : suitesparse_base_url + "POLYFLOW/mixtank_new.tar.gz",
     "cfd2"          : suitesparse_base_url + "Rothberg/cfd2.tar.gz",
