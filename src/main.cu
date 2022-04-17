@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
     // bs_vec.push_back(128);
     // bs_vec.push_back(1024);
     bool span_occupancies = true;
+    if(span_occupancies && !span_occupancies) return -1;
 
     Output output_dir;
     if(output_dir.empty()) {
@@ -122,7 +123,7 @@ int main(int argc, char** argv) {
 
 
     // Group 1
-    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
+    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
 
     // Group 2
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
