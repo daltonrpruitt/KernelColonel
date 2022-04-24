@@ -550,3 +550,22 @@ struct SpmvKernel {
     }
 
 };
+
+
+template <typename vt=double>
+__forceinline__ __host__ __device__
+void force_global_load(vt* arr, uint offset, uint m) {
+    if(offset >= m) return; 
+    vt tmp_vec;
+    // https://www.cplusplus.com/reference/typeinfo/type_info/operator==/
+    if constexpr(std::is_same<vt,double>()) {
+        asm volatile("ld.global.f64 %0, [%1];"
+                    : "=d"(tmp_vec) : "l"((vt *)(arr + offset)));
+    } else if constexpr(std::is_same<vt,float>()) {
+        asm volatile("ld.global.f32 %0, [%1];"
+                    : "=f"(tmp_vec) : "l"((vt *)(arr + offset)));
+    } else {
+        static_assert(std::is_same<vt,double>()); // Know will fail at this point, but needed to get around ill-formed argument https://stackoverflow.com/questions/38304847/constexpr-if-and-static-assert
+    }
+    return;
+}
