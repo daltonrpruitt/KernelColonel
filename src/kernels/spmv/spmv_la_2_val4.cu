@@ -60,7 +60,7 @@ __global__
 void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / WARP_SIZE;
-    if(warp_id >= matrix.m) return;
+    if(warp_id*8 >= matrix.m) return;
     // uint stride = 2 * 32 / sizeof(vt);
     uint lane = threadIdx.x % WARP_SIZE; 
     // assume vector is preloaded into cache
@@ -72,9 +72,12 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
 #endif
 
     // uint row_id = warp_id;
-    uint start = matrix.offsets[warp_id];
-    uint stop =  matrix.offsets[warp_id + 1];
-    uint vals_processed = stop - start;
+    uint start = matrix.offsets[warp_id*8*chunk_parts];
+    uint stop =  matrix.offsets[(warp_id+1)*8*chunk_parts];
+    uint vals_processed = stop - start; // should be equal to 32*chunk_parts always
+    // if (lane == 0) { product[warp_id] = vals_processed; } return; 
+
+    // can probably get rid of the above steps, since already know start/stop from warp_id
 
     // uint chunk_parts = 2;
     uint chunk_size = WARP_SIZE * chunk_parts;
