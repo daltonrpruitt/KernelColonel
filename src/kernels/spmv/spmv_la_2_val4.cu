@@ -119,8 +119,8 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
     for (int offset = 2; offset > 0; offset /= 2) {
         t_sum += __shfl_down_sync(m, t_sum, offset);
     }
-    if (lane == 0) {
-        product[warp_id] = t_sum;  // Single thread writing single value...
+    if (lane % 4 == 0) {
+        product[warp_id * 8 + lane/4] = t_sum;
     }
     return;
 }
