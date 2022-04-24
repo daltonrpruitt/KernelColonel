@@ -146,7 +146,8 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
                 << "\n\t occupancy=" << this->get_occupancy()
                 << "\n\t preload=" << bool_to_string(preload)
                 << "\n\t include_preload_arithmetic=" << bool_to_string(include_preload_arith)
-                << "\n\t chunk_parts=" << chunk_parts << endl;
+                // << "\n\t chunk_parts=" << chunk_parts 
+                << endl;
     }
 
     float local_execute() override {  
