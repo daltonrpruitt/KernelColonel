@@ -87,7 +87,16 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 plot_filename_base_suffix = ""
 plot_title_suffix = "" 
 
+
+# fields for spmv_la_v1 :  "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts"]
+
 plot_configs = [
+    # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
+    #     ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+    ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
+        ["matrix_file", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+
+    #'''
     ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
         ["reads_per_write"], "stream_size", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
     ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
@@ -135,6 +144,7 @@ plot_configs = [
     #         "kernel_type", "elements", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
     # ["interleaved_fl_ilp", "elements", "fraction_of_max_bandwidth",
     #         "kernel_type", "ILP", "intrlvd_fl_ilp", "Interleaved BW vs Occup."],
+    #'''
 ]
 
 def get_config_combos(d, fields):
