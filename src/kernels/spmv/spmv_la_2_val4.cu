@@ -81,11 +81,11 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
 
     // uint chunk_parts = 2;
     uint chunk_size = WARP_SIZE * chunk_parts;
-    int num_chunks = (vals_processed + chunk_size) / chunk_size;
+    // int num_chunks = (vals_processed + chunk_size) / chunk_size;
 
     vt t_sum = 0;
-    for(int chunk=0; chunk < num_chunks; chunk++) {
-        uint local_start = start + chunk * chunk_size;
+    //    for(int chunk=0; chunk < num_chunks; chunk++) {
+    uint local_start = start;// + chunk * chunk_size;
 
         uint local_start_col_idx=0, local_stop_col_idx=0, cur_preload_start_idx=local_start_col_idx;
 
@@ -111,7 +111,7 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
             it col = matrix.indices[immediate_idx];
             t_sum += val * vec[col];
         }
-    }
+	// }
     // if (lane == 0) { product[warp_id] = local_stop_col_idx;} return;
     
     // Final parallel reduce
