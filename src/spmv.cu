@@ -13,6 +13,7 @@ using it = uint;
 #include <kernels/spmv/spmv_driver.h>
 #include <kernels/spmv/spmv_base.cu>
 #include <kernels/spmv/spmv_la_1.cu>
+#include <kernels/spmv/spmv_la_2_val4.cu>
 
 #include <output.h>
 #include <utils.h>
