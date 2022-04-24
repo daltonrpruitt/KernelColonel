@@ -1,13 +1,26 @@
 #pragma once
 /**
- * @file spmv_la_1.cu
+ * @file spmv_la_2_val4.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Derived from TemplateKernelContext
+ * @brief Derived from SpmvKernelLAv1
  * @version 0.1
  * @date 2022-04-07
  * 
- * This SpMV kernel is to test using a version of latency amortization
- * that is fairly simple: loading in chunks of the vector into cache. 
+ * This SpMV kernel is meant to make use of an assumption 
+ * of a constant valence of 4 assuming a tetrahedral mesh. 
+ * To have consistent comparisons between different orderings, 
+ * should only run matrices derived from actual tetrahedral
+ * meshes, as these would conform to the assumption. 
+ * A more relaxed version of this could be generated that would
+ * allow for variable variance within some tolerance, but that 
+ * would possible run into the same possible load balancing 
+ * issues I saw for the SpmvKernelLAv1 in spmv_la_1.cu ...
+ *
+ * From the assumption of a valence of 4 (meaning 4 nonzeros in 
+ * each row), I can process 8 rows (equations) for each warp, 
+ * eliminating the need for most of the generalized loops in 
+ * the SpmvKernelLAv1 kernel. 
+ * 
  *
  */
 
