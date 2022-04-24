@@ -116,7 +116,7 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
     
     // Final parallel reduce
     unsigned m = 0xffffffff;
-    for (int offset = 16; offset > 0; offset /= 2) {
+    for (int offset = 2; offset > 0; offset /= 2) {
         t_sum += __shfl_down_sync(m, t_sum, offset);
     }
     if (lane == 0) {
