@@ -20,6 +20,8 @@
 #include <mmio.c>
 #pragma GCC diagnostic pop
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -70,7 +72,11 @@ class CRSMat {
 
     void from_file(string filename_input) {
         filename = filename_input;
-        if(!read_coo_to_crs_matrix(filename, *this)){
+        if(filename.find("crs") != string::npos) {
+            if(!read_crs_matrix(filename, *this)){
+                nnz = -1;
+            }
+        } else if(!read_coo_to_crs_matrix(filename, *this)){
             nnz = -1;
         }
     }
@@ -102,6 +108,91 @@ bool compare_pts(pt &a, pt &b) {
     else // (a.r == b.r ) 
         return a.c < b.c;  
 };
+
+/* generate a random floating point number from min to max */
+double randfrom(double min, double max) 
+{
+    double range = (max - min); 
+    double div = RAND_MAX / range;
+    return min + (rand() / div);
+}
+
+template <typename it=int, typename vt=double>
+bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
+
+    FILE *f;
+    int i, *I, *J;
+    double *val;
+
+    if (filename.length() == 0 )
+	{
+		cerr <<  "Must provide filename to matrix reader!" << endl;
+		return false;
+	}
+    else    
+    { 
+        if ((f = fopen(filename.c_str(), "r")) == NULL) 
+		return false;
+    }
+
+    // int M=0, N=0, nz=0;   
+    if (fscanf(f, "%d %d %d\n", &mat.m, &mat.n, &mat.nnz) != 3){
+		cerr <<  "First line of "<<filename << " must be '<rows> <cols> <nnz>' !" << endl;
+        cerr << "Exiting!" << endl;
+        exit(EXIT_FAILURE);
+    };
+    mat.nnz = mat.m*5;
+
+    mat.values = (vt *) malloc(mat.nnz * sizeof(vt));
+    mat.indices = (it *) malloc(mat.nnz * sizeof(it));
+    mat.offsets = (it *) malloc((mat.m+1) * sizeof(it));
+
+    it cur_entry = 0;
+    for (int i=0; i<mat.m; i++) {
+        int valence;
+        if(fscanf(f, "%d ", &valence) == EOF) {
+            cerr << "Premature EOF for " << filename << " at line "<< i+1 << "!" << endl;
+            cerr << "Exiting!" << endl;
+            exit(EXIT_FAILURE);
+        }
+        if(valence > 4) {
+            cerr << "Expected matrix to have valence of 4 or less, but is actually "<< valence <<" for row " << i <<"!" << endl;
+            cerr << "Exiting!" << endl;
+            exit(EXIT_FAILURE);
+        }
+        
+        mat.offsets[i+1] = 5;
+        if(i < 25) { cout << "On row " << i << " with " << valence  << " values." <<endl; }
+        
+        it idx=0; 
+        char next_char;
+        for(int j=0; j < valence; ++j){
+            fscanf(f, "%d%c", &idx, &next_char);
+            mat.indices[cur_entry] = idx-1;
+            mat.values[cur_entry] = randfrom(-1.0, 1.0);
+            cur_entry++;
+            // fscanf(f, "%d%c", &idx);
+
+        }
+        for(int j=0; j < 5-valence; ++j) {
+            mat.indices[cur_entry] = mat.indices[cur_entry-valence];
+            mat.values[cur_entry] = 0;
+            cur_entry++;
+        }
+
+        // while (idx != '\n') {
+        // }
+    }
+
+    mat.offsets[0]=0;
+    for(int j=1; j<mat.m+1;  ++j){
+        mat.offsets[j] += mat.offsets[j-1];
+    }
+
+    return true;
+}
+
+
 
 template <typename it=int, typename vt=double>
 bool read_coo_to_crs_matrix(string filename, CRSMat<it, vt> &mat) {
