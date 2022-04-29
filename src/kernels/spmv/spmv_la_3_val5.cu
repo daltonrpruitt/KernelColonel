@@ -56,7 +56,7 @@ template <typename it=int, typename vt=double, bool preload=false, bool include_
 __launch_bounds__(MAX_THREADS_PER_BLOCK, MIN_BLOCKS_PER_MP)
 // __forceinline__ __host__ __device__ 
 __global__ 
-void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) {
+void spmv_kernel_latency_amortization_3(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / WARP_SIZE;
     if(warp_id*8 >= matrix.m) return;
@@ -125,20 +125,20 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
 }
 
 template <typename it=int, typename vt=double, bool preload=false, bool include_preload_arith=false, int chunk_parts=1>
-struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
+struct SpmvKernelLAv3 : SpmvKernel<it, vt> {
    public:
     typedef SpmvKernel<it, vt> super;
 
 
-  SpmvKernelLAv2(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
+  SpmvKernelLAv3(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
     : super(bs, d_ctx, mtx_filename, shd_mem_alloc) {
-        this->name = "SpmvKernelLAv2";
+        this->name = "SpmvKernelLAv3";
         static_assert(!( preload && !include_preload_arith)); // if preload, must include arith (just to reduce test space complexity)
     }
-    ~SpmvKernelLAv2() {}
+    ~SpmvKernelLAv3() {}
 
     void output_config_info() override {
-        cout << "SpMV Latency Amortization V1 with : "
+        cout << "SpMV Latency Amortization V3 (Val=5) with : "
                 << "\n\t Bsz=" << this->Bsz 
                 << "\n\t Blocks used ="<< this->Gsz
                 << "\n\t matrix file="<< fs::path(this->matrix_filename).filename()
@@ -153,13 +153,13 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
         if(this->dev_ctx->props_.major >= 7) {
             cudaFuncAttributes attr;
             cudaFuncGetAttributes(&attr, 
-                (void *) spmv_kernel_latency_amortization_2<it, vt, preload, include_preload_arith, chunk_parts>);
+                (void *) spmv_kernel_latency_amortization_3<it, vt, preload, include_preload_arith, chunk_parts>);
             int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
             cudaFuncSetAttribute(
-                (void *) spmv_kernel_latency_amortization_2<it, vt, preload, include_preload_arith, chunk_parts>, 
+                (void *) spmv_kernel_latency_amortization_3<it, vt, preload, include_preload_arith, chunk_parts>, 
                 cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
             cudaFuncSetAttribute(
-                (void *) spmv_kernel_latency_amortization_2<it, vt, preload, include_preload_arith, chunk_parts>, 
+                (void *) spmv_kernel_latency_amortization_3<it, vt, preload, include_preload_arith, chunk_parts>, 
                 cudaFuncAttributePreferredSharedMemoryCarveout, cudaSharedmemCarveoutMaxShared);
             cudaPrintLastError();
         }
@@ -171,7 +171,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
         // dense_vector_cache_preload<<<preload_blocks, Bsz, shared_memory_usage>>>(gpu_vector, gpu_matrix.m);
         // cudaDeviceSynchronize();
         // cudaPrintLastError();
-        spmv_kernel_latency_amortization_2<it,vt,preload,include_preload_arith,chunk_parts>
+        spmv_kernel_latency_amortization_3<it,vt,preload,include_preload_arith,chunk_parts>
             <<<this->Gsz, this->Bsz, this->shared_memory_usage>>>(this->gpu_results, this->gpu_matrix, this->gpu_vector);
         cudaEventRecord(stop);
 
@@ -189,7 +189,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
     void local_compute_register_usage(bool& pass) override {
         // Kernel Registers
         struct cudaFuncAttributes funcAttrib;
-        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel_latency_amortization_2<it,vt,preload,include_preload_arith,chunk_parts>), "getting function attributes (for # registers)", pass);
+        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel_latency_amortization_3<it,vt,preload,include_preload_arith,chunk_parts>), "getting function attributes (for # registers)", pass);
         if (!pass) {
             this->okay = false;
             return;
