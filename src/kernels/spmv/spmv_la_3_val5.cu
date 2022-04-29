@@ -57,9 +57,10 @@ __launch_bounds__(MAX_THREADS_PER_BLOCK, MIN_BLOCKS_PER_MP)
 // __forceinline__ __host__ __device__ 
 __global__ 
 void spmv_kernel_latency_amortization_3(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) {
+    __shared__ vt sums[30];
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / WARP_SIZE;
-    if(warp_id*8 >= matrix.m) return;
+    if(warp_id*6 >= matrix.m) return;
     // uint stride = 2 * 32 / sizeof(vt);
     uint lane = threadIdx.x % WARP_SIZE; 
     // assume vector is preloaded into cache
@@ -71,8 +72,8 @@ void spmv_kernel_latency_amortization_3(vt* product, CRSMat_gpu<it,vt> matrix, v
 #endif
 
     // uint row_id = warp_id;
-    uint start = matrix.offsets[warp_id*8*chunk_parts];
-    uint stop =  matrix.offsets[(warp_id+1)*8*chunk_parts];
+    uint start = matrix.offsets[warp_id*6*chunk_parts];
+    uint stop =  matrix.offsets[(warp_id+1)*6*chunk_parts];
     uint vals_processed = stop - start; // should be equal to 32*chunk_parts always
     // if (lane == 0) { product[warp_id] = vals_processed; } return; 
 
@@ -82,7 +83,7 @@ void spmv_kernel_latency_amortization_3(vt* product, CRSMat_gpu<it,vt> matrix, v
     uint chunk_size = WARP_SIZE * chunk_parts;
     // int num_chunks = (vals_processed + chunk_size) / chunk_size;
 
-    vt t_sum = 0;
+    // vt t_sum = 0;
     //    for(int chunk=0; chunk < num_chunks; chunk++) {
     uint local_start = start;// + chunk * chunk_size;
 
@@ -103,23 +104,35 @@ void spmv_kernel_latency_amortization_3(vt* product, CRSMat_gpu<it,vt> matrix, v
         }
     
     
-        for(uint part=0; part < chunk_parts; part++) {
+        // for(uint part=0; part < chunk_parts; part++) {
+            if(lane >= 30) return; // cannot work with last two threads in warp (except for preloading)
             uint immediate_idx = local_start + part*WARP_SIZE + lane;
             if(immediate_idx >= stop) break;
             vt val = matrix.values[immediate_idx];
             it col = matrix.indices[immediate_idx];
-            t_sum += val * vec[col];
-        }
-	// }
+            sums[lane] = val * vec[col];
+        // }
+	}
     // if (lane == 0) { product[warp_id] = local_stop_col_idx;} return;
     
     // Final parallel reduce
-    unsigned m = 0xffffffff;
-    for (int offset = 2; offset > 0; offset /= 2) {
-        t_sum += __shfl_down_sync(m, t_sum, offset);
+    // unsigned m = 0xffffffff;
+    // for (int offset = 2; offset > 0; offset /= 2) {
+    //     t_sum += __shfl_down_sync(m, t_sum, offset);
+    // }
+
+    // Only first 30 threads/lanes at this point !!!
+    uint logical_local_lane = lane % 5;
+    if( (logical_local_lane < 4)  && (logical_local_lane % 2 == 0) ) {
+        sums[lane] += sums[lane+1];
+    } 
+    if( logical_local_lane == 0 ) {
+        sums[lane] += sums[lane+2];
+        sums[lane] += sums[lane+4];
     }
+
     if (lane % 4 == 0) {
-        product[warp_id * 8 + lane/4] = t_sum;
+        product[warp_id * 6 + lane/5] = t_sum;
     }
     return;
 }
