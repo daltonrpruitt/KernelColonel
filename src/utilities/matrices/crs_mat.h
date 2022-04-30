@@ -171,8 +171,6 @@ bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
             mat.indices[cur_entry] = idx-1;
             mat.values[cur_entry] = randfrom(-1.0, 1.0);
             cur_entry++;
-            // fscanf(f, "%d%c", &idx);
-
         }
         for(int j=0; j < 5-valence; ++j) {
             mat.indices[cur_entry] = mat.indices[cur_entry-valence];
@@ -180,8 +178,6 @@ bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
             cur_entry++;
         }
 
-        // while (idx != '\n') {
-        // }
     }
 
     mat.offsets[0]=0;
