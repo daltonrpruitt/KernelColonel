@@ -65,6 +65,13 @@ int main(int argc, char** argv) {
     fs::path matrices_dir = fs::path(base_dir).append("matrices");
     cout << "Matrices dir =" << matrices_dir << endl;
 
+    fs::path grids_dir = fs::path(base_dir).append("grids/cell_based");
+    cout << "Grids dir =" << grids_dir << endl;
+    if(!fs::exists(grids_dir)) {
+        cerr << "Expect directory for grid-derived matrix files names 'grids/cell_based' in main directory!"<< endl;
+        exit(EXIT_FAILURE);
+    }
+    /*
     for (auto const& dir_entry : fs::directory_iterator{matrices_dir}) {
         string mtx_file_string = dir_entry.path().string();
         if(mtx_file_string.find(string(".mtx")) == string::npos){
@@ -78,7 +85,18 @@ int main(int argc, char** argv) {
             #include <kernels/spmv/tests/spmv_la_1.test>
         }
 
-}
+    }
+    */
+
+    for (auto const& dir_entry : fs::directory_iterator{grids_dir}) {
+        string mtx_file_string = dir_entry.path().string();
+        if(mtx_file_string.find(string(".crs")) == string::npos){
+            continue;
+        }
+        cout << "Processing " << mtx_file_string << " starting at run " << total_runs << endl;
+        #include <kernels/spmv/tests/spmv_la_2.test>
+    }
+
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
     
