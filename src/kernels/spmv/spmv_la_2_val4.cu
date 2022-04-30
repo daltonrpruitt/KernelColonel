@@ -139,7 +139,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
     ~SpmvKernelLAv2() {}
 
     void output_config_info() override {
-        cout << "SpMV Latency Amortization V1 with : "
+        cout << "SpMV Latency Amortization V2 with (valence=4): "
                 << "\n\t Bsz=" << this->Bsz 
                 << "\n\t Blocks used ="<< this->Gsz
                 << "\n\t matrix file="<< fs::path(this->matrix_filename).filename()
