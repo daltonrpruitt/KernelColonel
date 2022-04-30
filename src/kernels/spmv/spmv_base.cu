@@ -88,7 +88,7 @@ void spmv_kernel(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) { //}, int max_
 };
 */
 
-template <typename it=int, typename vt=double>
+template <typename it=int, typename vt=double, int const_valence=-1>
 struct SpmvKernel {
    public:
     // typedef KernelCPUContext<vt, it> super;
@@ -104,7 +104,7 @@ struct SpmvKernel {
 
 
     string matrix_filename;
-    CRSMat<it,vt> host_matrix;
+    CRSMat<it,vt, const_valence> host_matrix;
     CRSMat_gpu<it,vt> gpu_matrix;
     uint nnz;
     vector<double> host_vector;
@@ -162,7 +162,15 @@ struct SpmvKernel {
         host_matrix.dump();
         #endif
 
-        Gsz = host_matrix.m / (Bsz / WARP_SIZE) + 1;
+        if(const_valence < 0){
+            Gsz = host_matrix.m / (Bsz / WARP_SIZE) + 1;
+        } else if(const_valence == 4) {
+            Gsz = ( host_matrix.m / (Bsz / WARP_SIZE) ) / 8 + 1;
+        } else if (const_valence == 5) {
+            Gsz = ( host_matrix.m / (Bsz / WARP_SIZE) ) / 6 + 1;
+        } else {
+            Gsz = -1;
+        }
         
         gpu_matrix.nnz = host_matrix.nnz;
         gpu_matrix.m   = host_matrix.m;
@@ -550,3 +558,22 @@ struct SpmvKernel {
     }
 
 };
+
+
+template <typename vt=double>
+__forceinline__ __host__ __device__
+void force_global_load(vt* arr, uint offset, uint m) {
+    if(offset >= m) return; 
+    vt tmp_vec;
+    // https://www.cplusplus.com/reference/typeinfo/type_info/operator==/
+    if constexpr(std::is_same<vt,double>()) {
+        asm volatile("ld.global.f64 %0, [%1];"
+                    : "=d"(tmp_vec) : "l"((vt *)(arr + offset)));
+    } else if constexpr(std::is_same<vt,float>()) {
+        asm volatile("ld.global.f32 %0, [%1];"
+                    : "=f"(tmp_vec) : "l"((vt *)(arr + offset)));
+    } else {
+        static_assert(std::is_same<vt,double>()); // Know will fail at this point, but needed to get around ill-formed argument https://stackoverflow.com/questions/38304847/constexpr-if-and-static-assert
+    }
+    return;
+}

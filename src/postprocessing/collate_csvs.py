@@ -80,8 +80,9 @@ def main():
     base_folder = sys.argv[-1]
     if not os.path.exists(base_folder):
         ic(f"{base_folder} does not exist!")
-    collate_csv(base_folder, "interleaved_copy_full_life")
-    collate_csv(base_folder, "uncoalesced_reuse_general_single")
+    collate_csv(base_folder, "spmv_la_v1")
+    # collate_csv(base_folder, "interleaved_copy_full_life")
+    # collate_csv(base_folder, "uncoalesced_reuse_general_single")
 
 if __name__ == '__main__':
     main()

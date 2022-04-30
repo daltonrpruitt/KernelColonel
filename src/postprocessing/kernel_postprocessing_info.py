@@ -31,7 +31,9 @@ kernel_config_info = [
     ["uncoalesced_reuse_gen_single_ilp",    "UncoalescedReuseGenSingleILP", 
                                                 "preload", "avoid_bank_conflicts", "shuffle_size", "ILP"],
     ["indirect_copy", "IndirectCopy",   "shuffle_size", "ILP", "access_pattern"],
-    ["expansion_contraction", "ExpansionContraction",   "reads_per_write", "stream_size"]
+    ["expansion_contraction", "ExpansionContraction",   "reads_per_write", "stream_size"],
+    ["spmv_la_v1", "SpmvKernelLAv1",    
+        "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts"]
 ]
 
 kernel_class_names = {k[0]: k[1] for k in kernel_config_info}

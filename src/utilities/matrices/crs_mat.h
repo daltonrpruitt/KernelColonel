@@ -20,6 +20,8 @@
 #include <mmio.c>
 #pragma GCC diagnostic pop
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -43,7 +45,7 @@ struct CRSMat_gpu {
     it* offsets;
 };
 
-template <typename it=int, typename vt=double>
+template <typename it=int, typename vt=double, int const_valence=-1>
 class CRSMat {
     public:
         string filename; 
@@ -53,6 +55,7 @@ class CRSMat {
         it* offsets;
 
     CRSMat() { 
+        static_assert(const_valence==-1 || const_valence==4 || const_valence==5);
         values = nullptr;
         indices = nullptr; 
         offsets = nullptr;
@@ -70,8 +73,19 @@ class CRSMat {
 
     void from_file(string filename_input) {
         filename = filename_input;
-        if(!read_coo_to_crs_matrix(filename, *this)){
-            nnz = -1;
+        if(filename.find("crs") != string::npos) {
+            if(!read_crs_matrix(filename, *this)){
+                nnz = -1;
+            }
+        } else {
+            if(const_valence > 0) {
+                cerr << "Cannot use valence with non-crs files!" << endl;
+                exit(EXIT_FAILURE);
+            }
+            if(!read_coo_to_crs_matrix(filename, *this)){
+                cerr << "Did not read " << filename << "successfully!" << endl;
+                nnz = -1;
+            }
         }
     }
 
@@ -82,14 +96,21 @@ class CRSMat {
     //     }
     // }
 
-    void dump(){
-        if(values)  { cout << " Values[]: " ;  for(int i=0; i < min(32, nnz); ++i) { cout << " " << values[i];  } cout << endl; }
-        if(indices) { cout << " indices[]: " ; for(int i=0; i < min(32, nnz); ++i) { cout << " " << indices[i]; } cout << endl; }
-        if(offsets) { cout << " offsets[]: " ; for(int i=0; i < min(32, m); ++i)   { cout << " " << offsets[i]; } cout << endl; }
+    void dump(int num_to_output = 32){
+        if(values)  { cout << " Values[]: " ;  for(int i=0; i < min(num_to_output, nnz); ++i) { cout << " " << values[i];  } cout << endl; }
+        if(indices) { cout << " indices[]: " ; for(int i=0; i < min(num_to_output, nnz); ++i) { cout << " " << indices[i]; } cout << endl; }
+        if(offsets) { cout << " offsets[]: " ; for(int i=0; i < min(num_to_output, m); ++i)   { cout << " " << offsets[i]; } cout << endl; }
     }
 
 
 };
+
+template <typename it, typename vt, int const_valence>
+std::ostream& operator<< (std::ostream &out, const CRSMat<it, vt, const_valence> &mat) {
+    out << "CRSMat from " << mat.filename << ": ";
+    out << "M=" << mat.m << " nnz=" << mat.nnz ;
+    return out;
+}
 
 struct pt {
     int r,c;
@@ -102,6 +123,96 @@ bool compare_pts(pt &a, pt &b) {
     else // (a.r == b.r ) 
         return a.c < b.c;  
 };
+
+/* generate a random floating point number from min to max */
+double randfrom(double min, double max) 
+{
+    double range = (max - min); 
+    double div = RAND_MAX / range;
+    return min + (rand() / div);
+}
+
+template <typename it=int, typename vt=double, int const_valence=-1>
+bool read_crs_matrix(string filename, CRSMat<it, vt, const_valence> &mat) {
+
+    FILE *f;
+    int i, *I, *J;
+    double *val;
+
+    if (filename.length() == 0 )
+	{
+		cerr <<  "Must provide filename to matrix reader!" << endl;
+		return false;
+	}
+    else    
+    { 
+        if ((f = fopen(filename.c_str(), "r")) == NULL) 
+		return false;
+    }
+
+    // int M=0, N=0, nz=0;   
+    if (fscanf(f, "%d %d %d\n", &mat.m, &mat.n, &mat.nnz) != 3){
+		cerr <<  "First line of "<<filename << " must be '<rows> <cols> <nnz>' !" << endl;
+        cerr << "Exiting!" << endl;
+        exit(EXIT_FAILURE);
+    };
+    if(const_valence >0 ) {
+        mat.nnz = mat.m*const_valence;
+    }
+
+    mat.values = (vt *) malloc(mat.nnz * sizeof(vt));
+    mat.indices = (it *) malloc(mat.nnz * sizeof(it));
+    mat.offsets = (it *) malloc((mat.m+1) * sizeof(it));
+
+    it cur_entry = 0;
+    for (int i=0; i<mat.m; i++) {
+        int valence;
+        if(fscanf(f, "%d ", &valence) == EOF) {
+            cerr << "Premature EOF for " << filename << " at line "<< i+1 << "!" << endl;
+            cerr << "Exiting!" << endl;
+            exit(EXIT_FAILURE);
+        }
+        if(const_valence > 0 && valence > const_valence) {
+            cerr << "Expected matrix to have valence of "<<const_valence<<" or less, but is actually "<< valence <<" for row " << i <<"!" << endl;
+            cerr << "Exiting!" << endl;
+            exit(EXIT_FAILURE);
+        }
+        if (const_valence > 0) {
+            mat.offsets[i+1] = const_valence;
+        } else {
+            mat.offsets[i+1] = valence;
+        }
+        
+#ifdef DEBUG
+        if(i < 25) { cout << "On row " << i << " with " << valence  << " values." <<endl; }
+#endif        
+        it idx=0; 
+        char next_char;
+        for(int j=0; j < valence; ++j){
+            fscanf(f, "%d%c", &idx, &next_char);
+            mat.indices[cur_entry] = idx;
+            mat.values[cur_entry] = randfrom(-1.0, 1.0);
+            cur_entry++;
+        }
+        if(const_valence > 0) {
+            for(int j=0; j < const_valence-valence; ++j) {
+                mat.indices[cur_entry] = mat.indices[cur_entry-valence];
+                mat.values[cur_entry] = 0;
+                cur_entry++;
+            }
+        }
+
+    }
+
+    mat.offsets[0]=0;
+    for(int j=1; j<mat.m+1;  ++j){
+        mat.offsets[j] += mat.offsets[j-1];
+    }
+
+    return true;
+}
+
+
 
 template <typename it=int, typename vt=double>
 bool read_coo_to_crs_matrix(string filename, CRSMat<it, vt> &mat) {
