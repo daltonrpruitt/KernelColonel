@@ -24,6 +24,7 @@
  *
  */
 
+#include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -129,12 +130,26 @@ template <typename it=int, typename vt=double, bool preload=false, bool include_
 struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
    public:
     typedef SpmvKernel<it, vt, 4> super;
+    string matrix_order;
 
 
   SpmvKernelLAv2(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
     : super(bs, d_ctx, mtx_filename, shd_mem_alloc) {
         this->name = "SpmvKernelLAv2";
         static_assert(!( preload && !include_preload_arith)); // if preload, must include arith (just to reduce test space complexity)
+        string order = "";
+        if(this->matrix_filename.find("asis") != string::npos) {
+            matrix_order = "as-is";
+        } else if (this->matrix_filename.find("biprcm") != string::npos) {
+            matrix_order = "bipartile-rcm";
+        } else if (this->matrix_filename.find("symrcm") != string::npos) {
+            matrix_order = "symmetric-rcm";
+        } else {
+            cerr << "Invalid grid ordering!" << endl;
+            assert(false);
+        }
+
+
     }
     ~SpmvKernelLAv2() {}
 
@@ -147,6 +162,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
                 << "\n\t preload=" << bool_to_string(preload)
                 << "\n\t include_preload_arithmetic=" << bool_to_string(include_preload_arith)
                 // << "\n\t chunk_parts=" << chunk_parts 
+                << "\n\t matrix_order=" << matrix_order
                 << endl;
     }
 
@@ -199,12 +215,12 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
     }
 
     string get_local_extra_config_parameters() override { 
-        return "preload,include_preload_arith,chunk_parts";
+        return "preload,include_preload_arith,chunk_parts,order";
     }
     
     string get_local_extra_config_values() { 
         stringstream out;
-        out << bool_to_string(preload) << "," << bool_to_string(include_preload_arith) << "," << chunk_parts;
+        out << bool_to_string(preload) << "," << bool_to_string(include_preload_arith) << "," << chunk_parts<<"," << matrix_order;
         return out.str();
     } 
 
