@@ -105,6 +105,13 @@ class CRSMat {
 
 };
 
+template <typename it, typename vt, int const_valence>
+std::ostream& operator<< (std::ostream &out, const CRSMat<it, vt, const_valence> &mat) {
+    out << "CRSMat from " << mat.filename << ": ";
+    out << "M=" << mat.m << " nnz=" << mat.nnz ;
+    return out;
+}
+
 struct pt {
     int r,c;
     double val;

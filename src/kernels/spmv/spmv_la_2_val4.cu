@@ -157,7 +157,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
         cout << "SpMV Latency Amortization V2 with (valence=4): "
                 << "\n\t Bsz=" << this->Bsz 
                 << "\n\t Blocks used ="<< this->Gsz
-                << "\n\t matrix file="<< fs::path(this->matrix_filename).filename()
+                << "\n\t " << this->host_matrix
                 << "\n\t occupancy=" << this->get_occupancy()
                 << "\n\t preload=" << bool_to_string(preload)
                 << "\n\t include_preload_arithmetic=" << bool_to_string(include_preload_arith)
