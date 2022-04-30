@@ -88,10 +88,10 @@ class CRSMat {
     //     }
     // }
 
-    void dump(){
-        if(values)  { cout << " Values[]: " ;  for(int i=0; i < min(32, nnz); ++i) { cout << " " << values[i];  } cout << endl; }
-        if(indices) { cout << " indices[]: " ; for(int i=0; i < min(32, nnz); ++i) { cout << " " << indices[i]; } cout << endl; }
-        if(offsets) { cout << " offsets[]: " ; for(int i=0; i < min(32, m); ++i)   { cout << " " << offsets[i]; } cout << endl; }
+    void dump(int num_to_output = 32){
+        if(values)  { cout << " Values[]: " ;  for(int i=0; i < min(num_to_output, nnz); ++i) { cout << " " << values[i];  } cout << endl; }
+        if(indices) { cout << " indices[]: " ; for(int i=0; i < min(num_to_output, nnz); ++i) { cout << " " << indices[i]; } cout << endl; }
+        if(offsets) { cout << " offsets[]: " ; for(int i=0; i < min(num_to_output, m); ++i)   { cout << " " << offsets[i]; } cout << endl; }
     }
 
 
