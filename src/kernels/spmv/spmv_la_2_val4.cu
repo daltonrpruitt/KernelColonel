@@ -107,7 +107,7 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
     
         for(uint part=0; part < chunk_parts; part++) {
             uint immediate_idx = local_start + part*WARP_SIZE + lane;
-            if(immediate_idx >= stop) break;
+            // if(immediate_idx >= stop) break;
             vt val = matrix.values[immediate_idx];
             it col = matrix.indices[immediate_idx];
             t_sum += val * vec[col];
