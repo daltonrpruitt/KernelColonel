@@ -5,10 +5,11 @@
         total_runs += INTER_FL_ILP_DRIVER(E, ILP, MATCH).get_total_runs(); }
         // INTER_FL_ILP_DRIVER(E, ILP, MATCH).set_config_bool(match_ilp); \
 
-    bool tmp_span = span_occupancies; 
+    // bool tmp_span = span_occupancies; 
 
-    span_occupancies = false;
+    // span_occupancies = false;
     // bool match_ilp = true;
+    /*
     INTERLEAVED_FL_ILP(1, 1, true)
     INTERLEAVED_FL_ILP(1, 2, true)    
     INTERLEAVED_FL_ILP(1, 4, true)
@@ -23,22 +24,29 @@
     INTERLEAVED_FL_ILP(64, 2, true)
     INTERLEAVED_FL_ILP(64, 4, true)
     INTERLEAVED_FL_ILP(64, 8, true)
+    */
 
-    // INTERLEAVED_FL_ILP(1, 4, true)
-    INTERLEAVED_FL_ILP(2, 4, true)
-    INTERLEAVED_FL_ILP(4, 4, true)
-    // INTERLEAVED_FL_ILP(8, 4, true)
-    INTERLEAVED_FL_ILP(16, 4, true)
-    INTERLEAVED_FL_ILP(32, 4, true)
-    // INTERLEAVED_FL_ILP(64, 4, true)
-    INTERLEAVED_FL_ILP(128, 4, true)
-    INTERLEAVED_FL_ILP(256, 4, true)
-    INTERLEAVED_FL_ILP(512, 4, true)
-    INTERLEAVED_FL_ILP(1024, 4, true)
-    INTERLEAVED_FL_ILP(2048, 4, true)
-    // INTERLEAVED_FL_ILP(4096, 4, true)
+    INTERLEAVED_FL_ILP(1, 1, true)
+    INTERLEAVED_FL_ILP(2, 1, true)
+    INTERLEAVED_FL_ILP(4, 1, true)
+    INTERLEAVED_FL_ILP(8, 1, true)
+    INTERLEAVED_FL_ILP(16, 1, true)
+    INTERLEAVED_FL_ILP(32, 1, true)
+    INTERLEAVED_FL_ILP(64, 1, true)
+    INTERLEAVED_FL_ILP(128, 1, true)
+    INTERLEAVED_FL_ILP(256, 1, true)
+    INTERLEAVED_FL_ILP(512, 1, true)
+    INTERLEAVED_FL_ILP(1024, 1, true)
+    INTERLEAVED_FL_ILP(2048, 1, true)
+    INTERLEAVED_FL_ILP(4096, 1, true)
+    INTERLEAVED_FL_ILP(8192, 1, true)
+    INTERLEAVED_FL_ILP(16384, 1, true)
+    INTERLEAVED_FL_ILP(32768, 1, true)
+    INTERLEAVED_FL_ILP(65536, 1, true)
+    INTERLEAVED_FL_ILP(131072, 1, true)
+    INTERLEAVED_FL_ILP(262144, 1, true)
 
 
-    span_occupancies = tmp_span;
+    // span_occupancies = tmp_span;
 
 

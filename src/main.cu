@@ -94,44 +94,45 @@ int main(int argc, char** argv) {
     #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse_general.test>
     #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse_general_single.test>
   */  
-    // #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
-    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
+ 
+    // Phase 1
+
+    //      Burst mode
+    #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
+    // Note: keeping ILP = 1 in this one!
+
+    //      Uncoalesced reuse
+    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
+
+
+    // Phase 2
+
+    //      Indirect Coalescing
+    #include <kernels/general/tests/indirection_simple.test>
+
+    //      Indirect Burst Mode
+    //          N/A
+
+
+    // Phase 3
+
+    //      Sector-based Uncoalesced Reuse (vs warpsize-based) - indirection only!
+    #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
+    #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
+
+    //      Expansion-Contraction
+    #include <kernels/expansion_contraction/tests/expansion_contraction.test>
+
+    //      SpMV Latency Amortization using sector-based uncoalesced preloading 
+    //  Separate executable
+
+    //      Bonus : Cost of direct index computation latencies (out of spmv)
+
+
 
     // Profiling
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
     
-
-    // ###############
-    // Staging Directions
-    /** 
-     * For all, leave `span_occupancies` in this file (`main.cu`) set to `true`
-     * 
-     * 1. Profile with L1 enabled:
-     *      - Change submit script to run profiler and not the usual execution 
-     *      - Comment out the `set(CUDA_FLAGS ...)` line in `CMakeLists.txt`
-     *      - Uncomment Group 1 test below
-     *      - recompile and submit
-     * 2. Run warp_based_uncoalescing and sector_based_uncoalescing with L1 enabled 
-     *      - Change submit script back to original execution
-     *      - Comment Group 1 test and uncomment group 2 test
-     *      - recompile and submit
-     * 3. Run regularly for third group with flag added back in
-     *      - Uncomment the `set(CUDA_FLAGS ...)` line in `CMakeLists.txt` to disable L1 again
-     *      - Comment Group 2 test and Uncomment group 3 tests
-     *      - recompile and submit
-     */
-
-
-    // Group 1
-    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_profiling.test>
-
-    // Group 2
-    // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
-    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
-
-    // Group 3
-    // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
-
 
     clock_gettime(CLOCK_MONOTONIC, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
