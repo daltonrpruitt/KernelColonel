@@ -89,7 +89,7 @@ class SpmvDriver {
     bool check_kernels() {
         bool pass = true;
 // #ifdef DEBUG
-        cout << "Beginning check ... " ;
+        cout << "Beginning check ... " << endl;
 // #endif
         // for (auto ctx : contexts) {
             auto ctx = contexts.back();
