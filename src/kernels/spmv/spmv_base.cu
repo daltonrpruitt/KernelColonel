@@ -88,7 +88,7 @@ void spmv_kernel(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) { //}, int max_
 };
 */
 
-template <typename it=int, typename vt=double>
+template <typename it=int, typename vt=double, int const_valence=-1>
 struct SpmvKernel {
    public:
     // typedef KernelCPUContext<vt, it> super;
@@ -104,7 +104,7 @@ struct SpmvKernel {
 
 
     string matrix_filename;
-    CRSMat<it,vt> host_matrix;
+    CRSMat<it,vt, const_valence> host_matrix;
     CRSMat_gpu<it,vt> gpu_matrix;
     uint nnz;
     vector<double> host_vector;
