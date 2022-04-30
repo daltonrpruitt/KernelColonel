@@ -183,7 +183,7 @@ bool read_crs_matrix(string filename, CRSMat<it, vt, const_valence> &mat) {
         char next_char;
         for(int j=0; j < valence; ++j){
             fscanf(f, "%d%c", &idx, &next_char);
-            mat.indices[cur_entry] = idx-1;
+            mat.indices[cur_entry] = idx;
             mat.values[cur_entry] = randfrom(-1.0, 1.0);
             cur_entry++;
         }
