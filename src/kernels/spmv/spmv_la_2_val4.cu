@@ -126,9 +126,9 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
 }
 
 template <typename it=int, typename vt=double, bool preload=false, bool include_preload_arith=false, int chunk_parts=1>
-struct SpmvKernelLAv2 : SpmvKernel<it, vt> {
+struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
    public:
-    typedef SpmvKernel<it, vt> super;
+    typedef SpmvKernel<it, vt, 4> super;
 
 
   SpmvKernelLAv2(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
