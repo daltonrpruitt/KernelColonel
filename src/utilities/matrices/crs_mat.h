@@ -45,7 +45,7 @@ struct CRSMat_gpu {
     it* offsets;
 };
 
-template <typename it=int, typename vt=double>
+template <typename it=int, typename vt=double, int const_valence=-1>
 class CRSMat {
     public:
         string filename; 
@@ -55,6 +55,7 @@ class CRSMat {
         it* offsets;
 
     CRSMat() { 
+        static_assert(const_valence==-1 || const_valence==4 || const_valence==5);
         values = nullptr;
         indices = nullptr; 
         offsets = nullptr;
@@ -76,8 +77,15 @@ class CRSMat {
             if(!read_crs_matrix(filename, *this)){
                 nnz = -1;
             }
-        } else if(!read_coo_to_crs_matrix(filename, *this)){
-            nnz = -1;
+        } else {
+            if(const_valence > 0) {
+                cerr << "Cannot use valence with non-crs files!" << endl;
+                exit(EXIT_FAILURE);
+            }
+            if(!read_coo_to_crs_matrix(filename, *this)){
+                cerr << "Did not read " << filename << "successfully!" << endl;
+                nnz = -1;
+            }
         }
     }
 
@@ -117,8 +125,8 @@ double randfrom(double min, double max)
     return min + (rand() / div);
 }
 
-template <typename it=int, typename vt=double>
-bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
+template <typename it=int, typename vt=double, int const_valence=-1>
+bool read_crs_matrix(string filename, CRSMat<it, vt, const_valence> &mat) {
 
     FILE *f;
     int i, *I, *J;
@@ -141,7 +149,9 @@ bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
         cerr << "Exiting!" << endl;
         exit(EXIT_FAILURE);
     };
-    mat.nnz = mat.m*5;
+    if(const_valence >0 ) {
+        mat.nnz = mat.m*const_valence;
+    }
 
     mat.values = (vt *) malloc(mat.nnz * sizeof(vt));
     mat.indices = (it *) malloc(mat.nnz * sizeof(it));
@@ -155,10 +165,15 @@ bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
             cerr << "Exiting!" << endl;
             exit(EXIT_FAILURE);
         }
-        if(valence > 4) {
-            cerr << "Expected matrix to have valence of 4 or less, but is actually "<< valence <<" for row " << i <<"!" << endl;
+        if(const_valence > 0 && valence > const_valence) {
+            cerr << "Expected matrix to have valence of "<<const_valence<<" or less, but is actually "<< valence <<" for row " << i <<"!" << endl;
             cerr << "Exiting!" << endl;
             exit(EXIT_FAILURE);
+        }
+        if (const_valence > 0) {
+            mat.offsets[i+1] = const_valence;
+        } else {
+            mat.offsets[i+1] = valence;
         }
         
 #ifdef DEBUG
@@ -172,10 +187,12 @@ bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
             mat.values[cur_entry] = randfrom(-1.0, 1.0);
             cur_entry++;
         }
-        for(int j=0; j < 5-valence; ++j) {
-            mat.indices[cur_entry] = mat.indices[cur_entry-valence];
-            mat.values[cur_entry] = 0;
-            cur_entry++;
+        if(const_valence > 0) {
+            for(int j=0; j < const_valence-valence; ++j) {
+                mat.indices[cur_entry] = mat.indices[cur_entry-valence];
+                mat.values[cur_entry] = 0;
+                cur_entry++;
+            }
         }
 
     }
