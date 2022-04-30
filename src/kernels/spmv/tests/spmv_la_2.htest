@@ -1,0 +1,15 @@
+#include <kernels/spmv/spmv_la_2_val4.cu>
+#ifndef SPMV_LA_2_DRIVER
+#define SPMV_LA_2_DRIVER(PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS) spmv_la_v1_ ## PRELOAD ## _ ## INCLUDE_PRELOAD_ARITH ## _ ## CHUNK_PARTS ## _driver
+#endif
+
+#ifndef SPMV_LA_2
+#define SPMV_LA_2(PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS) \
+	{ \
+		auto driver = SpmvDriver<SpmvKernelLAv2<it, vt, PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS>> \
+			(64, output_dir+ XSTRINGIFY( SPMV_LA_2_DRIVER(PRELOAD, INCLUDE_PRELOAD_ARITH, CHUNK_PARTS) ) ".csv", \
+			&dev_ctx, mtx_file_string, span_occupancies); \
+		if (!driver.check_then_run_kernels()) {return -1;}  \
+		total_runs += driver.get_total_runs(); \
+	}
+#endif
