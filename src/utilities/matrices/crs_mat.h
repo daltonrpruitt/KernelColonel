@@ -136,8 +136,6 @@ template <typename it=int, typename vt=double, int const_valence=-1>
 bool read_crs_matrix(string filename, CRSMat<it, vt, const_valence> &mat) {
 
     FILE *f;
-    int i, *I, *J;
-    double *val;
 
     if (filename.length() == 0 )
 	{
