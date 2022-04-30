@@ -162,7 +162,15 @@ struct SpmvKernel {
         host_matrix.dump();
         #endif
 
-        Gsz = host_matrix.m / (Bsz / WARP_SIZE) + 1;
+        if(const_valence < 0){
+            Gsz = host_matrix.m / (Bsz / WARP_SIZE) + 1;
+        } else if(const_valence == 4) {
+            Gsz = ( host_matrix.m / (Bsz / WARP_SIZE) ) / 8 + 1;
+        } else if (const_valence == 5) {
+            Gsz = ( host_matrix.m / (Bsz / WARP_SIZE) ) / 6 + 1;
+        } else {
+            Gsz = -1;
+        }
         
         gpu_matrix.nnz = host_matrix.nnz;
         gpu_matrix.m   = host_matrix.m;
