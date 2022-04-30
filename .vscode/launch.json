@@ -95,7 +95,7 @@
             ]
         },
         {
-            "name": "Debug debug/main",
+            "name": "Debug main",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/debug/main",
