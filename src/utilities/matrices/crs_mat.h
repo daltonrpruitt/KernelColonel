@@ -161,9 +161,9 @@ bool read_crs_matrix(string filename, CRSMat<it, vt> &mat) {
             exit(EXIT_FAILURE);
         }
         
-        mat.offsets[i+1] = 5;
+#ifdef DEBUG
         if(i < 25) { cout << "On row " << i << " with " << valence  << " values." <<endl; }
-        
+#endif        
         it idx=0; 
         char next_char;
         for(int j=0; j < valence; ++j){
