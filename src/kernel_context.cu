@@ -205,12 +205,6 @@ struct KernelCPUContext {
 
             float time = local_execute();
 
-            bool pass = true;
-            for(int i=num_in_data; i < num_total_data; ++i) {
-                cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]", pass);
-            }
-            
-            if(!pass) {free(); okay = false; time = -1.0;}
             return time;
         }
 
@@ -221,6 +215,13 @@ struct KernelCPUContext {
                 cout << "Cannot check "<< name << " due to previous failure!" << endl;
                 return false;
             };
+
+            bool pass = true;
+            for(int i=num_in_data; i < num_total_data; ++i) {
+                cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * sizeof(vt), cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]", pass);
+            }            
+            if(!pass) {free(); okay = false;}
+
             return local_check_result();
         }
 
