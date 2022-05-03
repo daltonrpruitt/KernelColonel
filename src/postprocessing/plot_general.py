@@ -283,6 +283,10 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
                     raise TypeError("Invalid type for multiplot value: "+str(t))
                 if k < len(fields_for_multiplotting) -1: label_str += " | "
 
+            if(len(plot_local_data) == 0):
+                print(f"Configuration of {title_configs} with {label_str} has no data and will be skipped.")
+                continue
+           
             ic(plot_local_data)
             plt.plot(plot_local_data[x_field], 
                      plot_local_data[y_field], 
