@@ -23,7 +23,8 @@ set_property(TARGET main PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Q
 target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                         --keep 
                         -Xptxas -dlcm=cg
-                       >)
+                        -Xcudafe "--diag_suppress=unsigned_compare_with_zero"
+                        >)
 
 add_executable(spmv src/spmv.cu)
 set_property(TARGET spmv PROPERTY CXX_STANDARD 17)
