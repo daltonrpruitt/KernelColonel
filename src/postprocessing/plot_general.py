@@ -87,16 +87,25 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 plot_filename_base_suffix = ""
 plot_title_suffix = "" 
 
+plot_configs_dict = {
+    "spmv": [
+        ["spmv_la_v2", "occupancy", "fraction_of_max_bandwidth",
+         ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v2_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+        ["spmv_la_v2", "occupancy", "fraction_of_max_bandwidth",
+         ["order", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v2_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
 
-# fields for spmv_la_v1 :  "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts"]
+        # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
+        #     ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+        # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
+        #    ["matrix_file", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+    ],
+    "default": []
+]
+
 
 plot_configs = [
-    # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
-    #     ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
-    ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
-        ["matrix_file", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
 
-    #'''
+    '''
     ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
         ["reads_per_write"], "stream_size", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
     ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
