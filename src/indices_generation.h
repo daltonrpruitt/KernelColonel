@@ -152,7 +152,7 @@ int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute
         for(int shuffle_scan_id=0; shuffle_scan_id<scans_per_shuffle; shuffle_scan_id++) {
             
             for(int shuffle_scan_warp_id=0; shuffle_scan_warp_id<warps_per_shuffle_scan; shuffle_scan_warp_id++) {
-                it scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
+                it scan_local_start_idx = shuffle_scan_warp_id * ( shuffle_size / warps_per_shuffle_scan ) ;
 
                 for(int warp_t_idx=0; warp_t_idx<warp_size; ++warp_t_idx) {
                     it global_t_idx = shuffle_block_start_idx + (shuffle_scan_id * warps_per_shuffle_scan + shuffle_scan_warp_id)*warp_size + warp_t_idx; 
