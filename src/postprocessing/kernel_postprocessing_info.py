@@ -33,7 +33,9 @@ kernel_config_info = [
     ["indirect_copy", "IndirectCopy",   "shuffle_size", "ILP", "access_pattern"],
     ["expansion_contraction", "ExpansionContraction",   "reads_per_write", "stream_size"],
     ["spmv_la_v1", "SpmvKernelLAv1",    
-        "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts"]
+        "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts"],
+    ["spmv_la_v2", "SpmvKernelLAv2",    
+        "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts", "order"]
 ]
 
 kernel_class_names = {k[0]: k[1] for k in kernel_config_info}

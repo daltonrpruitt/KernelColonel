@@ -1,16 +1,16 @@
 #include <kernels/spmv/tests/spmv_la_2.htest>
 
     SPMV_LA_2(false, false, 1);
-    // SPMV_LA_2(false, false, 2);
-    // SPMV_LA_2(false, false, 4);
-    // SPMV_LA_2(false, false, 8);
+    SPMV_LA_2(false, false, 2);
+    SPMV_LA_2(false, false, 4);
+    SPMV_LA_2(false, false, 8);
 
     SPMV_LA_2(false, true,  1);
-    // SPMV_LA_2(false, true,  2);
-    // SPMV_LA_2(false, true,  4);
-    // SPMV_LA_2(false, true,  8);
+    SPMV_LA_2(false, true,  2);
+    SPMV_LA_2(false, true,  4);
+    SPMV_LA_2(false, true,  8);
 
     SPMV_LA_2(true,  true,  1);
-    // SPMV_LA_2(true,  true,  2);
-    // SPMV_LA_2(true,  true,  4);
-    // SPMV_LA_2(true,  true,  8);
+    SPMV_LA_2(true,  true,  2);
+    SPMV_LA_2(true,  true,  4);
+    SPMV_LA_2(true,  true,  8);

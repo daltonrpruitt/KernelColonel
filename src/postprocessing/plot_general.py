@@ -87,16 +87,25 @@ uncoal = "uncoalesced_reuse_gen_single_ilp"
 plot_filename_base_suffix = ""
 plot_title_suffix = "" 
 
+plot_configs_dict = {
+    "spmv": [
+        ["spmv_la_v2", "occupancy", "fraction_of_max_bandwidth",
+         ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v2_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+        ["spmv_la_v2", "occupancy", "fraction_of_max_bandwidth",
+         ["order", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v2_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
 
-# fields for spmv_la_v1 :  "matrix_file", "m", "n", "nnz", "preload", "include_preload_arith", "chunk_parts"]
+        # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
+        #     ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+        # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
+        #    ["matrix_file", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
+    ],
+    "default": []
+]
+
 
 plot_configs = [
-    # ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
-    #     ["matrix_file", "preload", "include_preload_arith"], "chunk_parts", "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
-    ["spmv_la_v1", "occupancy", "fraction_of_max_bandwidth",
-        ["matrix_file", "chunk_parts"], ["preload","include_preload_arith"], "spmv_la_v1_"+plot_filename_base_suffix, "SpMV Mult. BW vs Occup." + plot_title_suffix],
 
-    #'''
+    '''
     ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
         ["reads_per_write"], "stream_size", "expansion_contraction"+plot_filename_base_suffix, "Expansion/Contraction BW vs Occup." + plot_title_suffix],
     ["expansion_contraction", "occupancy", "fraction_of_max_bandwidth",
@@ -274,6 +283,10 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
                     raise TypeError("Invalid type for multiplot value: "+str(t))
                 if k < len(fields_for_multiplotting) -1: label_str += " | "
 
+            if(len(plot_local_data) == 0):
+                print(f"Configuration of {title_configs} with {label_str} has no data and will be skipped.")
+                continue
+           
             ic(plot_local_data)
             plt.plot(plot_local_data[x_field], 
                      plot_local_data[y_field], 
@@ -286,16 +299,27 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         plt.savefig(os.path.join(images_dir, filename) + ".png")
         plt.close()
 
-for p in plot_configs:
-    kernel = p[0]
-    collated_file = collate_csv(base_folder, kernel)
-    if collated_file is None:
-        print("Could not collate", kernel, "in" ,base_folder, "!")
-        exit(1)
-    elif collated_file == "":
-        print(f"No data for {kernel}!")
-        continue
-    data = read_csv(collated_file)
-    # data = data.loc[(data["shuffle_size"]==1024) & (data["ILP"]==1)]
-    # ic(data)
-    plot_general(data, p[0], p[1], p[2], p[3], p[4], p[5], p[6])
+
+def collate_and_plot(configs):
+    for c in configs:
+        kernel = c[0]
+        collated_file = collate_csv(base_folder, kernel)
+        if collated_file is None:
+            print("Could not collate", kernel, "in" ,base_folder, "!")
+            exit(1)
+        elif collated_file == "":
+            print(f"No data for {kernel}!")
+            continue
+            data = read_csv(collated_file)
+            # data = data.loc[(data["shuffle_size"]==1024) & (data["ILP"]==1)]
+            # ic(data)
+            plot_general(data, c[0], c[1], c[2], c[3], c[4], c[5], c[6])
+    
+
+def main():
+    collate_and_plot(plot_configs_dict["spmv"])
+    collate_and_plot(plot_configs)
+    
+
+if __name__=="__main__":
+    main()
