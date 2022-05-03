@@ -295,16 +295,27 @@ def plot_general(all_data, kernel_name, x_field, y_field, fields_to_keep_constan
         plt.savefig(os.path.join(images_dir, filename) + ".png")
         plt.close()
 
-for p in plot_configs:
-    kernel = p[0]
-    collated_file = collate_csv(base_folder, kernel)
-    if collated_file is None:
-        print("Could not collate", kernel, "in" ,base_folder, "!")
-        exit(1)
-    elif collated_file == "":
-        print(f"No data for {kernel}!")
-        continue
-    data = read_csv(collated_file)
-    # data = data.loc[(data["shuffle_size"]==1024) & (data["ILP"]==1)]
-    # ic(data)
-    plot_general(data, p[0], p[1], p[2], p[3], p[4], p[5], p[6])
+
+def collate_and_plot(configs):
+    for c in configs:
+        kernel = c[0]
+        collated_file = collate_csv(base_folder, kernel)
+        if collated_file is None:
+            print("Could not collate", kernel, "in" ,base_folder, "!")
+            exit(1)
+        elif collated_file == "":
+            print(f"No data for {kernel}!")
+            continue
+            data = read_csv(collated_file)
+            # data = data.loc[(data["shuffle_size"]==1024) & (data["ILP"]==1)]
+            # ic(data)
+            plot_general(data, c[0], c[1], c[2], c[3], c[4], c[5], c[6])
+    
+
+def main():
+    collate_and_plot(plot_configs_dict["spmv"])
+    collate_and_plot(plot_configs)
+    
+
+if __name__=="__main__":
+    main()
