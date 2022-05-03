@@ -158,14 +158,14 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
 
     void output_config_info() override {
         cout << "SpMV Latency Amortization V2 with (valence=4): "
+                << "\n\t " << this->host_matrix
+                << "\n\t matrix_order=" << matrix_order
                 << "\n\t Bsz=" << this->Bsz 
                 << "\n\t Blocks used ="<< this->Gsz
-                << "\n\t " << this->host_matrix
                 << "\n\t occupancy=" << this->get_occupancy()
                 << "\n\t preload=" << bool_to_string(preload)
                 << "\n\t include_preload_arithmetic=" << bool_to_string(include_preload_arith)
                 << "\n\t chunk_parts=" << chunk_parts 
-                << "\n\t matrix_order=" << matrix_order
                 << endl;
     }
 
