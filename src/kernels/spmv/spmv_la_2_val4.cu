@@ -61,7 +61,7 @@ __global__
 void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) {
     uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
     uint warp_id = g_t_id / WARP_SIZE;
-    if(warp_id*8 >= matrix.m) return;
+    if(warp_id*chunk_parts*8 >= matrix.m) return;
     // uint stride = 2 * 32 / sizeof(vt);
     uint lane = threadIdx.x % WARP_SIZE; 
     // assume vector is preloaded into cache
@@ -84,7 +84,8 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
     uint chunk_size = WARP_SIZE * chunk_parts;
     // int num_chunks = (vals_processed + chunk_size) / chunk_size;
 
-    vt t_sum = 0;
+    vt t_sum[chunk_parts];
+    for(int i=0; i<chunk_parts; ++i) t_sum[i] = 0;
     //    for(int chunk=0; chunk < num_chunks; chunk++) {
     uint local_start = start;// + chunk * chunk_size;
 
@@ -110,18 +111,20 @@ void spmv_kernel_latency_amortization_2(vt* product, CRSMat_gpu<it,vt> matrix, v
             // if(immediate_idx >= stop) break;
             vt val = matrix.values[immediate_idx];
             it col = matrix.indices[immediate_idx];
-            t_sum += val * vec[col];
+            t_sum[part] += val * vec[col];
         }
 	// }
     // if (lane == 0) { product[warp_id] = local_stop_col_idx;} return;
     
     // Final parallel reduce
     unsigned m = 0xffffffff;
-    for (int offset = 2; offset > 0; offset /= 2) {
-        t_sum += __shfl_down_sync(m, t_sum, offset);
-    }
-    if (lane % 4 == 0) {
-        product[warp_id * 8 + lane/4] = t_sum;
+    for(uint part=0; part < chunk_parts; part++) {
+      for (int offset = 2; offset > 0; offset /= 2) {
+        t_sum[part] += __shfl_down_sync(m, t_sum[part], offset);
+      }
+      if (lane % 4 == 0) {
+        product[(warp_id * chunk_parts + part) * 8  + lane/4] = t_sum[part];
+      }
     }
     return;
 }
@@ -149,7 +152,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
             assert(false);
         }
 
-
+	this->Gsz /= chunk_parts;
     }
     ~SpmvKernelLAv2() {}
 
@@ -161,7 +164,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
                 << "\n\t occupancy=" << this->get_occupancy()
                 << "\n\t preload=" << bool_to_string(preload)
                 << "\n\t include_preload_arithmetic=" << bool_to_string(include_preload_arith)
-                // << "\n\t chunk_parts=" << chunk_parts 
+                << "\n\t chunk_parts=" << chunk_parts 
                 << "\n\t matrix_order=" << matrix_order
                 << endl;
     }
