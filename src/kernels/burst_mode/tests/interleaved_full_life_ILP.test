@@ -1,8 +1,8 @@
 #define INTER_FL_ILP_DRIVER(E, ILP, MATCH) interleaved_fl_ilp_ ## E ## _ ## ILP ## _driver
 #define INTERLEAVED_FL_ILP(E, ILP, MATCH) { MicrobenchmarkDriver<InterleavedFullLifeILPContext<vt, it, E, ILP, MATCH>> \
         INTER_FL_ILP_DRIVER(E, ILP, MATCH)(N, bs_vec, output_dir+ XSTRINGIFY( INTER_FL_ILP_DRIVER(E, ILP, MATCH) ) ".csv", &dev_ctx, span_occupancies); \
-        if (!INTER_FL_ILP_DRIVER(E, ILP, MATCH).check_then_run_kernels()) {return -1;} \
-        total_runs += INTER_FL_ILP_DRIVER(E, ILP, MATCH).get_total_runs(); }
+        if (!INTER_FL_ILP_DRIVER(E, ILP, MATCH).check_then_run_kernels()) { cerr << "Could not run " << XSTRINGIFY( INTER_FL_ILP_DRIVER(E, ILP, MATCH) ) << "!" << endl;} \
+        else { total_runs += INTER_FL_ILP_DRIVER(E, ILP, MATCH).get_total_runs(); } }
         // INTER_FL_ILP_DRIVER(E, ILP, MATCH).set_config_bool(match_ilp); \
 
     // bool tmp_span = span_occupancies; 
