@@ -12,8 +12,8 @@ for d in ${dirs[@]}; do
     fi
 done
 
-ml python
-python3 download_matrices.py
+#ml python
+#python3 download_matrices.py
 
 cd build/debug ;
 if test ! -f "../CMakeCache.txt"; then
