@@ -94,16 +94,21 @@ int main(int argc, char** argv) {
     #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse_general.test>
     #include <kernels/uncoalesced_cache_access/tests/uncoalesced_reuse_general_single.test>
   */  
+
+    #include <kernels/general/tests/copy.test>
+
  
     // Phase 1
 
     //      Burst mode
-    #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
+    // #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
     // Note: keeping ILP = 1 in this one!
 
-    //      Uncoalesced reuse
-    #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
 
+
+    //      Uncoalesced reuse
+    // #include <kernels/uncoalesced_cached_access/tests/uncoalesced_reuse_general_single_ILP.test>
+    
 
     // Phase 2
 
@@ -117,11 +122,12 @@ int main(int argc, char** argv) {
     // Phase 3
 
     //      Sector-based Uncoalesced Reuse (vs warpsize-based) - indirection only!
-    #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
-    #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
+    // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
+    // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
+     #include <kernels/indirect/tests/indirect_copy_uncoalesced_no_reuse.test>
 
     //      Expansion-Contraction
-    #include <kernels/expansion_contraction/tests/expansion_contraction.test>
+    // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
 
     //      SpMV Latency Amortization using sector-based uncoalesced preloading 
     //  Separate executable
