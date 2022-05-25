@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     // Phase 1
 
     //      Burst mode
-    // #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
+     #include <kernels/burst_mode/tests/interleaved_full_life_ILP.test>
     // Note: keeping ILP = 1 in this one!
 
 
