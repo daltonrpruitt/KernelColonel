@@ -294,7 +294,7 @@ struct KernelCPUContext {
         } else {
 	    if(dev_ctx->props_.major == 8) {
 	      max_blocks_shared_mem = dev_ctx->props_.sharedMemPerMultiprocessor / (shared_memory_usage+1024);
-	    else {
+	    } else {
 	      max_blocks_shared_mem = dev_ctx->props_.sharedMemPerMultiprocessor / shared_memory_usage;
 	    }
         }
