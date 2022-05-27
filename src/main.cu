@@ -64,6 +64,19 @@ int main(int argc, char** argv) {
     min_array_size = pow(2, ceil(log2(min_array_size)));
     unsigned long long N = min_array_size * dev_ctx.props_.multiProcessorCount;
 
+#ifdef DEBUG
+    int max_shd_mem_per_block = dev_ctx.props_.sharedMemPerBlock;
+    int max_shd_mem_per_proc = dev_ctx.props_.sharedMemPerMultiprocessor;
+    if(dev_ctx.props_.major == 8) {
+        max_shd_mem_per_block = 164 * 1024;
+        max_shd_mem_per_proc =  164 * 1024;
+    }
+    cout << "Shared memory data:" 
+            << " mx shdmem/blk=" << max_shd_mem_per_block 
+            << " mx shdmem/SM=" << max_shd_mem_per_proc 
+            << endl;
+#endif
+
     cout << "Processing " << N  << " elements" << endl;
 
 
