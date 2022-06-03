@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
     // Phase 2
 
     //      Indirect Coalescing
-    #include <kernels/general/tests/indirection_simple.test>
+    // #include <kernels/general/tests/indirection_simple.test>
 
     //      Indirect Burst Mode
     //          N/A
@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
     //#include <kernels/indirect/tests/indirect_copy_uncoalesced_no_reuse.test>
 
     //      Expansion-Contraction
-    // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
+    #include <kernels/expansion_contraction/tests/expansion_contraction.test>
 
     //      SpMV Latency Amortization using sector-based uncoalesced preloading 
     //  Separate executable
