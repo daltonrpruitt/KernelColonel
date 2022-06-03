@@ -147,6 +147,8 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
             matrix_order = "bipartile-rcm";
         } else if (this->matrix_filename.find("symrcm") != string::npos) {
             matrix_order = "symmetric-rcm";
+        } else if (this->matrix_filename.find("coord-sort") != string::npos) {
+            matrix_order = "coord-sort";
         } else {
             cerr << "Invalid grid ordering!" << endl;
             assert(false);
