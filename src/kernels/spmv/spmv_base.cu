@@ -475,6 +475,7 @@ struct SpmvKernel {
             return -1.0;
         }
 
+        int max_blocks_shared_mem;
         if(shared_memory_usage == 0) {
             max_blocks_shared_mem = dev_ctx->props_.maxBlocksPerMultiProcessor;
         } else {
