@@ -448,8 +448,9 @@ struct SpmvKernel {
         }
         int max_shd_mem_per_block = dev_ctx->props_.sharedMemPerBlock;
         int max_shd_mem_per_proc = dev_ctx->props_.sharedMemPerMultiprocessor;
-        if (dev_ctx->props_.major == 8) {
-            max_shd_mem_per_block = max_shd_mem_per_proc;
+        if(dev_ctx->props_.major == 8) {
+            max_shd_mem_per_block = 164 * 1024;
+            max_shd_mem_per_proc =  164 * 1024;
         }
         int min_blocks_due_to_shd_mem = max_shd_mem_per_proc / max_shd_mem_per_block;
 
@@ -474,12 +475,16 @@ struct SpmvKernel {
             return -1.0;
         }
 
-        int max_blocks_shared_mem;
-        if (shared_memory_usage == 0) {
+        if(shared_memory_usage == 0) {
             max_blocks_shared_mem = dev_ctx->props_.maxBlocksPerMultiProcessor;
         } else {
-            max_blocks_shared_mem = dev_ctx->props_.sharedMemPerMultiprocessor / shared_memory_usage;
+            if(dev_ctx->props_.major == 8) {
+                max_blocks_shared_mem = dev_ctx->props_.sharedMemPerMultiprocessor / (shared_memory_usage+1024);
+            } else {
+                max_blocks_shared_mem = dev_ctx->props_.sharedMemPerMultiprocessor / shared_memory_usage;
+            }
         }
+
         int max_blocks_simul = std::min(max_blocks_simultaneous_per_sm, max_blocks_shared_mem);
         int num_threads_simul = max_blocks_simul * Bsz;
         return float(num_threads_simul) / float(dev_ctx->props_.maxThreadsPerMultiProcessor);
@@ -501,8 +506,10 @@ struct SpmvKernel {
 
         int max_shd_mem_per_block = dev_ctx->props_.sharedMemPerBlock;
         int max_shd_mem_per_proc = dev_ctx->props_.sharedMemPerMultiprocessor;
-        if (dev_ctx->props_.major == 8) {
-            max_shd_mem_per_block = max_shd_mem_per_proc;
+        // if(dev_ctx->props_.major == 8) {max_shd_mem_per_block = max_shd_mem_per_proc;}
+        if(dev_ctx->props_.major == 8) {
+            max_shd_mem_per_block = 164 * 1024;
+            max_shd_mem_per_proc =  164 * 1024;
         }
 
         int shdmem = max_shd_mem_per_proc / blocks;
