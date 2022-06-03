@@ -176,7 +176,8 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
             cudaFuncAttributes attr;
             cudaFuncGetAttributes(&attr, 
                 (void *) spmv_kernel_latency_amortization_2<it, vt, preload, include_preload_arith, chunk_parts>);
-            int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-1024-attr.sharedSizeBytes;
+            int shmem = this->dev_ctx->props_.sharedMemPerMultiprocessor-attr.sharedSizeBytes;
+            if(this->dev_ctx->props_.major == 8) { shmem -= 1024; }
             cudaFuncSetAttribute(
                 (void *) spmv_kernel_latency_amortization_2<it, vt, preload, include_preload_arith, chunk_parts>, 
                 cudaFuncAttributeMaxDynamicSharedMemorySize, shmem);
