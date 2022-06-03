@@ -491,6 +491,7 @@ struct SpmvKernel {
         return float(num_threads_simul) / float(dev_ctx->props_.maxThreadsPerMultiProcessor);
     }
 
+  /*
     int get_sharedmemory_from_occupancy(float occupancy) {
         bool pass = true;
         if (max_blocks_simultaneous_per_sm < 0) compute_max_simultaneous_blocks(pass);
@@ -524,6 +525,7 @@ struct SpmvKernel {
         }
         return shdmem;
     }
+  */
 
     void print_register_usage() {
         bool pass = true;
