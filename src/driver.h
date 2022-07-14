@@ -32,23 +32,40 @@ using std::ofstream;
 using std::stringstream;
 using std::setw;
 
-
+/**
+ * @brief Container for verifying, running, and saving the timing statistics 
+ *      for a specific kernel workload
+ * 
+ * @tparam kernel_ctx_t Specific kernel context class to run
+ */
 template <typename kernel_ctx_t>
 class MicrobenchmarkDriver {
    private:
-    string output_filename_;
-    ofstream output_file;
-    bool output_file_started = false;
-    device_context* dev_ctx_;
-    vector<kernel_ctx_t*> contexts;
+    string output_filename_;            // Name of file to save output data to (CSV)
+    ofstream output_file;               // File handle for output data to stream into
+    bool output_file_started = false;   // Flag to determine whether header has been written
+    device_context* dev_ctx_;           // References CUDA Device Context structure for device parameters
+    vector<kernel_ctx_t*> contexts;     // Set of different kernel instances to test (just different occupancies at the moment)
 
-    int N = 0;
-    int bs = 0;
+    int N = 0;                          // Associated with workload size; often number of threads
+    int bs = 0;                         // Block size (unused?)
 
    public:
-    int kernel_runs = 25;
-    int kernel_checks = 1;
+    int kernel_runs = 25;               // Number of runs performed for timing statistics
+    int kernel_checks = 1;              // Number of runs performed for kernel verification (defined in kernel context)
 
+    /**
+     * @brief Construct a new Microbenchmark Driver object
+     * 
+     * Sets up at least one, but possibly several, instances of `kernel_ctx_t`. 
+     * Number and configuration depends on inputs. 
+     * 
+     * @param N Workload size
+     * @param bs_vec Vector of block sizes to test over; currently only single value used 
+     * @param output_filename Name to save timing statistics and other data to
+     * @param dev_ctx Reference to CUDA GPU device context structure
+     * @param span_occupancies Flag for whether to run kernel for valid relative occupancies in range (0,1] 
+     */
     MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
         output_filename_(output_filename) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
@@ -87,6 +104,12 @@ class MicrobenchmarkDriver {
         }
     }
 
+    /**
+     * @brief Test each kernel for accuracy (only 1 now)
+     * 
+     * @return true All kernels passed check
+     * @return false One kernel failed check 
+     */
     bool check_kernels() {
         bool pass = true;
 #ifdef DEBUG
@@ -116,6 +139,10 @@ class MicrobenchmarkDriver {
         return pass;
     }
 
+    /**
+     * @brief Perform `kernel_runs` runs of each kernel, then save statistical data
+     * 
+     */
     void run_kernels() {
 #ifdef DEBUG
             cout << "Beginning actual runs" << endl;
@@ -174,6 +201,14 @@ class MicrobenchmarkDriver {
         }
     }
 
+    /**
+     * @brief Wrapper for check_kernels() and run_kernels()
+     * 
+     * First, checks kernels; if pass checks, runs kernels. 
+     * 
+     * @return true 
+     * @return false 
+     */
     bool check_then_run_kernels() {
         bool pass = check_kernels();
         if (pass) {
@@ -184,6 +219,10 @@ class MicrobenchmarkDriver {
         return pass; 
     }
 
+    /**
+     * @brief Add headers to output file
+     * 
+     */
     void start_output_file(){
         // Guard against overwriting data
         struct stat output_file_buffer;
@@ -223,10 +262,20 @@ class MicrobenchmarkDriver {
         output_file << endl;
     }
 
+    /**
+     * @brief Get the number of context in this driver instance
+     * 
+     * @return int Number of kernel contexts (configurations)
+     */
     int get_num_contexts() {
         return (int)contexts.size();
     }
 
+    /**
+     * @brief Get the number of total runs performed in this driver instance
+     * 
+     * @return int Total number of kernel runs in the driver (# kernels * kernel_runs)
+     */
     int get_total_runs() {
         return get_num_contexts() * kernel_runs;
     }
