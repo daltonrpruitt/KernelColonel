@@ -10,6 +10,12 @@
 using std::cout;
 using std::endl;
 
+/**
+ * @brief Wrapper around cudaDeviceProp
+ * 
+ * Computes theoretical bandwidth in init()
+ * 
+ */
 class device_context {
   public:
     cudaDeviceProp props_;
@@ -18,6 +24,12 @@ class device_context {
     device_context() {}
     ~device_context() {}
     
+    /**
+     * @brief Checks if cuda device available, gets properties, and calculates theoretical bandwidth
+     * 
+     * @return true Initialized properly
+     * @return false Failed initialization
+     */
     bool init() {
         bool pass = true;
         cudaErrChk(cudaSetDevice(0), "finding GPU device", pass);

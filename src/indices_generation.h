@@ -13,6 +13,14 @@ using std::string;
 
 int warp_size = 32;
 
+/**
+ * @brief Provides consistent format to look at generated indices arrays
+ * 
+ * @tparam it Index type
+ * @param indxs Array of computed indices
+ * @param block_size Size of the thread blocks
+ * @param idx Current index in array
+ */
 template<typename it>
 void print_indices_sample(it* indxs, int block_size, unsigned long long idx) {
     if(idx % block_size >= block_size / 2 - 2 &&
@@ -33,6 +41,17 @@ void print_indices_sample(it* indxs, int block_size, unsigned long long idx) {
     }
 }
 
+/**
+ * @brief Simple sequential pattern
+ * 
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param block_size Size of the thread blocks
+ * @param shuffle_size Size of the "shuffle blocks", chunks of array
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it>
 int sequential_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
 
@@ -59,7 +78,14 @@ int sequential_indices(it* indxs, unsigned long long N, int block_size, int shuf
  * with a blocksize of 128, warpsize of 32 
  * the shuffled indices would be 
  *      0 32 64 96 ... 71 103 8 40 ... 79 111 16 48 ... ... 31  63  95  127 128 160 192 ... ... 159 191 223 255
- * 
+ *
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param block_size Size of the thread blocks
+ * @param shuffle_size Size of the "shuffle blocks", chunks of array
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
  */
 template<typename it>
 int strided_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
@@ -78,6 +104,17 @@ int strided_indices(it* indxs, unsigned long long N, int block_size, int shuffle
     return 0;
 }
 
+/**
+ * @brief Same as strided_indices() but with offsets to avoid bank conflicts between threads in same warp
+ * 
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param block_size Size of the thread blocks
+ * @param shuffle_size Size of the "shuffle blocks", chunks of array
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it>
 int strided_no_conflict_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "strided no conflict indices (Bsz="<<block_size<<",shuffle sz="<<shuffle_size<< "): ";
@@ -95,6 +132,18 @@ int strided_no_conflict_indices(it* indxs, unsigned long long N, int block_size,
     return 0;
 }
 
+/**
+ * @brief Templated replacement for strided_indices() and strided_no_conflict_indices() (I think)
+ * 
+ * @tparam it Index type
+ * @tparam avoid_bank_conflicts Whether to avoid bank conflicts or not
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param block_size Size of the thread blocks
+ * @param shuffle_size Size of the "shuffle blocks", chunks of array
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it, bool avoid_bank_conflicts>
 int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     assert(N % shuffle_size == 0);
@@ -132,6 +181,23 @@ int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_s
     return 0;
 }
 
+/**
+ * @brief Same as uncoalesced_access_shuffle_size() but using the transaction size of the architecture to optimize the stride
+ * 
+ * By "optimize", I mean to ensure that data is loaded in the densest way possible, where each access that is uncoalesced picks 
+ * up where the previous access ends, with no overlap and no skipped areas. 
+ * 
+ * @tparam vt Value type (required due to transaction size considerations)
+ * @tparam it Index type
+ * @tparam avoid_bank_conflicts Whether to avoid bank conflicts or not
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param compute_capability_major The CUDA Compute Capability Major version (e.g. 7 = Volta)
+ * @param block_size Size of the thread blocks
+ * @param shuffle_size Size of the "shuffle blocks", chunks of array
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename vt, typename it, bool avoid_bank_conflicts>
 int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute_capability_major, int shuffle_size, bool output_sample = false){
     assert(N % shuffle_size == 0);
@@ -175,6 +241,17 @@ int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute
     return 0;
 }
 
+/**
+ * @brief Compute random shuffle of arrays within chunks of size shuffle_size 
+ * 
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param block_size Size of the thread blocks
+ * @param shuffle_size Size of the "shuffle blocks", chunks of array
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it>
 int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_size, bool output_sample = false){
     if(output_sample) cout << "random indices : ";
@@ -191,6 +268,18 @@ int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_
     return 0;
 }
 
+/**
+ * @brief Provides indices that result in reading stream and writing same values degree_of_expansion times
+ * 
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param degree_of_expansion Ratio between writing to reading amounts
+ * @param block_size Size of the thread blocks
+ * @param stream_size Size of the chunks of array used to limit working set size
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it>
 int expansion_indices(it* indxs, unsigned long long N, int degree_of_expansion, int stream_size, bool output_sample = false){
     int warps_per_stream = stream_size / warp_size;
@@ -214,7 +303,18 @@ int expansion_indices(it* indxs, unsigned long long N, int degree_of_expansion, 
     return 0;
 }
 
-
+/**
+ * @brief Provides indices that result in reading stream and writing degree_of_contraction times fewer values
+ * 
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param degree_of_contraction Ratio between reading to writing amounts
+ * @param block_size Size of the thread blocks
+ * @param stream_size Size of the chunks of array used to limit working set size
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it>
 int contraction_indices(it* indxs, unsigned long long N, int degree_of_contraction, int stream_size, bool output_sample = false){
     int warps_per_stream = stream_size / warp_size;
@@ -245,6 +345,18 @@ int contraction_indices(it* indxs, unsigned long long N, int degree_of_contracti
     return 0;
 }
 
+/**
+ * @brief Wrapper for expansion_indices() and contraction_indices() to "simplify" general expansion/contraction calls
+ * 
+ * @tparam it Index type
+ * @param indxs Array of indicies to write to
+ * @param N Size of index array
+ * @param reads_per_8_writes Ratio of reads per 8 writes
+ * @param block_size Size of the thread blocks
+ * @param stream_size Size of the chunks of array used to limit working set size
+ * @param output_sample Whether to print sample of the computed indices for analysis
+ * @return int Pass (0) or fail (no current way to fail)
+ */
 template<typename it>
 int expansion_contraction_indices(it* indxs, unsigned long long N, int reads_per_8_writes, int stream_size, bool output_sample = false){
     assert(N % stream_size == 0);

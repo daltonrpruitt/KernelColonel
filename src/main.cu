@@ -1,5 +1,16 @@
 // driver.cpp
 // simple driver file for kernel testing
+/**
+ * @file main.cu
+ * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
+ * @brief Showcase of how I used KernelColonel to test kernels
+ * @version 0.1
+ * @date 2022-07-22
+ * 
+ * The current design is ... less than optimal. 
+ * I plan to have a more modern-ish design to allow for better and generally more sensible setup. 
+ * 
+ */
 
 #define DEBUG
 
