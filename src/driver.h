@@ -44,6 +44,7 @@ class MicrobenchmarkDriver {
     string output_filename_;            // Name of file to save output data to (CSV)
     ofstream output_file;               // File handle for output data to stream into
     bool output_file_started = false;   // Flag to determine whether header has been written
+    bool output_all_runs = false;       // Flag to control whether all run times or the statistics are reported
     device_context* dev_ctx_;           // References CUDA Device Context structure for device parameters
     vector<kernel_ctx_t*> contexts;     // Set of different kernel instances to test (just different occupancies at the moment)
 
@@ -66,8 +67,8 @@ class MicrobenchmarkDriver {
      * @param dev_ctx Reference to CUDA GPU device context structure
      * @param span_occupancies Flag for whether to run kernel for valid relative occupancies in range (0,1] 
      */
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false) :
-        output_filename_(output_filename) {
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false, bool output_all_runs=false) :
+        output_filename_(output_filename), output_all_runs(output_all_runs) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
         dev_ctx_ = dev_ctx;
 
@@ -160,6 +161,8 @@ class MicrobenchmarkDriver {
                 times.push_back(t);
             }
             ctx->uninit();
+
+            if(!output_all_runs) {
             // avg/std dev/ min, max, med
             vector<timing_precision_t> timing_stats = stats_from_vec(times);
             timing_precision_t throughput =  (timing_precision_t) ctx->get_total_bytes_processed() / (1024*1024*1024)  // Total data processed * 1 GB/(1024^3) B
@@ -198,6 +201,18 @@ class MicrobenchmarkDriver {
 #endif
             // output to file
             write_data(ctx, timing_stats);
+
+            } else { // output_all_runs == true
+                for (int i=0; i < kernel_runs; ++i) {
+                    timing_precision_t t = times[i];
+                    timing_precision_t throughput =  (timing_precision_t) ctx->get_total_bytes_processed() / (1024*1024*1024)  // Total data processed * 1 GB/(1024^3) B
+                        / t                                                       // time to finish (1/ms)
+                        * 1000;                                                                 // 1000 ms / 1 s
+                    timing_precision_t fraction_theoretical_bw_achieved = throughput / dev_ctx_->theoretical_bw_; 
+                    vector<timing_precision_t> single_run_outputs {std::static_cast<timing_precision_t>(i), t, throughput, fraction_theoretical_bw_achieved};
+                    write_data(ctx, single_run_outputs);
+                }
+            }
         }
     }
 
@@ -238,7 +253,13 @@ class MicrobenchmarkDriver {
         // output_file << "Array_size,tpb,ept,bwss,twss,num_blocks,fraction_of_l2_used_per_block,num_repeat,theoretical_bandwidth"
         //              << ",shuffle_type,kernel_type,blocks_per_sm,min,med,max,avg,stddev,achieved_throughput" << endl ;
         output_file.open(output_filename_.c_str());
-        output_file << "kernel_type,array_size,value_size,index_size,tpb,occupancy,min,med,max,avg,stddev,throughput,fraction_of_max_bandwidth" ;
+        output_file << "kernel_type,array_size,value_size,index_size,tpb,occupancy," ;
+        if(!output_all_runs) {
+            output_file << "min,med,max,avg,stddev,";
+        } else {
+            output_file << "run_num,runtime,";
+        }
+        output_file << "throughput,fraction_of_max_bandwidth" ;
         if(contexts[0]->get_extra_config_parameters().compare("") != 0) {
             output_file << "," << contexts[0]->get_extra_config_parameters() ;
         }
