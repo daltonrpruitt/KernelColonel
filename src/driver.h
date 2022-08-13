@@ -208,8 +208,10 @@ class MicrobenchmarkDriver {
                     timing_precision_t throughput =  (timing_precision_t) ctx->get_total_bytes_processed() / (1024*1024*1024)  // Total data processed * 1 GB/(1024^3) B
                         / t                                                       // time to finish (1/ms)
                         * 1000;                                                                 // 1000 ms / 1 s
-                    timing_precision_t fraction_theoretical_bw_achieved = throughput / dev_ctx_->theoretical_bw_; 
-                    vector<timing_precision_t> single_run_outputs {std::static_cast<timing_precision_t>(i), t, throughput, fraction_theoretical_bw_achieved};
+                    timing_precision_t fraction_theoretical_bw_achieved = throughput / dev_ctx_->theoretical_bw_;
+		    timing_precision_t tmp_i(i);
+                    vector<timing_precision_t> single_run_outputs{ tmp_i, t, throughput, fraction_theoretical_bw_achieved };
+
                     write_data(ctx, single_run_outputs);
                 }
             }
