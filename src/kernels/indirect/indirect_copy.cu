@@ -115,9 +115,9 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
 
         void init_indices(bool& pass) override {
             bool debug = false;
-// #ifdef DEBUG
-//             debug = true;
-// #endif
+ #ifdef DEBUG
+             debug = true;
+ #endif
             indices.reserve(N);
             if( index_patterns[idx_pattern](indices.data(), N, Bsz, shuffle_size, debug) != 0) {
                 cerr << "Failed to generate indices!"; 
