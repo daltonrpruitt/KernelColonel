@@ -7,7 +7,8 @@ project(microbenchmarks CUDA CXX)
 
 include(FindCUDAToolkit)
 
-add_subdirectory(test)
+add_subdirectory(sandbox)
+
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/utilities/matrices)
