@@ -148,10 +148,10 @@ int main(int argc, char** argv) {
     //      Sector-based Uncoalesced Reuse (vs warpsize-based) - indirection only!
     // #include <kernels/indirect/tests/indirect_copy_warpsize_based_uncoalescing.test>
     // #include <kernels/indirect/tests/indirect_copy_sector_based_uncoalescing.test>
-    //#include <kernels/indirect/tests/indirect_copy_uncoalesced_no_reuse.test>
+    //  #include <kernels/indirect/tests/indirect_copy_uncoalesced_no_reuse.test>
 
     //      Expansion-Contraction
-    #include <kernels/expansion_contraction/tests/expansion_contraction.test>
+    // #include <kernels/expansion_contraction/tests/expansion_contraction.test>
 
     //      SpMV Latency Amortization using sector-based uncoalesced preloading 
     //  Separate executable

@@ -9,7 +9,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
-build
+*build
 
 # dated copies
 *??-??-* 
@@ -39,3 +39,6 @@ node_arch_translation.csv
 # matrix files
 *.mtx
 grid*
+
+ # emacs tmp files
+*~
