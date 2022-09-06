@@ -39,3 +39,4 @@ target_compile_options(spmv PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                        >)
 
 
+add_subdirectory(tests)
