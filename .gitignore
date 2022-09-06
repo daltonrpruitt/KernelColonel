@@ -17,7 +17,8 @@ _deps
 extra*
 kernel_types.h
 
-output*/
+*output*/
+
 
 # Python cache
 *.pyc
