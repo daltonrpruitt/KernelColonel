@@ -44,7 +44,8 @@ target_compile_options(spmv PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                         --keep 
                         -Xptxas -dlcm=cg
                         -Xcudafe "--diag_suppress=set_but_not_used --diag_suppress=declared_but_not_referenced"
-                       >)
+>)
+
 # message(STATUS "python exec: ${Python_EXECUTABLE}")
 
 # add_custom_target(
