@@ -1,6 +1,7 @@
 // Index array generation functions
 #pragma once
 #include <iostream>
+#include <random>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -258,8 +259,11 @@ int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_
     for(int i=0; i < N; i++) {
         indxs[i] = i;                                                                    
     }
+    std::random_device rd;
+    std::mt19937 generator(rd());
+
     for(int i=0; i < N; i+=shuffle_size) {
-        std::random_shuffle(indxs+i, indxs + i + shuffle_size);
+        std::shuffle(indxs+i, indxs + i + shuffle_size, generator);
     }
 
     for(int i=0; i < N; i++) {
