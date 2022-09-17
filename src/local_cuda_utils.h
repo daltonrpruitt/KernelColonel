@@ -4,7 +4,9 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
+using std::string;
+using std::cerr;
+using std::endl;
 
 void cudaErrChk(cudaError_t status, string msg, bool& pass) {
     if (status != cudaSuccess) {

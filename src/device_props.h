@@ -43,7 +43,7 @@ class device_context {
                             * 1000 / (1024*1024*1024);                     // 1000 cycles/kcycle * 1 GB/1024^3 B 
 			std::streamsize ss = cout.precision();
             cout << "Device '" << props_.name << "' : Max Bandwidth = " << std::fixed << std::setprecision(1) << theoretical_bw_ << " GB/s" << endl;
-			cout << std::setprecision(ss) << resetiosflags( std::ios::fixed | std::ios::showpoint );
+			cout << std::setprecision(ss) << std::resetiosflags( std::ios::fixed | std::ios::showpoint );
         }
         cudaPrintLastError();
         return pass;
