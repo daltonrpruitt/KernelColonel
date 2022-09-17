@@ -22,7 +22,51 @@
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "linux-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "${workspaceFolder}/src",
+                    "${CUDA_INCLUDE_DIRS}",
+                    "/usr/include/linux",
+                    "/apps/cuda-11.2.1/toolkit/targets/x86_64-linux/include",
+                    "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/../../../../include/c++/8.3.0",
+                    "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/../../../../include/c++/8.3.0/x86_64-pc-linux-gnu",
+                    "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/../../../../include/c++/8.3.0/backward",
+                    "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/include",
+                    "/usr/local/include",
+                    "/apps/gcc-8.3.0/gcc-8.3.0/include",
+                    "/apps/gcc-8.3.0/gcc-8.3.0/lib/gcc/x86_64-pc-linux-gnu/8.3.0/include-fixed",
+                    "/usr/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "GPU Laptop",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.7\\include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.18362.0",
+            "compilerPath": "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.7/bin/nvcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.7\\include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "configurationProvider": "ms-vscode.cpptools"
         }
     ],
     "version": 4
