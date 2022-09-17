@@ -415,7 +415,7 @@ struct SpmvKernel {
     virtual void local_compute_register_usage(bool& pass) {
         // Kernel Registers
         struct cudaFuncAttributes funcAttrib;
-        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel<it, vt>), "getting function attributes (for # registers)", pass);
+        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, spmv_kernel<it, vt>), "getting function attributes (for # registers)", pass);
         if (!pass) {
             this->okay = false;
             return;

@@ -202,7 +202,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *interleaved_fl_ilp_kernel_for_regs<vt,it,elements,ILP>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, interleaved_fl_ilp_kernel_for_regs<vt,it,elements,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;

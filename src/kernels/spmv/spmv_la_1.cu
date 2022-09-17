@@ -172,7 +172,7 @@ struct SpmvKernelLAv1 : SpmvKernel<it, vt> {
     void local_compute_register_usage(bool& pass) override {
         // Kernel Registers
         struct cudaFuncAttributes funcAttrib;
-        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *spmv_kernel_latency_amortization_1<it,vt,preload,include_preload_arith,chunk_parts>), "getting function attributes (for # registers)", pass);
+        cudaErrChk(cudaFuncGetAttributes(&funcAttrib, spmv_kernel_latency_amortization_1<it,vt,preload,include_preload_arith,chunk_parts>), "getting function attributes (for # registers)", pass);
         if (!pass) {
             this->okay = false;
             return;
