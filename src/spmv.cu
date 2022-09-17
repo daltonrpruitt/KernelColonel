@@ -24,6 +24,10 @@ using it = unsigned int;
 #include <time.h>
 #include <filesystem>
 
+#if defined(_WIN64)
+#include <clock_gettime_windows.h>
+#endif
+
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
@@ -38,7 +42,7 @@ namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
     timespec mainStart, mainEnd;
-    clock_gettime(CLOCK_MONOTONIC, &mainStart);
+    clock_gettime(0, &mainStart);
     int total_runs = 0;
     
     // bool profile = false;
@@ -97,7 +101,7 @@ int main(int argc, char** argv) {
         #include <kernels/spmv/tests/spmv_la_2.test>
     }
 
-    clock_gettime(CLOCK_MONOTONIC, &mainEnd);
+    clock_gettime(0, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
     
     cout << "#########  Finished  #########" << endl << endl;
