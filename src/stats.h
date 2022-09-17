@@ -26,7 +26,7 @@ vec<T> min_med_max(vec<T> data) {
 
 template <typename T>
 vec<T> avg_stddev(vec<T>& data) {
-    T total, avg, sum_of_square_deviation = 0, std_dev;
+    T total=0, avg, sum_of_square_deviation = 0, std_dev;
     for (T val : data) total += val;
     avg = total / (T)data.size();
     for (T val : data) sum_of_square_deviation += pow(avg - val, 2);
