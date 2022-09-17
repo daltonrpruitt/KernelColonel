@@ -29,8 +29,8 @@ using std::vector;
 
 template<typename vt, typename it, int num_idxs>
 __forceinline__ __host__ __device__        
-void kernel(uint idx, vt* in, vt* out, it* indices){
-    uint indir_idxs[num_idxs];
+void kernel(unsigned int idx, vt* in, vt* out, it* indices){
+    unsigned int indir_idxs[num_idxs];
     
     int tidx = threadIdx.x;
     int Bidx = blockIdx.x;
@@ -50,7 +50,7 @@ void kernel(uint idx, vt* in, vt* out, it* indices){
 
 template<typename vt, typename it, int num_idxs>
 __global__        
-void overlapped_kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
+void overlapped_kernel_for_regs(unsigned int idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     kernel<vt, it, num_idxs>(idx, in, out, indices);
 }
@@ -85,7 +85,7 @@ struct OverlappedIdxDataAccessKernel : public KernelCPUContext<vt, it> {
             it * gpu_indices;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                extern __shared__ int dummy[];
                     kernel<vt, it, num_idxs>(idx, gpu_in, gpu_out, gpu_indices);
             }

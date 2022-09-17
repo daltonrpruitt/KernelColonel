@@ -38,25 +38,25 @@ template <typename it=int, typename vt=double, int ILP = 1>
 // __forceinline__ __host__ __device__ 
 __global__ 
 void spmv_kernel(vt* product, CRSMat_gpu<it,vt> matrix, vt* vec) { //}, int max_nz_row) {
-    uint g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
-    uint warp_id = g_t_id / warpSize;
+    unsigned int g_t_id = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int warp_id = g_t_id / warpSize;
     if(warp_id >= matrix.m) return;
-    // uint stride = 2 * 32 / sizeof(vt);
-    uint lane = threadIdx.x % warpSize; 
+    // unsigned int stride = 2 * 32 / sizeof(vt);
+    unsigned int lane = threadIdx.x % warpSize; 
 
 
     // assume m % stride == 0
-    // uint stride = 1 * 32 / sizeof(vt);
+    // unsigned int stride = 1 * 32 / sizeof(vt);
     // if (g_t_id < matrix.m / stride) {
     //     vt tmp_vec;  // = vec[g_t_id*stride];
     //     asm volatile("ld.global.f64 %0, [%1];"
     //                  : "=d"(tmp_vec) : "l"((double *)(vec + g_t_id * stride)));
     // }
 
-    // uint row_id = warp_id;
-    uint start = matrix.offsets[warp_id];
-    uint stop =  matrix.offsets[warp_id + 1];
-    uint vals_processed = stop - start;
+    // unsigned int row_id = warp_id;
+    unsigned int start = matrix.offsets[warp_id];
+    unsigned int stop =  matrix.offsets[warp_id + 1];
+    unsigned int vals_processed = stop - start;
 
     // if (lane == 0) {
     //     product[warp_id] =  (vals_processed / warpSize) + 1;
@@ -106,7 +106,7 @@ struct SpmvKernel {
     string matrix_filename;
     CRSMat<it,vt, const_valence> host_matrix;
     CRSMat_gpu<it,vt> gpu_matrix;
-    uint nnz;
+    unsigned int nnz;
     vector<double> host_vector;
     double *gpu_vector;
     vector<double> host_results;
@@ -133,7 +133,7 @@ struct SpmvKernel {
     //     vt* gpu_results;
     //     vt* gpu_out;
 
-    //     __device__ void operator()(uint idx, vt* product, CRSMat matrix, vt* vector, int max_nz_row) {
+    //     __device__ void operator()(unsigned int idx, vt* product, CRSMat matrix, vt* vector, int max_nz_row) {
     //         extern __shared__ int dummy[];
     //         kernel<vt, it>(idx, product,  matrix, vector, max_nz_row);
     //     }
@@ -572,7 +572,7 @@ struct SpmvKernel {
 
 template <typename vt=double>
 __forceinline__ __host__ __device__
-void force_global_load(vt* arr, uint offset, uint m) {
+void force_global_load(vt* arr, unsigned int offset, unsigned int m) {
     if(offset >= m) return; 
     vt tmp_vec;
     // https://www.cplusplus.com/reference/typeinfo/type_info/operator==/

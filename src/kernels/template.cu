@@ -28,7 +28,7 @@ using std::vector;
 
 template<typename vt, typename it>
 __forceinline__ __host__ __device__        
-void kernel(uint idx, /* parameters */){
+void kernel(unsigned int idx, /* parameters */){
     /* 
      * Actual kernel code
      * The idx above is the thread index
@@ -38,7 +38,7 @@ void kernel(uint idx, /* parameters */){
 
 template<typename vt, typename it>
 __global__        
-void kernel_for_regs(uint idx, /* parameters (same as kernel) */){
+void kernel_for_regs(unsigned int idx, /* parameters (same as kernel) */){
         extern __shared__ int dummy[];
         kernel<vt, it>(idx, /* pass parameters from above */);
 }
@@ -71,7 +71,7 @@ struct TemplateKernelContext : public KernelCPUContext<vt, it> {
             vt * gpu_out;   
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 kernel<vt, it>(idx, /* pass parameters (same as before) */);
             }

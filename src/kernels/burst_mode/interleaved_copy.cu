@@ -27,7 +27,7 @@ using std::vector;
 
 template<typename vt, typename it, int block_life, int elements>
 __forceinline__ __host__ __device__        
-void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     unsigned long long b_idx = blockIdx.x;
     unsigned long long t_idx = threadIdx.x;
@@ -47,7 +47,7 @@ void interleaved_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N)
 
 template<typename vt, typename it, int block_life, int elements>
 __global__        
-void uncoalesced_reuse_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         interleaved_kernel<vt, it, block_life, elements>(idx, gpu_in, gpu_out, N);
 }
@@ -75,7 +75,7 @@ struct InterleavedCopyContext : public KernelCPUContext<vt, it> {
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 interleaved_kernel<vt, it, block_life, elements>(idx, gpu_in, gpu_out, N);
             }

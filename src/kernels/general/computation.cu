@@ -26,7 +26,7 @@ using std::vector;
 #define LOOPS 100
 template<typename vt, typename it, int computational_intensity>
 __forceinline__ __host__ __device__        
-void kernel(uint idx, vt* gpu_in, vt* gpu_out){
+void kernel(unsigned int idx, vt* gpu_in, vt* gpu_out){
     // float tmp = float(idx);
     vt data = gpu_in[idx];
 // #pragma unroll
@@ -36,16 +36,16 @@ void kernel(uint idx, vt* gpu_in, vt* gpu_out){
             data += vt(1); 
         }
         data -= vt(computational_intensity-1);
-        data = gpu_in[uint(data)];
+        data = gpu_in[unsigned int(data)];
     }
 
-    gpu_out[uint(data)] = data;
+    gpu_out[unsigned int(data)] = data;
 }
 
 
 template<typename vt, typename it, int computational_intensity>
 __global__        
-void comp_intens_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out){
+void comp_intens_kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out){
         extern __shared__ int dummy[];
         kernel<vt, it, computational_intensity>(idx, gpu_in, gpu_out);
 }
@@ -72,7 +72,7 @@ struct ComputationalIntensityContext : public KernelCPUContext<vt, it> {
             vt * gpu_out;   
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 kernel<vt, it>(idx, gpu_in, gpu_out);
             }

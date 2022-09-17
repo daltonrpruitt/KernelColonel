@@ -28,7 +28,7 @@ using std::vector;
 
 template<typename vt, typename it, int elements>
 __forceinline__ __host__ __device__        
-void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_full_life_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     // unsigned long long b_idx = blockIdx.x;
     // unsigned long long t_idx = threadIdx.x;
@@ -37,7 +37,7 @@ void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned lo
     
     // int block_life = N / gridDim.x / elements; 
     unsigned long long start_idx = blockIdx.x * blockDim.x * elements + threadIdx.x;
-    uint cycle_offset = gridDim.x * blockDim.x * elements;
+    unsigned int cycle_offset = gridDim.x * blockDim.x * elements;
 
     for(int x=0; x < N / ( gridDim.x * blockDim.x * elements); ++x) {
         for(int y=0; y < elements; ++y) {
@@ -51,7 +51,7 @@ void interleaved_full_life_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned lo
 
 template<typename vt, typename it, int elements>
 __global__        
-void uncoalesced_reuse_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         interleaved_full_life_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
 }
@@ -79,7 +79,7 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 interleaved_full_life_kernel<vt, it, elements>(idx, gpu_in, gpu_out, N);
             }

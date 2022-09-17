@@ -35,10 +35,10 @@ using std::vector;
 
 template<typename vt, typename it, int degree_of_contraction>
 __forceinline__ __host__ __device__        
-void kernel_contraction(uint idx, vt* in, vt* out, it* indices){
+void kernel_contraction(unsigned int idx, vt* in, vt* out, it* indices){
     it indxs[degree_of_contraction];
 
-    uint indices_start_idx = idx + blockIdx.x * blockDim.x * (degree_of_contraction-1) + (threadIdx.x / warpSize) * warpSize * (degree_of_contraction-1);
+    unsigned int indices_start_idx = idx + blockIdx.x * blockDim.x * (degree_of_contraction-1) + (threadIdx.x / warpSize) * warpSize * (degree_of_contraction-1);
     for(int i=0; i < degree_of_contraction; ++i) {
         indxs[i] = indices[indices_start_idx + warpSize*i];
     }
@@ -57,7 +57,7 @@ void kernel_contraction(uint idx, vt* in, vt* out, it* indices){
 
 template<typename vt, typename it, int reads_per_8_writes, int stream_size>
 __global__        
-void kernel_for_regs_expansion_contraction(uint idx, vt* in, vt* out, it* indices){
+void kernel_for_regs_expansion_contraction(unsigned int idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     if constexpr(reads_per_8_writes > 8) {
         kernel_contraction<vt, it, reads_per_8_writes/8>(idx, in, out, indices);
@@ -99,7 +99,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             it * gpu_indices;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 if constexpr(reads_per_8_writes > 8) {
                     kernel_contraction<vt, it, reads_per_8_writes/8>(idx, gpu_in, gpu_out, gpu_indices);

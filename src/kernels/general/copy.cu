@@ -25,14 +25,14 @@ using std::vector;
 
 template<typename vt, typename it>
 __forceinline__ __host__ __device__        
-void kernel(uint idx, vt* gpu_in, vt* gpu_out){
+void kernel(unsigned int idx, vt* gpu_in, vt* gpu_out){
         gpu_out[idx] = gpu_in[idx];
 }
 
 
 template<typename vt, typename it>
 __global__        
-void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out){
+void kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out){
         extern __shared__ int dummy[];
         kernel<vt, it>(idx, gpu_in, gpu_out);
 }
@@ -59,7 +59,7 @@ struct ArrayCopyContext : public KernelCPUContext<vt, it> {
             vt * gpu_out;   
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 kernel<vt, it>(idx, gpu_in, gpu_out);
             }

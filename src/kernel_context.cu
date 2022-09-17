@@ -33,7 +33,7 @@ using std::vector;
 template<typename kernel_ctx_t>
 __global__
 void compute_kernel(unsigned long long N, kernel_ctx_t ctx) {
-    uint idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if(idx >= N) return;
     ctx(idx);
 }
@@ -94,8 +94,8 @@ float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, device_c
 template<typename vt, typename it>
 struct KernelCPUContext {
     public:
-        uint vt_size = sizeof(vt);
-        uint it_size = sizeof(it);
+        unsigned int vt_size = sizeof(vt);
+        unsigned int it_size = sizeof(it);
         typedef it IT;
         string name;
         unsigned long long N=0;

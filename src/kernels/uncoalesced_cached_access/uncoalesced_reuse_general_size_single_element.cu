@@ -32,13 +32,13 @@ using std::vector;
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __forceinline__ __host__ __device__        
-void uncoalesced_reuse_general_single_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_general_single_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
-    uint Sz = shuffle_size; 
-    uint shuffle_b_idx = idx / Sz;
-    uint shuffle_t_idx = idx % Sz;
+    unsigned int Sz = shuffle_size; 
+    unsigned int shuffle_b_idx = idx / Sz;
+    unsigned int shuffle_t_idx = idx % Sz;
 
-    uint num_warps = shuffle_size / 32;
+    unsigned int num_warps = shuffle_size / 32;
     
     // Preload data
     if constexpr(preload_for_reuse) {
@@ -61,7 +61,7 @@ void uncoalesced_reuse_general_single_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __global__        
-void kernel_for_regs_reuse_single(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void kernel_for_regs_reuse_single(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         uncoalesced_reuse_general_single_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
 }
@@ -88,7 +88,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 uncoalesced_reuse_general_single_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
             }
@@ -144,7 +144,7 @@ struct UncoalescedReuseGeneralSingleElementContext : public KernelCPUContext<vt,
                 for (int j=0; j < shuffle_size; ++j){
                     global_tidx = start_idx + j;
 
-                    uint shuffle_t_idx = global_tidx % shuffle_size;
+                    unsigned int shuffle_t_idx = global_tidx % shuffle_size;
                     vt val = 0;
                     if constexpr(!avoid_bank_conflicts) {
                         val = in[( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx];

@@ -33,9 +33,9 @@ using std::vector;
 
 template<typename vt, typename it, int ILP>
 __forceinline__ __host__ __device__        
-void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
+void kernel_indirect_copy(unsigned int idx, vt* in, vt* out, it* indices){
     it indxs[ILP];
-    uint local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);
+    unsigned int local_start_idx = idx + blockIdx.x * blockDim.x * (ILP-1);
     for(int i=0; i < ILP; ++i) {
         indxs[i] = indices[local_start_idx + blockDim.x*i];
     }
@@ -52,7 +52,7 @@ void kernel_indirect_copy(uint idx, vt* in, vt* out, it* indices){
 
 template<typename vt, typename it, int ILP>
 __global__        
-void kernel_for_regs_indirect_copy(uint idx, vt* in, vt* out, it* indices){
+void kernel_for_regs_indirect_copy(unsigned int idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     kernel_indirect_copy<vt, it, ILP>(idx, in, out, indices);
 }
@@ -87,7 +87,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             it * gpu_indices;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 kernel_indirect_copy<vt, it, ILP>(idx, gpu_in, gpu_out, gpu_indices);
             }

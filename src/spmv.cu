@@ -4,7 +4,7 @@
 // #define DEBUG
 
 using vt = double;
-using it = uint;
+using it = unsigned int;
 
 
 // local files

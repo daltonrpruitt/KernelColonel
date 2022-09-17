@@ -29,7 +29,7 @@ using std::vector;
 
 template<typename vt, typename it>
 __forceinline__ __host__ __device__        
-void kernel_direct(uint idx, vt* in, vt* out, it* indices){
+void kernel_direct(unsigned int idx, vt* in, vt* out, it* indices){
     it indirect_idx = indices[idx];
     if( (indirect_idx - idx) != 0) {return;} // ensure read in indirection 
     out[idx] = in[idx];
@@ -37,7 +37,7 @@ void kernel_direct(uint idx, vt* in, vt* out, it* indices){
 
 template<typename vt, typename it>
 __forceinline__ __host__ __device__        
-void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
+void kernel_indirect(unsigned int idx, vt* in, vt* out, it* indices){
     it indirect_idx = indices[idx];
     if(! (indirect_idx >= 0)) {return;}
     out[idx] = in[indirect_idx];
@@ -45,7 +45,7 @@ void kernel_indirect(uint idx, vt* in, vt* out, it* indices){
 
 template<typename vt, typename it, bool is_indirect>
 __global__        
-void simple_indirection_kernel_for_regs(uint idx, vt* in, vt* out, it* indices){
+void simple_indirection_kernel_for_regs(unsigned int idx, vt* in, vt* out, it* indices){
     extern __shared__ int dummy[];
     if constexpr(is_indirect) {
         kernel_indirect<vt, it>(idx, in, out, indices);
@@ -84,7 +84,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
             it * gpu_indices;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                extern __shared__ int dummy[];
                 if constexpr(is_indirect) {
                     kernel_indirect<vt, it>(idx, gpu_in, gpu_out, gpu_indices);
