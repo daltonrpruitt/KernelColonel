@@ -48,6 +48,8 @@ struct CRSMat_gpu {
 template <typename it=int, typename vt=double, int const_valence=-1>
 class CRSMat {
     public:
+        typedef it it;
+        typedef vt vt;
         string filename; 
         int m, n, nnz;
         vt* values;
@@ -212,8 +214,11 @@ bool read_crs_matrix(string filename, CRSMat<it, vt, const_valence> &mat) {
 
 
 
-template <typename it=int, typename vt=double>
-bool read_coo_to_crs_matrix(string filename, CRSMat<it, vt> &mat) {
+template <typename mat_t>
+bool read_coo_to_crs_matrix(string filename, mat_t &mat) {
+
+    typedef mat_t::it it;
+    typedef mat_t::vt vt;
 
     MM_typecode matcode;
     FILE *f;
