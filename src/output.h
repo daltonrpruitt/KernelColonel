@@ -14,11 +14,17 @@
 
 #include <stdlib.h>
 #include <errno.h>
-#include <sys/utsname.h>
 #include <ctime>
 #include <iostream>
 #include <string>
 #include <filesystem>
+
+#if defined(__linux__) 
+#include <sys/utsname.h>
+#elif defined(_WIN64)
+#include <windows.h>
+#define INFO_BUFFER_SIZE 32767
+#endif
 
 using std::ostream;
 using std::string;
@@ -37,7 +43,7 @@ class Output {
         while (!at_base) {
             bool found_src=false, found_output=false;
             for (const auto & entry : fs::directory_iterator(curr_path)) {
-                string name = entry.path().filename();
+                string name = entry.path().filename().string();
                 if(name.compare("src") == 0) { found_src = true; }
                 if(name.compare("output") == 0) { found_output = true; }
                 if(found_src && found_output) {
@@ -77,14 +83,36 @@ class Output {
 
     string get_node_first_name() {
         // https://stackoverflow.com/questions/3596310/c-how-to-use-the-function-uname
+        
+        string node_full;
+
+        #if defined(__linux__)
+
         struct utsname buffer;
         errno = 0;
         if (uname(&buffer) < 0) {
             perror("uname");
+            throw std::exception("uname"); 
             // base_dir = fs::path("");
             return "";
         }
-        string node_full = buffer.nodename;
+        node_full = buffer.nodename;
+
+        #elif defined(_WIN64)
+
+        TCHAR  infoBuf[INFO_BUFFER_SIZE];
+        DWORD  bufCharCount = INFO_BUFFER_SIZE;
+
+        // Based on https://stackoverflow.com/questions/27914311/get-computer-name-and-logged-user-name
+        // Get and display the name of the computer.
+        if( !GetComputerName( infoBuf, &bufCharCount ) )
+        throw std::exception("GetComputerName"); 
+
+        node_full = std::string(infoBuf);
+
+        #endif
+        
+        
         int first_dot = node_full.find(".");
         string node_first = node_full.substr(0, first_dot);
         // cout << "Node first name = " << node_first << endl;
