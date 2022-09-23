@@ -33,18 +33,18 @@ using std::vector;
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __forceinline__ __host__ __device__        
-void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_gen_single_ilp_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
     // idx = blockIdx.x * blockDim.x + threadIdx.x; 
 
-    // uint Sz = shuffle_size; 
-    uint warp_size = 32; // I do not think the algorithm I have is acutally general enough for different warp sizes
-    // uint num_warps = shuffle_size / 32;
-    uint warps_per_shuffle = shuffle_size / warp_size;
-    uint warps_per_shuffle_scan = warps_per_shuffle / warp_size;
-    // uint scans_per_shuffle = warp_size;
+    // unsigned int Sz = shuffle_size; 
+    unsigned int warp_size = 32; // I do not think the algorithm I have is acutally general enough for different warp sizes
+    // unsigned int num_warps = shuffle_size / 32;
+    unsigned int warps_per_shuffle = shuffle_size / warp_size;
+    unsigned int warps_per_shuffle_scan = warps_per_shuffle / warp_size;
+    // unsigned int scans_per_shuffle = warp_size;
 
-    uint warp_t_idx = threadIdx.x % warp_size;
-    uint logical_start_t_idx = idx + blockIdx.x * blockDim.x * (ILP-1);  
+    unsigned int warp_t_idx = threadIdx.x % warp_size;
+    unsigned int logical_start_t_idx = idx + blockIdx.x * blockDim.x * (ILP-1);  
 
     for(int i=0; i < ILP; ++i) {
 
@@ -60,13 +60,13 @@ void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
     it access_idxs[ILP];
     for(int i=0; i < ILP; ++i) {
         unsigned long long local_logical_t_idx = logical_start_t_idx + i*blockDim.x;
-        uint shuffle_block_idx = local_logical_t_idx / shuffle_size;
-        // uint shuffle_t_idx = local_logical_t_idx % shuffle_size;
-        // uint start_idx = shuffle_b_idx * Sz;
-        uint shuffle_warp_idx = ( local_logical_t_idx % shuffle_size ) / warp_size;
-        uint shuffle_scan_id = shuffle_warp_idx / warps_per_shuffle_scan;
-        uint shuffle_scan_warp_id = shuffle_warp_idx % warps_per_shuffle_scan;
-        uint scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
+        unsigned int shuffle_block_idx = local_logical_t_idx / shuffle_size;
+        // unsigned int shuffle_t_idx = local_logical_t_idx % shuffle_size;
+        // unsigned int start_idx = shuffle_b_idx * Sz;
+        unsigned int shuffle_warp_idx = ( local_logical_t_idx % shuffle_size ) / warp_size;
+        unsigned int shuffle_scan_id = shuffle_warp_idx / warps_per_shuffle_scan;
+        unsigned int shuffle_scan_warp_id = shuffle_warp_idx % warps_per_shuffle_scan;
+        unsigned int scan_local_start_idx = shuffle_scan_warp_id * shuffle_size / warps_per_shuffle_scan;
         
         it shuffle_block_start_idx = shuffle_block_idx * shuffle_size;
 
@@ -91,10 +91,10 @@ void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
 #else
         return;
         // unsigned long long local_logical_t_idx = logical_start_t_idx + i*blockDim.x;
-        // uint shuffle_b_idx = local_logical_t_idx / Sz;
-        // uint shuffle_t_idx = local_logical_t_idx % Sz;
+        // unsigned int shuffle_b_idx = local_logical_t_idx / Sz;
+        // unsigned int shuffle_t_idx = local_logical_t_idx % Sz;
         // unsigned long long access_idx;
-        // uint start_idx = shuffle_b_idx * Sz;
+        // unsigned int start_idx = shuffle_b_idx * Sz;
         // unsigned long long access_idx; 
         // if constexpr(!avoid_bank_conflicts) {
         //     access_idx = ( shuffle_t_idx % num_warps) * 32 + shuffle_t_idx / num_warps + start_idx;
@@ -114,7 +114,7 @@ void uncoalesced_reuse_gen_single_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, 
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size, int ILP>
 __global__        
-void kernel_for_regs_reuse_gen_single_ilp(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void kernel_for_regs_reuse_gen_single_ilp(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         uncoalesced_reuse_gen_single_ilp_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size, ILP>(idx, gpu_in, gpu_out, N);
 }
@@ -141,7 +141,7 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 uncoalesced_reuse_gen_single_ilp_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size, ILP>(idx, gpu_in, gpu_out, N);
             }
@@ -248,7 +248,7 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs_reuse_gen_single_ilp<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size,ILP>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, kernel_for_regs_reuse_gen_single_ilp<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;

@@ -44,6 +44,10 @@ using it = unsigned long long;
 #include <algorithm>
 #include <time.h>
 
+#if defined(_WIN64)
+#include <clock_gettime_windows.h>
+#endif
+
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
@@ -60,7 +64,7 @@ using std::to_string;
 
 int main(int argc, char** argv) {
     timespec mainStart, mainEnd;
-    clock_gettime(CLOCK_MONOTONIC, &mainStart);
+    clock_gettime(0, &mainStart);
     int total_runs = 0;
 
     std::vector<int> inputs;
@@ -164,7 +168,7 @@ int main(int argc, char** argv) {
     // #include <kernels/indirect/tests/indirect_copy_profiling.test>
     
 
-    clock_gettime(CLOCK_MONOTONIC, &mainEnd);
+    clock_gettime(0, &mainEnd);
     double main_time = elapsed_time_ms(mainStart, mainEnd);
     
     cout << "#########  Finished  #########" << endl << endl;

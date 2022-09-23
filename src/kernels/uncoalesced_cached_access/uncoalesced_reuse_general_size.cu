@@ -30,15 +30,15 @@ using std::vector;
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __forceinline__ __host__ __device__        
-void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_general_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
-    // uint b_idx = blockIdx.x;
-    // uint t_idx = threadIdx.x;
-    uint Sz = shuffle_size; // blockDim.x;
-    uint shuffle_idx = idx / Sz;
-    // uint Gsz = gridDim.x;
+    // unsigned int b_idx = blockIdx.x;
+    // unsigned int t_idx = threadIdx.x;
+    unsigned int Sz = shuffle_size; // blockDim.x;
+    unsigned int shuffle_idx = idx / Sz;
+    // unsigned int Gsz = gridDim.x;
 
-    uint num_warps = shuffle_size / 32;
+    unsigned int num_warps = shuffle_size / 32;
     
     // Preload data
     if constexpr(preload_for_reuse) {
@@ -68,7 +68,7 @@ void uncoalesced_reuse_general_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigne
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts, int shuffle_size>
 __global__        
-void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         uncoalesced_reuse_general_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
 }
@@ -95,7 +95,7 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 uncoalesced_reuse_general_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts, shuffle_size>(idx, gpu_in, gpu_out, N);
             }
@@ -183,7 +183,7 @@ struct UncoalescedReuseGeneralContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts,shuffle_size>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;

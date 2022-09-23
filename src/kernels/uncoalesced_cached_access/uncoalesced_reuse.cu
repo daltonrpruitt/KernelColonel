@@ -29,14 +29,14 @@ using std::vector;
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
 __forceinline__ __host__ __device__        
-void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void uncoalesced_reuse_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
-    uint b_idx = blockIdx.x;
-    uint t_idx = threadIdx.x;
-    uint Bsz = blockDim.x;
-    // uint Gsz = gridDim.x;
+    unsigned int b_idx = blockIdx.x;
+    unsigned int t_idx = threadIdx.x;
+    unsigned int Bsz = blockDim.x;
+    // unsigned int Gsz = gridDim.x;
 
-    uint num_warps = Bsz / 32;
+    unsigned int num_warps = Bsz / 32;
     
     // Preload data
     if constexpr(preload_for_reuse) {
@@ -66,7 +66,7 @@ void uncoalesced_reuse_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long l
 
 template<typename vt, typename it, bool preload_for_reuse, bool avoid_bank_conflicts>
 __global__        
-void kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         uncoalesced_reuse_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts>(idx, gpu_in, gpu_out, N);
 }
@@ -93,7 +93,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 uncoalesced_reuse_kernel<vt, it, preload_for_reuse, avoid_bank_conflicts>(idx, gpu_in, gpu_out, N);
             }
@@ -148,7 +148,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
             for(int i=0; i < this->Gsz; ++i) {
                 int start_idx = i * Bsz;
                 for (int j=0; j < Bsz; ++j){
-                    uint global_tidx = start_idx + j;
+                    unsigned int global_tidx = start_idx + j;
                     vt sum = 0;
                     for(int e=0; e<ELEMENTS_REUSED; ++e) {
                         int tmp_t_idx = (j + e) % Bsz;
@@ -183,7 +183,7 @@ struct UncoalescedReuseContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, kernel_for_regs<vt,it,preload_for_reuse,avoid_bank_conflicts>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
