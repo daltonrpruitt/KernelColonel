@@ -14,21 +14,22 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+include_directories(${CMAKE_SOURCE_DIR}/../src)
 
 add_executable(
-  driver_test
-  driver_test.cc
+  DirectoryFinderTests
+  DirectoryFinderTests.cpp
 )
 
 target_link_libraries(
-  driver_test
+  DirectoryFinderTests
   GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(driver_test)
+gtest_discover_tests(DirectoryFinderTests)
 
 # Testing
 enable_testing()
 
-add_test(driver_test driver_test)
+add_test(DirectoryFinderTests DirectoryFinderTests)
