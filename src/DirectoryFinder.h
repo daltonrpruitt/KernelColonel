@@ -32,7 +32,23 @@ using std::stringstream;
 using std::cout;
 using std::cerr;
 using std::endl;
+
+namespace KernelColonel {
+namespace utilities {
+
 namespace fs = std::filesystem;
+    
+class DirectoryFinderException : public std::exception {
+private:
+    char * message;
+
+public:
+    DirectoryFinderException(char * msg) : message(msg) {}
+    char * what () {
+        return message;
+    }
+};
+
 
 class Output {
   public: 
@@ -152,3 +168,6 @@ ostream& operator<<(ostream& os, const Output& output){
     os << output.base_dir.string();
     return os;
 }
+
+} // namespace utilities 
+} // namespace KernelColonel
