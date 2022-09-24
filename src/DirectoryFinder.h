@@ -51,9 +51,6 @@ public:
 };
 
 
-class Output {
-  public: 
-    fs::path base_dir; 
     Output() {
         fs::path curr_path = fs::current_path();
         bool at_base = false;
@@ -96,7 +93,7 @@ class Output {
             base_dir = fs::path("");
         }
     }
-    ~Output() {}
+
 
     string get_node_first_name() {
         // https://stackoverflow.com/questions/3596310/c-how-to-use-the-function-uname
@@ -146,29 +143,6 @@ class Output {
 
     }
 
-    bool empty() { return base_dir.empty(); }
-
-    // operator fs::path const & () const noexcept { return base_dir; }
-    // operator fs::path       & ()     & noexcept { return base_dir; }
-
-    string operator+(string filename) {
-        stringstream out; 
-        out << base_dir.string() << "/" << filename;
-        return out.str();
-    }
-
-    string operator+(const char * filename) {
-        stringstream out; 
-        out << base_dir.string() << "/" << filename;
-        return out.str();
-    }
-
-};
-
-ostream& operator<<(ostream& os, const Output& output){
-    os << output.base_dir.string();
-    return os;
-}
 
 } // namespace utilities 
 } // namespace KernelColonel
