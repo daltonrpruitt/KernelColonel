@@ -51,21 +51,70 @@ public:
 };
 
 
-    Output() {
-        fs::path curr_path = fs::current_path();
-        bool at_base = false;
-        while (!at_base) {
-            bool found_src=false, found_output=false;
-            for (const auto & entry : fs::directory_iterator(curr_path)) {
-                string name = entry.path().filename().string();
-                if(name.compare("src") == 0) { found_src = true; }
-                if(name.compare("output") == 0) { found_output = true; }
-                if(found_src && found_output) {
-                    at_base = true;
-                    break;
-                } 
-            }
-            if(at_base) { break; }
+/**
+ * @brief Finds one of the parent directories via name
+ * 
+ * @param dir_name Name of directory to search for
+ * @return std::filesystem::path The path to the found directory
+ */
+fs::path find_parent_dir_by_name(const std::string& dir_name) {
+    bool atBase = false;
+    fs::path currPath = fs::current_path();
+    if(currPath.string().find(dir_name) == std::string::npos) {
+        throw DirectoryError("Directory '"+dir_name +"' is not a parent of current directory '"+currPath.string() +"'");
+    }
+
+    fs::path parentDir = currPath.parent_path();
+    std::cout << parentDir.string() << std::endl;
+    
+    while (currPath != parentDir) {
+        if (parentDir.stem().string().compare(dir_name) == 0) {
+            return parentDir; 
+        }
+        currPath = parentDir;
+        std::cout << parentDir.string() << std::endl;
+    }
+    throw DirectoryError("Reached supposedly unreachable point of find_parent_dir_by_name()");    
+} 
+
+fs::path add_directory_to_path(const fs::path& start_dir, const std::string& dir_name) {
+    if (!fs::exists(start_dir)) {
+        throw DirectoryError("Directory '" + start_dir.string() + "' does not exist! Curr work dir='" +fs::current_path().string()+"'");
+    }
+    
+    fs::path output_path = start_dir / fs::path(dir_name);
+    if(fs::exists(output_path)) {
+        throw DirectoryError("Directory '" + output_path.string() + "' already exists!");
+    }
+    if ( ! fs::create_directory(output_path) ) {
+        throw DirectoryError("Failed to create directory '" + output_path.string() + "'!");
+        output_path = fs::path("");
+    }
+    
+    return output_path;
+}
+
+
+/*
+std::string find_directory_by_siblings(std::vector<std::string> sibling_dirs, 
+                                       std::string base_dir,
+                                       std::string dir_to_add, 
+                                       int max_depth=4)
+    fs::path foundDir;
+    bool atBase = false;
+    fs::path currPath = fs::current_path();
+    while (!at_base) {
+        bool found_src=false, found_output=false;
+        for (const auto & entry : fs::directory_iterator(curr_path)) {
+            string name = entry.path().filename().string();
+            if(name.compare("src") == 0) { found_src = true; }
+            if(name.compare("output") == 0) { found_output = true; }
+            if(found_src && found_output) {
+                at_base = true;
+                break;
+            } 
+        }
+        if(at_base) { break; }
             if(curr_path.has_relative_path()) { 
                 curr_path = curr_path.parent_path(); 
             } else {
@@ -93,7 +142,7 @@ public:
             base_dir = fs::path("");
         }
     }
-
+*/
 
     string get_node_first_name() {
         // https://stackoverflow.com/questions/3596310/c-how-to-use-the-function-uname
