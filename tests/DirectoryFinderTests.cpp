@@ -1,5 +1,5 @@
 
-#include "output.h"
+#include "DirectoryFinder.h"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -29,26 +29,25 @@ class DirectoryFinderTest : public ::testing::Test {
    void TearDown() override {}
 };
 
-TEST_F(DirectoryFinderTest, FailsToFind) {
+TEST_F(DirectoryFinderTest, FailToFindParent) {
   
     // Arrange
-    
+    fs::path foundDir;
     // Act
-        EXPECT_THROW({
+    EXPECT_THROW({
         try
         {
-            DirectoryFinder(std::vector<std::string>("non_existant_directory"), "should_not_create");
+            foundDir = find_parent_dir_by_name("non_existent_directory");
         }
-        catch( const DirectoryFinderException& e )
+        catch( const DirectoryError& e )
         {
-            // and this tests that it has the correct message
-            EXPECT_STREQ( "Sibling directories could not be found", e.what() );
+            EXPECT_THAT( e.what(), HasSubstr("not a parent of current directory"));
             throw;
         }
-    }, DirectoryFinderException );
+    }, DirectoryError );
     
     // Assert  
-    ASSERT_FALSE(std::filesystem::exists("non_existant_directory"));
+    ASSERT_TRUE(foundDir.empty());
     // probably not a great assertion, but oh well.
 }
 /*
