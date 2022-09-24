@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <sstream>
 
 #if defined(__linux__) 
 #include <sys/utsname.h>
