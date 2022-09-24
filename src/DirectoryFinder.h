@@ -39,14 +39,14 @@ namespace utilities {
 
 namespace fs = std::filesystem;
     
-class DirectoryFinderException : public std::exception {
+class DirectoryError : public std::exception {
 private:
-    char * message;
+    std::string message;
 
 public:
-    DirectoryFinderException(char * msg) : message(msg) {}
-    char * what () {
-        return message;
+    DirectoryError(std::string msg) : message(msg) {}
+    const char * what () const {
+        return message.c_str();
     }
 };
 
