@@ -20,10 +20,12 @@ add_executable(
   DirectoryFinderTests
   DirectoryFinderTests.cpp
 )
+set_property(TARGET DirectoryFinderTests PROPERTY CXX_STANDARD 17)
 
 target_link_libraries(
   DirectoryFinderTests
   GTest::gtest_main
+  GTest::gmock_main 
 )
 
 include(GoogleTest)
