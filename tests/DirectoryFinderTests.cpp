@@ -52,7 +52,7 @@ class DirectoryFinderTest : public ::testing::Test {
     fs::path dummy_child_dir = dummy_parent_dir / fs::path(dummy_child_dir_name);
 };
 
-TEST_F(DirectoryFinderTest, FailToFindParent) {
+TEST_F(DirectoryFinderTest, FindParentFailure) {
   
     // Arrange
     fs::path foundDir;
