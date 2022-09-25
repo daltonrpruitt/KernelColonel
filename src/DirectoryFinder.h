@@ -64,15 +64,11 @@ fs::path find_parent_dir_by_name(const std::string& dir_name) {
         throw DirectoryError("Directory '"+dir_name +"' is not a parent of current directory '"+currPath.string() +"'");
     }
 
-    fs::path parentDir = currPath.parent_path();
-    std::cout << parentDir.string() << std::endl;
-    
-    while (currPath != parentDir) {
-        if (parentDir.stem().string().compare(dir_name) == 0) {
-            return parentDir; 
+    while (currPath != currPath.root_path()) {
+        if (currPath.stem().string().compare(dir_name) == 0) {
+            return currPath; 
         }
-        currPath = parentDir;
-        std::cout << parentDir.string() << std::endl;
+        currPath = currPath.parent_path();
     }
     throw DirectoryError("Reached supposedly unreachable point of find_parent_dir_by_name()");    
 } 
