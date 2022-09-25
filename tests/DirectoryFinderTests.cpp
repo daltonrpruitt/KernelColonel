@@ -73,15 +73,29 @@ TEST_F(DirectoryFinderTest, FailToFindParent) {
     ASSERT_TRUE(foundDir.empty());
     // probably not a great assertion, but oh well.
 }
-/*
-TEST(DirectoryFinderTest, BasicAssertions) {
+
+TEST_F(DirectoryFinderTest, FindParentSuccess) {
+  
+    // Arrange
+    fs::path foundDir;
+    
+    // Act
+    foundDir = find_parent_dir_by_name(dummy_parent_dir_name);
+    
+    // Assert  
+    ASSERT_FALSE(foundDir.empty());
+    ASSERT_THAT(foundDir.string(), HasSubstr(dummy_parent_dir_name));
+
+    // Act
+    foundDir = find_parent_dir_by_name(std::string(PROJECT_BASE_DIR));
+    
+    // Assert  
+    ASSERT_FALSE(foundDir.empty());
+    ASSERT_THAT(foundDir.string(), HasSubstr(PROJECT_BASE_DIR));
 
 }
 
-TEST(DirectoryFinderTest, BasicAssertions) {
 
-}
-*/
 } // namespace utilities
 
 } // namespace KernelColonel
