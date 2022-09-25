@@ -20,14 +20,14 @@ using ::testing::HasSubstr;
 
 class DirectoryFinderTest : public ::testing::Test {
   protected:
-   DirectoryFinderTest() {}
+    DirectoryFinderTest() {}
 
-   ~DirectoryFinderTest() override {
+    ~DirectoryFinderTest() override {
         if (fs::exists(starting_working_dir)) fs::current_path(starting_working_dir);
     }
 
     // will create subdirectories "./parent/child" and move to "child" as starting point
-   void SetUp() override {
+    void SetUp() override {
         ASSERT_THAT(starting_working_dir.string(), HasSubstr(PROJECT_BASE_DIR));
         while(fs::current_path().parent_path().string().find(PROJECT_BASE_DIR) != std::string::npos) {
             fs::current_path(fs::current_path().parent_path());
