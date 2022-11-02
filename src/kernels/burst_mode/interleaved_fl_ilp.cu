@@ -30,7 +30,7 @@ using std::vector;
 
 template<typename vt, typename it, int elements, int ILP>
 __forceinline__ __host__ __device__        
-void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_fl_ilp_kernel(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
 
     // unsigned long long b_idx = blockIdx.x;
     // unsigned long long t_idx = threadIdx.x;
@@ -39,28 +39,28 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
     
     // int block_life = N / gridDim.x / elements; 
     unsigned long long start_idx = blockIdx.x * blockDim.x * elements + threadIdx.x;
-    uint cycle_offset = gridDim.x * blockDim.x * elements;
-    // uint ILP_loop_offset = blockDim.x * ILP;
+    unsigned int cycle_offset = gridDim.x * blockDim.x * elements;
+    // unsigned int ILP_loop_offset = blockDim.x * ILP;
 
     vt vals[ILP];
 
     for(int i=0; i < N / ( gridDim.x * blockDim.x * ILP) ; ++i) {
-        // uint x = i / elements;
-        // uint y = i % elements;
+        // unsigned int x = i / elements;
+        // unsigned int y = i % elements;
 
         // for(int y=0; y < elements / ILP; ++y) {
             
             for(int k=0; k < ILP; ++k){
-                uint x = (i * ILP + k) / elements;
-                uint y = (i * ILP + k) % elements;
+                unsigned int x = (i * ILP + k) / elements;
+                unsigned int y = (i * ILP + k) % elements;
                 unsigned long long data_idx = start_idx + cycle_offset * x + blockDim.x * y ;
                 if(data_idx >= N) continue;
                 vals[k] = gpu_in[data_idx];
             }
             
             for(int k=0; k < ILP; ++k){
-                uint x = (i * ILP + k) / elements;
-                uint y = (i * ILP + k) % elements;
+                unsigned int x = (i * ILP + k) / elements;
+                unsigned int y = (i * ILP + k) % elements;
                 unsigned long long data_idx = start_idx + cycle_offset * x + blockDim.x * y ;
                 if(data_idx >= N) continue;
                 gpu_out[data_idx] = vals[k];
@@ -76,7 +76,7 @@ void interleaved_fl_ilp_kernel(uint idx, vt* gpu_in, vt* gpu_out, unsigned long 
 
 template<typename vt, typename it, int elements, int ILP>
 __global__        
-void interleaved_fl_ilp_kernel_for_regs(uint idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
+void interleaved_fl_ilp_kernel_for_regs(unsigned int idx, vt* gpu_in, vt* gpu_out, unsigned long long N){
         extern __shared__ int dummy[];
         interleaved_fl_ilp_kernel<vt, it, elements, ILP>(idx, gpu_in, gpu_out, N);
 }
@@ -104,7 +104,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
             unsigned long long N;
 
             __device__        
-            void operator() (uint idx){
+            void operator() (unsigned int idx){
                 extern __shared__ int dummy[];
                 interleaved_fl_ilp_kernel<vt, it, elements, ILP>(idx, gpu_in, gpu_out, N);
             }
@@ -202,7 +202,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         void local_compute_register_usage(bool& pass) override {   
             // Kernel Registers 
             struct cudaFuncAttributes funcAttrib;
-            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, *interleaved_fl_ilp_kernel_for_regs<vt,it,elements,ILP>), "getting function attributes (for # registers)", pass);
+            cudaErrChk(cudaFuncGetAttributes(&funcAttrib, interleaved_fl_ilp_kernel_for_regs<vt,it,elements,ILP>), "getting function attributes (for # registers)", pass);
             if(!pass) {
                 this->okay = false; 
                 return;
