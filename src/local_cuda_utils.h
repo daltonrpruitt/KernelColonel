@@ -15,6 +15,13 @@ void cudaErrChk(cudaError_t status, string msg, bool& pass) {
     }
 }
 
+void cudaErrChk(cudaError_t status, string msg) {
+    if (status != cudaSuccess) {
+        std::string cuda_error_string = cudaGetErrorString(status);
+        throw std::runtime_error("Error with " + msg +  " : cuda err msg= '" + cuda_error_string + "'");
+    }
+}
+
 void cudaPrintLastError() {
     cudaError_t status = cudaGetLastError();
     if (status != cudaSuccess)
