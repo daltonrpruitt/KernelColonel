@@ -143,7 +143,7 @@ struct SpmvKernelLAv3 : SpmvKernel<it, vt, 5> {
     typedef SpmvKernel<it, vt, 5 > super;
 
 
-  SpmvKernelLAv3(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
+  SpmvKernelLAv3(int bs, GpuDeviceContext* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
     : super(bs, d_ctx, mtx_filename, shd_mem_alloc) {
         this->name = "SpmvKernelLAv3";
         static_assert(!( preload && !include_preload_arith)); // if preload, must include arith (just to reduce test space complexity)

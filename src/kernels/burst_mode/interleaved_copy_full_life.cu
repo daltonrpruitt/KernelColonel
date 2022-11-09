@@ -85,7 +85,7 @@ struct InterleavedCopyFullLifeContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        InterleavedCopyFullLifeContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        InterleavedCopyFullLifeContext(int n, int bs, GpuDeviceContext* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             assert(N % (elements) == 0);
             this->name = "InterleavedCopyFullLife"; 

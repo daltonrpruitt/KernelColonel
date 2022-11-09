@@ -112,7 +112,7 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
 
         // bool match_ilp;
 
-        InterleavedFullLifeILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        InterleavedFullLifeILPContext(int n, int bs, GpuDeviceContext* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             assert(N % elements == 0);
             assert(N % ILP == 0);

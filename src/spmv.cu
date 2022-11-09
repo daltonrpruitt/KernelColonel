@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     //     }
     // }
 
-    device_context dev_ctx;
+    GpuDeviceContext dev_ctx;
     if(!dev_ctx.init()) return -1;
     
     bool span_occupancies = true;

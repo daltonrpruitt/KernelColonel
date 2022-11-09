@@ -93,7 +93,7 @@ struct IndirectCopyContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        IndirectCopyContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        IndirectCopyContext(int n, int bs, GpuDeviceContext* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "IndirectCopy";
 
