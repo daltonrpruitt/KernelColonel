@@ -16,13 +16,13 @@ using std::endl;
  * Computes theoretical bandwidth in init()
  * 
  */
-class device_context {
+class GpuDeviceContext {
   public:
     cudaDeviceProp props_;
     float theoretical_bw_;
 
-    device_context() {}
-    ~device_context() {}
+    GpuDeviceContext() {}
+    ~GpuDeviceContext() {}
     
     /**
      * @brief Checks if cuda device available, gets properties, and calculates theoretical bandwidth

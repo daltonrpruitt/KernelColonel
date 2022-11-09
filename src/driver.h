@@ -45,7 +45,7 @@ class MicrobenchmarkDriver {
     ofstream output_file;               // File handle for output data to stream into
     bool output_file_started = false;   // Flag to determine whether header has been written
     bool output_all_runs = false;       // Flag to control whether all run times or the statistics are reported
-    device_context* dev_ctx_;           // References CUDA Device Context structure for device parameters
+    GpuDeviceContext* dev_ctx_;           // References CUDA Device Context structure for device parameters
     vector<kernel_ctx_t*> contexts;     // Set of different kernel instances to test (just different occupancies at the moment)
 
     int N = 0;                          // Associated with workload size; often number of threads
@@ -67,7 +67,7 @@ class MicrobenchmarkDriver {
      * @param dev_ctx Reference to CUDA GPU device context structure
      * @param span_occupancies Flag for whether to run kernel for valid relative occupancies in range (0,1] 
      */
-    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, device_context* dev_ctx, bool span_occupancies=false, bool output_all_runs=false) :
+    MicrobenchmarkDriver(int N, vector<int>& bs_vec, string output_filename, GpuDeviceContext* dev_ctx, bool span_occupancies=false, bool output_all_runs=false) :
         output_filename_(output_filename), output_all_runs(output_all_runs) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
         dev_ctx_ = dev_ctx;

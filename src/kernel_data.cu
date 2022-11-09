@@ -37,9 +37,9 @@ template<typename value_t, typename it>
 class IKernelData { 
   public:
 
-    IKernelData(int in, int out, int indices, unsigned long long n, device_context* d_ctx)
+    IKernelData(int in, int out, int indices, unsigned long long n, GpuDeviceContext* dev_ctx)
         : num_in_data(in), num_out_data(out), num_indices(indices), 
-        num_total_data(in+out), N(n), dev_ctx(d_ctx) { }
+        num_total_data(in+out), N(n), gpu_dev_ctx(dev_ctx) { }
 
     ~IKernelData(){
         uninit();            
@@ -178,7 +178,7 @@ class IKernelData {
     bool okay = true;
     bool initialized = false;
 
-    device_context* dev_ctx;
+    GpuDeviceContext* gpu_dev_ctx;
 
     vector<vector<value_t>> host_data{(unsigned long)num_total_data};
     vector<value_t *> device_data_ptrs{(unsigned long)num_total_data};

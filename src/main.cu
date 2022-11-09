@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     } 
 
 
-    device_context dev_ctx;
+    GpuDeviceContext dev_ctx;
     if(!dev_ctx.init()) return -1;
     unsigned long long min_array_size = dev_ctx.props_.l2CacheSize / sizeof(vt) * 40 / dev_ctx.props_.multiProcessorCount;
     min_array_size = pow(2, ceil(log2(min_array_size)));

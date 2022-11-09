@@ -54,7 +54,7 @@ void compute_kernel(unsigned long long N, kernel_ctx_t ctx) {
  */
 template<typename kernel_ctx_t>
 inline
-float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, device_context* dev_ctx, kernel_ctx_t ctx) {
+float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, DeviceContext* dev_ctx, kernel_ctx_t ctx) {
     if(dev_ctx->props_.major >= 7) {
         cudaFuncAttributes attr;
         cudaFuncGetAttributes(&attr, compute_kernel<kernel_ctx_t>);
@@ -120,7 +120,7 @@ struct KernelCPUContext {
         int total_index_reads;
         int total_writes;
 
-        device_context* dev_ctx;
+        DeviceContext* dev_ctx;
 
         vector<vector<vt>> host_data{(unsigned long)num_total_data};
         vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
