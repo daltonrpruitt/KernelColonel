@@ -54,7 +54,7 @@ void compute_kernel(unsigned long long N, kernel_ctx_t ctx) {
  */
 template<typename kernel_ctx_t>
 inline
-float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, DeviceContext* dev_ctx, kernel_ctx_t ctx) {
+float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, GpuDeviceContext* dev_ctx, kernel_ctx_t ctx) {
     if(dev_ctx->props_.major >= 7) {
         cudaFuncAttributes attr;
         cudaFuncGetAttributes(&attr, compute_kernel<kernel_ctx_t>);
