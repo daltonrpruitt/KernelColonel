@@ -80,11 +80,11 @@ class SpmvDriver {
         output_file.close();
     }
 
-    void set_config_bool(bool val) {
-        for (auto ctx : contexts) {
-            ctx->set_config_bool(val);
-        }
-    }
+    // void set_config_bool(bool val) {
+    //     for (auto ctx : contexts) {
+    //         ctx->set_config_bool(val);
+    //     }
+    // }
 
     bool check_kernels() {
         bool pass = true;

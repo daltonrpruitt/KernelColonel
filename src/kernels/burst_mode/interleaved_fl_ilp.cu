@@ -145,9 +145,9 @@ struct InterleavedFullLifeILPContext : public KernelCPUContext<vt, it> {
         }
         ~InterleavedFullLifeILPContext(){}
 
-        void set_config_bool(bool val) override {
-            // match_ilp = val;
-        }
+        // void set_config_bool(bool val) override {
+        //     // match_ilp = val;
+        // }
 
         void init_inputs(bool& pass) override {
             for(int i=0; i<N; ++i){

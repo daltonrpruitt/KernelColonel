@@ -99,11 +99,11 @@ class MicrobenchmarkDriver {
         output_file.close();
     }
 
-    void set_config_bool(bool val) {
-        for (auto ctx : contexts) {
-            ctx->set_config_bool(val);
-        }
-    }
+    // void set_config_bool(bool val) {
+    //     for (auto ctx : contexts) {
+    //         ctx->set_config_bool(val);
+    //     }
+    // }
 
     /**
      * @brief Test each kernel for accuracy (only 1 now)
