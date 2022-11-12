@@ -34,3 +34,9 @@ if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS
   "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
 endif()
+
+add_custom_target (${TEST_BINARY}.tgt
+  DEPENDS ${TEST_BINARY}
+  COMMAND ${TEST_BINARY} --gtest_output=xml:test_output/${TEST_BINARY}.xml
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
