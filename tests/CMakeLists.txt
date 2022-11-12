@@ -16,43 +16,21 @@ FetchContent_MakeAvailable(googletest)
 
 include(FindCUDA)
 
-set(BINARY test)
+set(TEST_BINARY test)
 
 file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp *.cc)
 
 set(SOURCES ${TEST_SOURCES})
 message("SOURCES = ${SOURCES}")
 
-add_executable(${BINARY} ${TEST_SOURCES})
-set_property(TARGET ${BINARY} PROPERTY CUDA_ARCHITECTURES ${PROJECT_NAME}_CUDA_ARCHS)
+add_executable(${TEST_BINARY} ${TEST_SOURCES})
+set_property(TARGET ${TEST_BINARY} PROPERTY CUDA_ARCHITECTURES ${PROJECT_NAME}_CUDA_ARCHS)
 
-add_test(NAME ${BINARY} COMMAND ${BINARY})
+add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
 
-target_link_libraries(${BINARY} PUBLIC gtest ${CUDA_LIBRARIES}) # ${CMAKE_PROJECT_NAME}_lib gtest)
+target_link_libraries(${TEST_BINARY} PUBLIC gtest ${CUDA_LIBRARIES}) # ${CMAKE_PROJECT_NAME}_lib gtest)
 if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS
   "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
 endif()
-
-# add_test(BINARY
-
-# add_executable(
-#   driver_test
-#   driver_test.cc
-# )
-
-# target_link_libraries(
-#   driver_test
-#   GTest::gtest_main
-# )
-
-# file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true *.h *.cpp)
-
-# include(GoogleTest)
-# gtest_discover_tests(driver_test)
-
-# Testing
-# enable_testing()
-
-# add_test(driver_test driver_test)
