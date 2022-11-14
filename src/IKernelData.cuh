@@ -121,7 +121,7 @@ class IKernelData {
      */
     void uninit() {
         if(!initialized) {
-            std::cout << "Attempted to uninit() a KernelData instance more than once!" << std::endl;
+            std::cout << "Attempted to uninit() a KernelData instance without being init()'d!" << std::endl;
             return;
         }
         freeGpuData();
