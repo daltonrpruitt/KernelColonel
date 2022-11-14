@@ -63,7 +63,6 @@ class IKernelData {
         if(output_size == 0) { output_size = N; }
         if(indices_size == 0) { indices_size = N; }
 
-        compute_max_simultaneous_blocks(pass);
         if(pass) init_inputs_cpu(pass);
         if(pass) init_indices_cpu(pass);
 
