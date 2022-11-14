@@ -39,6 +39,29 @@
 			],
 			"group": "build"
 
+        },
+        {
+            "label": "CMake Build Debug `test`",
+            "type": "process",
+            "command": "cmake",
+            "args":[
+                "--build",
+                ".",
+                "--target",
+                "test.tgt",
+                // "--clean-first"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$nvcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
 
     ]
