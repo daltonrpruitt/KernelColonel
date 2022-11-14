@@ -61,8 +61,8 @@ class IKernelData {
         if(indices_size == 0) { indices_size = N; }
 
         compute_max_simultaneous_blocks(pass);
-        if(pass) init_inputs(pass);
-        if(pass) init_indices(pass);
+        if(pass) init_inputs_cpu(pass);
+        if(pass) init_indices_cpu(pass);
 
         if(pass){
 
@@ -132,16 +132,16 @@ class IKernelData {
     /**
      * @brief Placeholder for user-defined input data array(s) initialization
      * 
-     * @param pass Initialization successful? 
+     * Throws an exception if fails.
      */
-    virtual void init_inputs(bool& pass) {};
+    virtual void init_inputs_cpu() = 0;
 
     /**
-     * @brief Placeholder for user-defined indicies array(s) initialization
+     * @brief Placeholder for user-defined indices array(s) initialization
      * 
-     * @param pass Initialization successful? 
+     * Throws an exception if fails.
      */
-    virtual void init_indices(bool& pass) {};
+    virtual void init_indices_cpu() = 0;
 
     /**
      * @brief Free GPU memory
