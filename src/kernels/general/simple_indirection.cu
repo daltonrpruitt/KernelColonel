@@ -63,7 +63,7 @@ struct SimpleIndirectionKernel : public KernelCPUContext<vt, it> {
         int Gsz = super::Gsz;
         int Bsz = super::Bsz;
 
-        // Setup inputs/outputs, both data and indicies
+        // Setup inputs/outputs, both data and indices
         // Can be still in vector form, but is easier to identify explicitly with names   
         // Example
         vector<vt> & in = super::host_data[0];
