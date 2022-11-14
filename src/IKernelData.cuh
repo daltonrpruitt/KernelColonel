@@ -54,8 +54,10 @@ class IKernelData {
      * @return true Prematurely return if already initialized
      * @return false Failed to initialize properly (handling taken care of by owner of object)
      */
-    bool init(){
+    bool init(int dev_ctx_id){
         if(initialized) { return true; }
+        gpu_device_id = dev_ctx_id;
+
         bool pass = true;
         if(input_size == 0) { input_size = N; }
         if(output_size == 0) { output_size = N; }
@@ -66,9 +68,8 @@ class IKernelData {
         if(pass) init_indices_cpu(pass);
 
         if(pass){
-
             device_data_ptrs.resize(num_total_data);
-
+            cudaErrChk(cudaSetDevice(gpu_device_id), "setting device " + std::to_string(gpu_device_id));
             for(int i=0; i < num_in_data; ++i) {
                 cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], input_size * sizeof(value_t)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
                 if(!pass) break;
@@ -148,6 +149,7 @@ class IKernelData {
      * @brief Free GPU memory
      */
     void freeGpuData(){
+        cudaSetDevice(gpu_device_id);
         for(value_t* ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
         for(index_t* ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
     }
@@ -172,6 +174,7 @@ class IKernelData {
     bool okay = true;
     bool initialized = false;
     
+    int gpu_device_id;
 protected:
     unsigned long long N=0;
     unsigned long long input_size=0;
