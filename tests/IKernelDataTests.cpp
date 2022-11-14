@@ -3,10 +3,61 @@
 #include "IKernelData.cuh"
 
 
-// Demonstrate some basic assertions.
-TEST(IKernelDataTest, BasicAssertions) {
-  // Expect two strings not to be equal.
-  EXPECT_STRNE("hello", "world");
-  // Expect equality.
-  EXPECT_EQ(7 * 6, 42);
+// Add some tests for IKernelData class !!!
+// Can derive from IKernelData and perform some operations in lambdas???
+
+template<typename value_t, typename index_t> 
+class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
+{
+  public:
+    using super = IKernelData<value_t, index_t, 1, 1, 1>;
+    using vt_ = value_t;
+    using it_ = index_t;
+    
+    KernelData_Test(unsigned long long n) : super(n) {}
+    ~KernelData_Test() = default;
+
+    void set_extra_params(int i)
+    {
+        local_i = i;
+    }
+
+    auto get_cpu_data() { return super::host_data; }
+    auto get_gpu_data() { return super::device_data_ptrs; }
+
+  private:
+
+    void init_inputs_cpu() override 
+    {
+        for(int i=0; i< N; ++i)
+        {
+            host_data[0].push_back(static_cast<value_t>(i));
+        }
+    }
+
+    void init_indices_cpu() override 
+    {
+        for(int i=0; i<N; ++i)
+        {
+            host_indices[0].push_back(static_cast<index_t>(i));
+        }        
+    }
+
+    int local_i = 0;
+
+};
+
+TEST(IKernelDataTests, Construct) {
+    using KernelData_t = KernelData_Test<float, int>;
+    KernelData_t data(4);
+    vector<vector<KernelData_t::vt_>> cpu_data = data.get_cpu_data();
+    vector<KernelData_t::vt_* > gpu_data = data.get_gpu_data();
+    
+    ASSERT_EQ(cpu_data.size(), 2);
+    ASSERT_EQ(cpu_data[0].size(), 0);
+    ASSERT_EQ(cpu_data[1].size(), 0);
+
+    ASSERT_EQ(gpu_data.size(), 2);
+    ASSERT_EQ(gpu_data[0], nullptr);
+    ASSERT_EQ(gpu_data[1], nullptr);
 }
