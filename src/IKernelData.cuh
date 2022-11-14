@@ -33,13 +33,14 @@ using std::vector;
  * @tparam value_t Value type (data arrays)
  * @tparam it Index type (indirection arrays)
  */
-template<typename value_t, typename it>
+template<typename value_t, 
+         typename index_t, 
+         unsigned int num_in_data, 
+         unsigned num_out_data, 
+         unsigned int num_indices>
 class IKernelData { 
   public:
-
-    IKernelData(int in, int out, int indices, unsigned long long n, GpuDeviceContext* dev_ctx)
-        : num_in_data(in), num_out_data(out), num_indices(indices), 
-        num_total_data(in+out), N(n), gpu_dev_ctx(dev_ctx) { }
+    IKernelData(unsigned long long n) : N(n) {}
 
     ~IKernelData(){
         uninit();            
@@ -163,23 +164,19 @@ class IKernelData {
         }
     }
 
-    constexpr unsigned int value_t_size = sizeof(value_t);
-    constexpr unsigned int index_t_size = sizeof(index_t);
+    static constexpr unsigned int value_t_size = sizeof(value_t);
+    static constexpr unsigned int index_t_size = sizeof(index_t);
+    static constexpr unsigned int num_total_data = num_in_data + num_out_data;
     string name;
+    
+    bool okay = true;
+    bool initialized = false;
+    
+protected:
     unsigned long long N=0;
     unsigned long long input_size=0;
     unsigned long long output_size=0;
     unsigned long long indices_size=0;
-    int num_in_data=-1;
-    int num_out_data=-1;
-    int num_total_data=-1;
-    int num_indices=-1;
-    
-    bool okay = true;
-    bool initialized = false;
-
-    GpuDeviceContext* gpu_dev_ctx;
-
     vector<vector<value_t>> host_data{(unsigned long)num_total_data};
     vector<value_t *> device_data_ptrs{(unsigned long)num_total_data};
     
