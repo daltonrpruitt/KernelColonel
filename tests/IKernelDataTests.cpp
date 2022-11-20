@@ -98,7 +98,7 @@ TEST(IKernelDataTests, Initialize) {
     size_t data_size = 4;
     KernelData_t data(data_size);
     
-    data.init(0);
+    ASSERT_TRUE(data.init(0));
 
     const auto& cpu_data_vector = data.get_cpu_data_vector();
     const auto& cpu_indices_vector = data.get_cpu_indices_vector();
