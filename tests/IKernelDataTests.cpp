@@ -10,9 +10,14 @@ template<typename value_t, typename index_t>
 class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
 {
   public:
-    using super = IKernelData<value_t, index_t, 1, 1, 1>;
     using vt_ = value_t;
     using it_ = index_t;
+    using super = IKernelData<vt_, it_, 1, 1, 1>;
+    using super::host_data;
+    using super::host_indices;
+    using super::device_data_ptrs;
+    using super::device_indices_ptrs;
+
     
     KernelData_Test(unsigned long long n) : super(n) {}
     ~KernelData_Test() = default;
