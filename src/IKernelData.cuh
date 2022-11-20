@@ -63,9 +63,10 @@ class IKernelData {
         if(output_size == 0) { output_size = N; }
         if(indices_size == 0) { indices_size = N; }
 
-        if(pass) init_inputs_cpu(pass);
-        if(pass) init_indices_cpu(pass);
+        if(pass) init_inputs_cpu();
+        if(pass) init_indices_cpu();
 
+        // init inputs/indices gpu...
         if(pass){
             device_data_ptrs.resize(num_total_data);
             cudaErrChk(cudaSetDevice(gpu_device_id), "setting device " + std::to_string(gpu_device_id));
