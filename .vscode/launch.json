@@ -24,17 +24,17 @@
 
         },
         {
-            "name": "Debug test",
+            "name": "Debug tests (Windows)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/test/test",
+            "program": "${workspaceFolder}\\build\\tests\\Debug\\tests.exe",
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/debug",
+            "cwd": "${workspaceFolder}/build/tests/Debug",
             "environment": [],
-            "args": "/scratch/dp987/grids/cubeu_81-cell-asis.crs",
-            "console": "integratedTerminal", 
+            "args": [""],
             "externalConsole": false,
             "MIMode": "gdb",
+            "miDebuggerPath": "D:\\development\\msys64\\mingw64\\bin\\gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
