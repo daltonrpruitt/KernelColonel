@@ -27,12 +27,12 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
     auto get_gpu_data_ptrs_vector() { return super::device_data_ptrs; }
     auto get_gpu_indices_ptrs_vector() { return super::device_indices_ptrs; }
     
-    struct
+    struct gpu_data_s
     {
         value_t* input = nullptr;
         value_t* output = nullptr;
         index_t* indices = nullptr;
-    } gpu_data;
+    } gpu_named_data;
 
   private:
     void init_inputs_cpu() override 
@@ -53,10 +53,10 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
 
     void set_gpu_named_data() override 
     {
-        gpu_data.input = device_data_ptrs[0];
-        gpu_data.output = device_data_ptrs[1];
-        gpu_data.indices = device_indices_ptrs[0];
-    } gpu_named_data;
+        gpu_named_data.input = device_data_ptrs[0];
+        gpu_named_data.output = device_data_ptrs[1];
+        gpu_named_data.indices = device_indices_ptrs[0];
+    }
 
     int local_i = 0;
 };
