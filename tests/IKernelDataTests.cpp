@@ -22,8 +22,10 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
         local_i = i;
     }
 
-    auto get_cpu_data() { return super::host_data; }
-    auto get_gpu_data() { return super::device_data_ptrs; }
+    auto get_cpu_data_vector() { return super::host_data; }
+    auto get_cpu_indices_vector() { return super::host_indices; }
+    auto get_gpu_data_ptrs_vector() { return super::device_data_ptrs; }
+    auto get_gpu_indices_ptrs_vector() { return super::device_indices_ptrs; }
     
     struct
     {
@@ -62,14 +64,22 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
 TEST(IKernelDataTests, Construct) {
     using KernelData_t = KernelData_Test<float, int>;
     KernelData_t data(4);
-    vector<vector<KernelData_t::vt_>> cpu_data = data.get_cpu_data();
-    vector<KernelData_t::vt_* > gpu_data = data.get_gpu_data();
+    vector<vector<KernelData_t::vt_>> cpu_data_vector = data.get_cpu_data_vector();
+    vector<vector<KernelData_t::it_>> cpu_indices_vector = data.get_cpu_indices_vector();
+    vector<KernelData_t::vt_* > gpu_data_ptrs_vector = data.get_gpu_data_vector();
+    vector<KernelData_t::it_* > gpu_indices_ptrs_vector = data.get_gpu_indices_vector();
     
-    ASSERT_EQ(cpu_data.size(), 2);
-    ASSERT_EQ(cpu_data[0].size(), 0);
-    ASSERT_EQ(cpu_data[1].size(), 0);
+    ASSERT_EQ(cpu_data_vector.size(), 2);
+    EXPECT_EQ(cpu_data_vector[0].size(), 0);
+    EXPECT_EQ(cpu_data_vector[1].size(), 0);
 
-    ASSERT_EQ(gpu_data.size(), 2);
-    ASSERT_EQ(gpu_data[0], nullptr);
-    ASSERT_EQ(gpu_data[1], nullptr);
+    ASSERT_EQ(cpu_indices_vector.size(), 0);
+    EXPECT_EQ(cpu_indices_vector[0].size(), 0);
+
+    ASSERT_EQ(gpu_data_vector.size(), 2);
+    EXPECT_EQ(gpu_data_vector[0], nullptr);
+    EXPECT_EQ(gpu_data_vector[1], nullptr);
+
+    ASSERT_EQ(gpu_indices_vector.size(), 1);
+    EXPECT_EQ(gpu_indices_vector[0], nullptr);
 }
