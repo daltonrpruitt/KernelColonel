@@ -87,3 +87,31 @@ TEST(IKernelDataTests, Construct) {
     EXPECT_EQ(data.gpu_named_data.output, nullptr);
     EXPECT_EQ(data.gpu_named_data.indices, nullptr);
 }
+
+TEST(IKernelDataTests, Initialize) {
+    using KernelData_t = KernelData_Test<float, int>;
+    size_t data_size = 4;
+    KernelData_t data(data_size);
+    
+    data.init(0);
+
+    vector<vector<KernelData_t::vt_>> cpu_data_vector = data.get_cpu_data_vector();
+    vector<vector<KernelData_t::it_>> cpu_indices_vector = data.get_cpu_indices_vector();
+    vector<KernelData_t::vt_* > gpu_data_ptrs_vector = data.get_gpu_data_ptrs_vector();
+    vector<KernelData_t::it_* > gpu_indices_ptrs_vector = data.get_gpu_indices_ptrs_vector();
+
+    ASSERT_EQ(cpu_data_vector.size(), 2);
+    EXPECT_EQ(cpu_data_vector[0].size(), data_size);
+    EXPECT_EQ(cpu_data_vector[1].size(), data_size);
+
+    ASSERT_EQ(gpu_data_ptrs_vector.size(), 2);
+    EXPECT_NE(gpu_data_ptrs_vector[0], nullptr);
+    EXPECT_NE(gpu_data_ptrs_vector[1], nullptr);
+
+    ASSERT_EQ(gpu_indices_ptrs_vector.size(), 1);
+    EXPECT_NE(gpu_indices_ptrs_vector[0], nullptr);
+
+    EXPECT_EQ(data.gpu_named_data.input, gpu_data_ptrs_vector[0]);
+    EXPECT_EQ(data.gpu_named_data.output, gpu_data_ptrs_vector[1]);
+    EXPECT_EQ(data.gpu_named_data.indices, gpu_indices_ptrs_vector[0]);
+}
