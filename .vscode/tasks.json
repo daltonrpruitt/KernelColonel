@@ -41,14 +41,14 @@
 
         },
         {
-            "label": "CMake Build Debug `test`",
+            "label": "CMake Build Debug `tests`",
             "type": "process",
             "command": "cmake",
             "args":[
                 "--build",
                 ".",
                 "--target",
-                "test.tgt",
+                "tests.tgt",
                 // "--clean-first"
             ],
             "options": {

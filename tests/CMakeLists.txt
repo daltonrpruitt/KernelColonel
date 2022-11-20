@@ -16,7 +16,7 @@ FetchContent_MakeAvailable(googletest)
 
 include(FindCUDA)
 
-set(TEST_BINARY test)
+set(TEST_BINARY tests)
 
 file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp *.cc)
 
