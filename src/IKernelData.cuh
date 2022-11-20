@@ -57,7 +57,7 @@ class IKernelData {
     bool init(int dev_ctx_id){
         if(initialized) {
             if(dev_ctx_id == gpu_device_id) {
-                cout <<"Tried to reinitialize "<< this->name << "with same device id=" << gpu_device_id "; Ignored";
+                cout <<"Tried to reinitialize "<< this->name << "with same device id=" << gpu_device_id << "; Ignored";
                 return true;
             } else {
                 cerr<<"Tried to reinitialize "<< this->name << "with current device id=" << gpu_device_id <<" and new device ID="<<dev_ctx_id << "; Not allowed!";
