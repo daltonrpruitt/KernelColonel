@@ -101,13 +101,14 @@ class IKernelData {
                 }
             }
 
-            if(pass) { set_dev_ptrs(); }
+            if(pass) { set_gpu_named_data(); }
         }
 
         if(!pass) {
-            free(); 
+            freeGpuData();
+            freeCpuData();
             okay = false;
-            cerr<<"Error in initializing "<<this->name << "for N="<<this->N<<" Bsz="<<this->Bsz;
+            cerr<<"Error in initializing "<<this->name << "for N="<<this->N;
             if(input_size != 0) cout << " input_sz="<<input_size;
             if(output_size != 0) cout << " output_sz="<<output_size;
             if(indices_size != 0) cout << " indices_sz="<<indices_size;
