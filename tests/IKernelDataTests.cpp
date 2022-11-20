@@ -45,6 +45,7 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
         for(int i=0; i< N; ++i)
         {
             host_data[0].push_back(static_cast<value_t>(i));
+            host_data[1].push_back(static_cast<value_t>(0));
         }
     }
 
