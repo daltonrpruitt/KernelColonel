@@ -146,6 +146,13 @@ class IKernelData {
     virtual void init_indices_cpu() = 0;
 
     /**
+     * @brief Placeholder for user-defined gpu data structure initialization
+     * 
+     * Simple aliasing of pointers, so should not fail.
+     */
+     virtual void set_gpu_named_data() = 0;
+
+    /**
      * @brief Free GPU memory
      */
     void freeGpuData(){
