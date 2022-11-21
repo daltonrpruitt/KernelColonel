@@ -8,12 +8,12 @@
             "type": "process",
             "command": "cmake",
             "args":[
-                "-DCMAKE_BUILD_TYPE=debug",
+                "-DCMAKE_BUILD_TYPE=Debug",
                 "-B",".",
                 "-S","${workspaceFolder}",
             ],
             "options": {
-                "cwd": "${workspaceFolder}/build/debug"
+                "cwd": "${workspaceFolder}/build"
             },
 			"problemMatcher": [
 				"$gcc"
