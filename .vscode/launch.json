@@ -32,16 +32,7 @@
             "cwd": "${workspaceFolder}/build/tests/Debug",
             "environment": [],
             "args": [""],
-            "externalConsole": false,
-            // "MIMode": "gdb",
-            // "miDebuggerPath": "D:\\development\\msys64\\mingw64\\bin\\gdb.exe",
-            // "setupCommands": [
-            //     {
-            //         "description": "Enable pretty-printing for gdb",
-            //         "text": "-enable-pretty-printing",
-            //         "ignoreFailures": true
-            //     }
-            // ]
+            "console": "integratedTerminal", 
         },
         {
             "name": "Python: Current File",
