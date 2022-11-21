@@ -31,8 +31,7 @@ add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
 target_link_libraries(${TEST_BINARY} PUBLIC gtest ${CUDA_LIBRARIES}) # ${CMAKE_PROJECT_NAME}_lib gtest)
 if(MSVC)
-  set(CMAKE_EXE_LINKER_FLAGS
-  "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
 endif()
 
 add_custom_target (${TEST_BINARY}.tgt
