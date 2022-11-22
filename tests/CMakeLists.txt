@@ -28,8 +28,7 @@ set_property(TARGET ${TEST_BINARY} PROPERTY CUDA_ARCHITECTURES ${${PROJECT_NAME}
 
 add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
-
-target_link_libraries(${TEST_BINARY} PUBLIC gtest ${CUDA_LIBRARIES}) # ${CMAKE_PROJECT_NAME}_lib gtest)
+target_link_libraries(${TEST_BINARY} PUBLIC gtest_main gmock_main ${CUDA_LIBRARIES}) # ${CMAKE_PROJECT_NAME}_lib gtest)
 if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
 endif()

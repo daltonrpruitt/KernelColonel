@@ -1,4 +1,8 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
+#include <cuda.h>
+#include <cuda_runtime_api.h>
 
 #include "IKernelData.cuh"
 
@@ -133,4 +137,31 @@ TEST(IKernelDataTests, DestructAndDeinitialize) {
     ASSERT_EQ(data.get_cpu_indices_vector().size(), 0);
     ASSERT_EQ(data.get_gpu_data_ptrs_vector().size(), 0);
     ASSERT_EQ(data.get_gpu_indices_ptrs_vector().size(), 0);
+}
+
+template<typename gpu_data_t>
+__global__
+void copy_kernel(unsigned long long size, gpu_data_t data_struct) {
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if(idx >= size) return;
+    auto input = data_struct.input;
+    auto output = data_struct.output;
+    output[idx] = input[idx];
+}
+
+TEST(IKernelDataTests, PassToKernel) {
+    using namespace ::testing;
+    using KernelData_t = KernelData_Test<float, int>;
+    size_t data_size = 4;
+    KernelData_t data(data_size);
+    
+    const auto& cpu_data_vector = data.get_cpu_data_vector();
+    ASSERT_TRUE(data.init(0));
+    std::vector<float> v(data_size, 0);
+    ASSERT_THAT(cpu_data_vector[1], Pointwise(FloatEq(), v));
+
+    copy_kernel<decltype(data.gpu_named_data)><<<1,4>>>(data_size, data.gpu_named_data);
+    data.copyOutputToDevice();
+    
+    ASSERT_THAT(cpu_data_vector[1], ElementsAre(0, 1, 2, 3));
 }
