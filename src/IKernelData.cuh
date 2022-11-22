@@ -76,7 +76,6 @@ class IKernelData {
 
         // init inputs/indices gpu...
         if(pass){
-            device_data_ptrs.resize(num_total_data);
             cudaErrChk(cudaSetDevice(gpu_device_id), "setting device " + std::to_string(gpu_device_id));
             for(int i=0; i < num_in_data; ++i) {
                 cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], input_size * sizeof(value_t)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
