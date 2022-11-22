@@ -127,17 +127,71 @@ TEST(IKernelDataTests, Initialize) {
     EXPECT_EQ(data.gpu_named_data.indices, gpu_indices_ptrs_vector[0]);
 }
 
-TEST(IKernelDataTests, DestructAndDeinitialize) {
+TEST(IKernelDataTests, Uninitialize) {
+    using KernelData_t = KernelData_Test<float, int>;
+    size_t data_size = 4;
+    KernelData_t data(data_size);
+    const auto& cpu_data_vector = data.get_cpu_data_vector();
+    const auto& cpu_indices_vector = data.get_cpu_indices_vector();
+    const auto& gpu_data_ptrs_vector = data.get_gpu_data_ptrs_vector();
+    const auto& gpu_indices_ptrs_vector = data.get_gpu_indices_ptrs_vector();
+
+    ASSERT_TRUE(data.init(0));
+    data.uninit();
+    ASSERT_EQ(cpu_data_vector.size(), 2);
+    EXPECT_EQ(cpu_data_vector[0].size(), 0);
+    EXPECT_EQ(cpu_data_vector[1].size(), 0);
+
+    ASSERT_EQ(cpu_indices_vector.size(), 1);
+    EXPECT_EQ(cpu_indices_vector[0].size(), 0);
+
+    ASSERT_EQ(gpu_data_ptrs_vector.size(), 2);
+    EXPECT_EQ(gpu_data_ptrs_vector[0], nullptr);
+    EXPECT_EQ(gpu_data_ptrs_vector[1], nullptr);
+
+    ASSERT_EQ(gpu_indices_ptrs_vector.size(), 1);
+    EXPECT_EQ(gpu_indices_ptrs_vector[0], nullptr);
+
+    EXPECT_EQ(data.gpu_named_data.input, nullptr);
+    EXPECT_EQ(data.gpu_named_data.output, nullptr);
+    EXPECT_EQ(data.gpu_named_data.indices, nullptr);
+}
+
+TEST(IKernelDataTests, ReinitializeWithSameDevice) {
     using KernelData_t = KernelData_Test<float, int>;
     size_t data_size = 4;
     KernelData_t data(data_size);
     
     ASSERT_TRUE(data.init(0));
-    data.~KernelData_t();
-    ASSERT_EQ(data.get_cpu_data_vector().size(), 0);
-    ASSERT_EQ(data.get_cpu_indices_vector().size(), 0);
-    ASSERT_EQ(data.get_gpu_data_ptrs_vector().size(), 0);
-    ASSERT_EQ(data.get_gpu_indices_ptrs_vector().size(), 0);
+    ASSERT_TRUE(data.init(0));
+    data.uninit();
+    ASSERT_TRUE(data.init(0));
+}
+
+TEST(IKernelDataTests, ReinitializeWithDifferentDevice) {
+    int count;
+    cudaGetDevice(&count);
+    if(count == 1) {
+        GTEST_SKIP();
+    }
+    using KernelData_t = KernelData_Test<float, int>;
+    size_t data_size = 4;
+    KernelData_t data(data_size);
+    
+    ASSERT_TRUE(data.init(0));
+    ASSERT_TRUE(data.init(0));
+    ASSERT_FALSE(data.init(1));
+    data.uninit();
+    ASSERT_TRUE(data.init(0));
+}
+
+TEST(IKernelDataTests, Destruct) {
+    using KernelData_t = KernelData_Test<float, int>;
+    size_t data_size = 4;
+    KernelData_t* data_ptr = new KernelData_t(data_size);
+    
+    ASSERT_TRUE(data_ptr->init(0));
+    ASSERT_NO_THROW( { delete data_ptr; } );
 }
 
 template<typename gpu_data_t>
