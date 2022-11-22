@@ -121,3 +121,16 @@ TEST(IKernelDataTests, Initialize) {
     EXPECT_EQ(data.gpu_named_data.output, gpu_data_ptrs_vector[1]);
     EXPECT_EQ(data.gpu_named_data.indices, gpu_indices_ptrs_vector[0]);
 }
+
+TEST(IKernelDataTests, DestructAndDeinitialize) {
+    using KernelData_t = KernelData_Test<float, int>;
+    size_t data_size = 4;
+    KernelData_t data(data_size);
+    
+    ASSERT_TRUE(data.init(0));
+    data.~KernelData_t();
+    ASSERT_EQ(data.get_cpu_data_vector().size(), 0);
+    ASSERT_EQ(data.get_cpu_indices_vector().size(), 0);
+    ASSERT_EQ(data.get_gpu_data_ptrs_vector().size(), 0);
+    ASSERT_EQ(data.get_gpu_indices_ptrs_vector().size(), 0);
+}
