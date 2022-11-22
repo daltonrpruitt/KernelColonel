@@ -71,8 +71,8 @@ class IKernelData {
         if(output_size == 0) { output_size = N; }
         if(indices_size == 0) { indices_size = N; }
 
-        if(pass) init_inputs_cpu();
-        if(pass) init_indices_cpu();
+        if(pass) initInputsCpu();
+        if(pass) initIndicesCpu();
 
         // init inputs/indices gpu...
         if(pass){
@@ -109,7 +109,7 @@ class IKernelData {
                 }
             }
 
-            if(pass) { set_gpu_named_data(); }
+            if(pass) { setGpuNamedData(); }
         }
 
         if(!pass) {
@@ -151,21 +151,21 @@ class IKernelData {
      * 
      * Throws an exception if fails.
      */
-    virtual void init_inputs_cpu() = 0;
+    virtual void initInputsCpu() = 0;
 
     /**
      * @brief Placeholder for user-defined indices array(s) initialization
      * 
      * Throws an exception if fails.
      */
-    virtual void init_indices_cpu() = 0;
+    virtual void initIndicesCpu() = 0;
 
     /**
      * @brief Placeholder for user-defined gpu data structure initialization
      * 
      * Simple aliasing of pointers, so should not fail.
      */
-     virtual void set_gpu_named_data() = 0;
+     virtual void setGpuNamedData() = 0;
 
     /**
      * @brief Free GPU memory

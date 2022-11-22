@@ -44,7 +44,7 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
     } gpu_named_data;
 
   private:
-    void init_inputs_cpu() override 
+    void initInputsCpu() override 
     {
         for(int i=0; i< N; ++i)
         {
@@ -53,7 +53,7 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
         }
     }
 
-    void init_indices_cpu() override 
+    void initIndicesCpu() override 
     {
         for(int i=0; i<N; ++i)
         {
@@ -61,7 +61,7 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
         }        
     }
 
-    void set_gpu_named_data() override 
+    void setGpuNamedData() override 
     {
         gpu_named_data.input = device_data_ptrs[0];
         gpu_named_data.output = device_data_ptrs[1];
