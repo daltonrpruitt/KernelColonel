@@ -1,10 +1,9 @@
 #pragma once 
 /**
- * @file kernel_data.cu
+ * @file IKernelData.cuh
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Provides context information for GPU kernel execution of driver
- * @version 0.1
- * @date 2022-01-27
+ * @brief Provides a wrapper surrounding the data inputs/outputs and indices 
+ *          GPU kernel execution (in IKernelContext)
  * 
  */
 
