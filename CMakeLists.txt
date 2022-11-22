@@ -14,10 +14,20 @@ set(${PROJECT_NAME}_CUDA_ARCHS  native ) # 52-Quadro M2000 or GTX 980M (personal
 # set(${PROJECT_NAME}_CUDA_ARCHS 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(${CMAKE_SOURCE_DIR}/src/utilities/matrices)
+include_directories(${CMAKE_SOURCE_DIR}/src/include)
+# include_directories(${CMAKE_SOURCE_DIR}/src/utilities/matrices)
 
 
+set(KC_SOURCES 
+    src/cpp/IKernelData.cu
+    # src/cpp/IKernelExecContext.cu
+    # src/cpp/IKernelDriver.cu
+    )
+
+add_library(kernel_colonel ${KC_SOURCES})
+target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
+
+if(false)
 add_executable(main src/main.cu)
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS} )
@@ -55,6 +65,8 @@ if (MSVC)
 #   target_compile_options(spmv PRIVATE -Wa,-mbig-obj)
 endif ()
          
+endif ()
+
 endif ()
 
 add_subdirectory(tests)
