@@ -93,7 +93,12 @@
         "xmemory": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "any": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "variant": "cpp",
+        "xtree": "cpp"
     },
     "cSpell.words": [
         "Spmv",
