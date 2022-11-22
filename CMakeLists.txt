@@ -5,11 +5,11 @@ cmake_minimum_required(VERSION 3.20)
 
 project(microbenchmarks CUDA CXX)
 
-include(FindCUDAToolkit)
+include(FindCUDA)
 
 add_subdirectory(sandbox)
 
-set(${PROJECT_NAME}_CUDA_ARCHS  52 ) # 52-Quadro M2000 or GTX 980M (personal laptop)
+set(${PROJECT_NAME}_CUDA_ARCHS  native ) # 52-Quadro M2000 or GTX 980M (personal laptop)
 # set(${PROJECT_NAME}_CUDA_ARCHS 80) #80-A100
 # set(${PROJECT_NAME}_CUDA_ARCHS 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 
