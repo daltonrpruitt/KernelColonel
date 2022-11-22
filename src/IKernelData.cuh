@@ -138,6 +138,12 @@ class IKernelData {
         freeCpuData();
         initialized = false;
     }
+    
+    void copyOutputToDevice() {
+        for(int i=num_in_data; i < num_total_data; ++i) {
+            cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * sizeof(value_t), cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]");
+        }            
+    }
 
   private: 
     /**
