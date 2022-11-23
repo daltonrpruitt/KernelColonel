@@ -136,7 +136,7 @@ struct SpmvKernelLAv2 : SpmvKernel<it, vt, 4> {
     string matrix_order;
 
 
-  SpmvKernelLAv2(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
+  SpmvKernelLAv2(int bs, GpuDeviceContext* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
     : super(bs, d_ctx, mtx_filename, shd_mem_alloc) {
         this->name = "SpmvKernelLAv2";
         static_assert(!( preload && !include_preload_arith)); // if preload, must include arith (just to reduce test space complexity)

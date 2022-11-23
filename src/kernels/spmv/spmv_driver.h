@@ -39,7 +39,7 @@ class SpmvDriver {
     string output_filename_;
     ofstream output_file;
     bool output_file_started = false;
-    device_context* dev_ctx_;
+    GpuDeviceContext* dev_ctx_;
     vector<kernel_ctx_t*> contexts;
 
     int N = 0;
@@ -49,7 +49,7 @@ class SpmvDriver {
     int kernel_runs = 25;
     int kernel_checks = 1;
 
-    SpmvDriver(int bs, string output_filename, device_context* dev_ctx, string mtx_filename, bool span_occupancies=false) :
+    SpmvDriver(int bs, string output_filename, GpuDeviceContext* dev_ctx, string mtx_filename, bool span_occupancies=false) :
         Bsz(bs), output_filename_(output_filename) {
         //dev_ctx->init(); // assumed ctx is initialized already (why init in every single driver?)
         dev_ctx_ = dev_ctx;
@@ -80,11 +80,11 @@ class SpmvDriver {
         output_file.close();
     }
 
-    void set_config_bool(bool val) {
-        for (auto ctx : contexts) {
-            ctx->set_config_bool(val);
-        }
-    }
+    // void set_config_bool(bool val) {
+    //     for (auto ctx : contexts) {
+    //         ctx->set_config_bool(val);
+    //     }
+    // }
 
     bool check_kernels() {
         bool pass = true;

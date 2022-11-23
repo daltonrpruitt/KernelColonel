@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.cu": "cpp",
+        "*.cu": "cuda-cpp",
+        "*.tcu": "cuda-cpp",
         "cwchar": "cpp",
         "iostream": "cpp",
         "array": "cpp",
@@ -93,7 +94,12 @@
         "xmemory": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "any": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "variant": "cpp",
+        "xtree": "cpp"
     },
     "cSpell.words": [
         "Spmv",

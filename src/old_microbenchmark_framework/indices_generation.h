@@ -46,7 +46,7 @@ void print_indices_sample(it* indxs, int block_size, unsigned long long idx) {
  * @brief Simple sequential pattern
  * 
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param block_size Size of the thread blocks
  * @param shuffle_size Size of the "shuffle blocks", chunks of array
@@ -81,7 +81,7 @@ int sequential_indices(it* indxs, unsigned long long N, int block_size, int shuf
  *      0 32 64 96 ... 71 103 8 40 ... 79 111 16 48 ... ... 31  63  95  127 128 160 192 ... ... 159 191 223 255
  *
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param block_size Size of the thread blocks
  * @param shuffle_size Size of the "shuffle blocks", chunks of array
@@ -109,7 +109,7 @@ int strided_indices(it* indxs, unsigned long long N, int block_size, int shuffle
  * @brief Same as strided_indices() but with offsets to avoid bank conflicts between threads in same warp
  * 
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param block_size Size of the thread blocks
  * @param shuffle_size Size of the "shuffle blocks", chunks of array
@@ -138,7 +138,7 @@ int strided_no_conflict_indices(it* indxs, unsigned long long N, int block_size,
  * 
  * @tparam it Index type
  * @tparam avoid_bank_conflicts Whether to avoid bank conflicts or not
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param block_size Size of the thread blocks
  * @param shuffle_size Size of the "shuffle blocks", chunks of array
@@ -191,7 +191,7 @@ int uncoalesced_access_shuffle_size(it* indxs, unsigned long long N, int block_s
  * @tparam vt Value type (required due to transaction size considerations)
  * @tparam it Index type
  * @tparam avoid_bank_conflicts Whether to avoid bank conflicts or not
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param compute_capability_major The CUDA Compute Capability Major version (e.g. 7 = Volta)
  * @param block_size Size of the thread blocks
@@ -246,7 +246,7 @@ int sector_based_uncoalesced_access(it* indxs, unsigned long long N, int compute
  * @brief Compute random shuffle of arrays within chunks of size shuffle_size 
  * 
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param block_size Size of the thread blocks
  * @param shuffle_size Size of the "shuffle blocks", chunks of array
@@ -276,7 +276,7 @@ int random_indices(it* indxs, unsigned long long N, int block_size, int shuffle_
  * @brief Provides indices that result in reading stream and writing same values degree_of_expansion times
  * 
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param degree_of_expansion Ratio between writing to reading amounts
  * @param block_size Size of the thread blocks
@@ -311,7 +311,7 @@ int expansion_indices(it* indxs, unsigned long long N, int degree_of_expansion, 
  * @brief Provides indices that result in reading stream and writing degree_of_contraction times fewer values
  * 
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param degree_of_contraction Ratio between reading to writing amounts
  * @param block_size Size of the thread blocks
@@ -353,7 +353,7 @@ int contraction_indices(it* indxs, unsigned long long N, int degree_of_contracti
  * @brief Wrapper for expansion_indices() and contraction_indices() to "simplify" general expansion/contraction calls
  * 
  * @tparam it Index type
- * @param indxs Array of indicies to write to
+ * @param indxs Array of indices to write to
  * @param N Size of index array
  * @param reads_per_8_writes Ratio of reads per 8 writes
  * @param block_size Size of the thread blocks

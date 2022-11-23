@@ -1,6 +1,6 @@
 #pragma once
 #include <cuda.h>
-// #include <cuda_runtime_api.h>
+#include <cuda_runtime_api.h>
 #include <string>
 #include <iostream>
 
@@ -12,6 +12,13 @@ void cudaErrChk(cudaError_t status, string msg, bool& pass) {
     if (status != cudaSuccess) {
         cerr << "Error with " << msg << "!" << endl;
         pass = false;
+    }
+}
+
+void cudaErrChk(cudaError_t status, string msg) {
+    if (status != cudaSuccess) {
+        std::string cuda_error_string = cudaGetErrorString(status);
+        throw std::runtime_error("Error with " + msg +  " : cuda err msg= '" + cuda_error_string + "'");
     }
 }
 

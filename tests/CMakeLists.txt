@@ -14,21 +14,27 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+include(FindCUDA)
 
-add_executable(
-  driver_test
-  driver_test.cc
+set(TEST_BINARY tests)
+
+file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cuh *.cpp *.cc *.cu)
+
+set(SOURCES ${TEST_SOURCES})
+message("SOURCES = ${SOURCES}")
+
+add_executable(${TEST_BINARY} ${TEST_SOURCES})
+set_property(TARGET ${TEST_BINARY} PROPERTY CUDA_ARCHITECTURES ${${PROJECT_NAME}_CUDA_ARCHS})
+
+add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
+
+target_link_libraries(${TEST_BINARY} PUBLIC gtest_main gmock_main kernel_colonel)
+if(MSVC)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
+endif()
+
+add_custom_target (${TEST_BINARY}.tgt
+  DEPENDS ${TEST_BINARY}
+  COMMAND ${TEST_BINARY} --gtest_output=xml:test_output/${TEST_BINARY}.xml
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-
-target_link_libraries(
-  driver_test
-  GTest::gtest_main
-)
-
-include(GoogleTest)
-gtest_discover_tests(driver_test)
-
-# Testing
-enable_testing()
-
-add_test(driver_test driver_test)

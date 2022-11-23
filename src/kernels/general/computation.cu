@@ -78,7 +78,7 @@ struct ComputationalIntensityContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        ComputationalIntensityContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        ComputationalIntensityContext(int n, int bs, GpuDeviceContext* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "ComputationalIntensity"; // _N=" +std::to_string(n) + "_Bs="+std::to_string(bs);
             this->total_data_reads = N * data_reads_per_element;

@@ -147,7 +147,7 @@ struct UncoalescedReuseGenSingleILPContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        UncoalescedReuseGenSingleILPContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        UncoalescedReuseGenSingleILPContext(int n, int bs, GpuDeviceContext* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 0, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "UncoalescedReuseGenSingleILP"; 
             this->Gsz /= ILP;

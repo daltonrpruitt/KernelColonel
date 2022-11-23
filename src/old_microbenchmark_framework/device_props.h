@@ -16,26 +16,24 @@ using std::endl;
  * Computes theoretical bandwidth in init()
  * 
  */
-class device_context {
+class GpuDeviceContext {
+    int device_id;
   public:
     cudaDeviceProp props_;
     float theoretical_bw_;
 
-    device_context() {}
-    ~device_context() {}
+    GpuDeviceContext(int dev_id) : device_id(dev_id) {}
+    ~GpuDeviceContext() {}
     
     /**
      * @brief Checks if cuda device available, gets properties, and calculates theoretical bandwidth
      * 
-     * @return true Initialized properly
-     * @return false Failed initialization
+     * Throws excption if cannot properly set the device and get properties.
      */
-    bool init() {
-        bool pass = true;
-        cudaErrChk(cudaSetDevice(0), "finding GPU device", pass);
-        if(pass) { cudaErrChk(cudaGetDeviceProperties(&props_, 0), "getting device properties", pass); }
-        if(pass) { 
-            cout << "Successfully found GPU device "<< props_.name << endl;
+    void init() {
+        cudaErrChk(cudaSetDevice(device_id), "finding GPU device" + std::to_string(device_id));
+        cudaErrChk(cudaGetDeviceProperties(&props_, device_id), "getting device properties");
+            cout << "Successfully found GPU device "<< props_.name << "\n";
             theoretical_bw_ = (float)props_.memoryClockRate  // kHz = kcycles/s
                             * props_.memoryBusWidth        // bit / cycle
                             / 8                                // byte / 8 bits
@@ -44,9 +42,8 @@ class device_context {
 			std::streamsize ss = cout.precision();
             cout << "Device '" << props_.name << "' : Max Bandwidth = " << std::fixed << std::setprecision(1) << theoretical_bw_ << " GB/s" << endl;
 			cout << std::setprecision(ss) << std::resetiosflags( std::ios::fixed | std::ios::showpoint );
-        }
+        
         cudaPrintLastError();
-        return pass;
     }
 
 
