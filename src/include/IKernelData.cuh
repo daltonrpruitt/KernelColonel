@@ -8,6 +8,7 @@
  */
 
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <exception>
 
@@ -85,10 +86,10 @@ class IKernelData {
     static constexpr unsigned int value_t_size = sizeof(value_t);
     static constexpr unsigned int index_t_size = sizeof(index_t);
     static constexpr unsigned int num_total_data = num_in_data + num_out_data;
-    string name;
+    std::string name;
     
     bool okay = true;
-    DataState state = PREINIT;
+    DataState state = DataState::PREINIT;
     
     int gpu_device_id;
 protected:
@@ -97,9 +98,9 @@ protected:
     unsigned long long output_size=0;
     unsigned long long indices_size=0;
 
-    vector<vector<value_t>> host_data{(unsigned long)num_total_data};
-    vector<value_t *> device_data_ptrs{(unsigned long)num_total_data};
+    std::vector<std::vector<value_t>> host_data{(unsigned long)num_total_data};
+    std::vector<value_t *> device_data_ptrs{(unsigned long)num_total_data};
     
-    vector<vector<index_t>> host_indices{(unsigned long)num_indices};
-    vector<index_t *> device_indices_ptrs{(unsigned long)num_indices};
+    std::vector<std::vector<index_t>> host_indices{(unsigned long)num_indices};
+    std::vector<index_t *> device_indices_ptrs{(unsigned long)num_indices};
 };
