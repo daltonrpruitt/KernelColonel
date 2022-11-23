@@ -128,8 +128,8 @@ void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyO
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::freeGpuData(){
     cudaSetDevice(gpu_device_id);
-    for(vt* ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
-    for(it* ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
+    for(auto &ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
+    for(auto &ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
 }
         
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
