@@ -6,9 +6,7 @@
 
 #include "IKernelData.cuh"
 
-
-// Add some tests for IKernelData class !!!
-// Can derive from IKernelData and perform some operations in lambdas???
+using namespace KernelColonel;
 
 template<typename value_t, typename index_t> 
 class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>

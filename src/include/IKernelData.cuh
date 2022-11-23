@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <exception>
 
+namespace KernelColonel {
 
 /**
  * @brief Container for CPU/GPU data for different situations; used for reducing `cudaMemCpy()` calls
@@ -104,3 +105,7 @@ protected:
     std::vector<std::vector<index_t>> host_indices{(unsigned long)num_indices};
     std::vector<index_t *> device_indices_ptrs{(unsigned long)num_indices};
 };
+
+} // namespace KernelColonel
+
+#include "details/IKernelData.tcu"
