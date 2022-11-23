@@ -27,7 +27,8 @@ template<typename value_t,
          typename index_t, 
          unsigned int num_in_data, 
          unsigned num_out_data, 
-         unsigned int num_indices>
+         unsigned int num_indices, 
+         typename gpu_data_s_t>
 class IKernelData { 
   public:
     IKernelData(unsigned long long n);
@@ -104,6 +105,8 @@ protected:
     
     std::vector<std::vector<index_t>> host_indices{(unsigned long)num_indices};
     std::vector<index_t *> device_indices_ptrs{(unsigned long)num_indices};
+
+    gpu_data_s_t gpu_named_data;
 };
 
 } // namespace KernelColonel

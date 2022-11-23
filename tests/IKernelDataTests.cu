@@ -9,17 +9,26 @@
 using namespace KernelColonel;
 
 template<typename value_t, typename index_t> 
-class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
+struct gpu_data_s
+{
+    value_t* input = nullptr;
+    value_t* output = nullptr;
+    index_t* indices = nullptr;
+};
+
+template<typename value_t, typename index_t> 
+class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
 {
   public:
     using vt_ = value_t;
     using it_ = index_t;
-    using super = IKernelData<vt_, it_, 1, 1, 1>;
+    using super = IKernelData<vt_, it_, 1, 1, 1, gpu_data_s<vt_,it_>>;
     using super::N;
     using super::host_data;
     using super::host_indices;
     using super::device_data_ptrs;
     using super::device_indices_ptrs;
+    using super::gpu_named_data;
 
     
     KernelData_Test(unsigned long long n) : super(n) {}
@@ -34,13 +43,6 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
     const auto& get_gpu_data_ptrs_vector()    { return device_data_ptrs; }
     const auto& get_gpu_indices_ptrs_vector() { return device_indices_ptrs; }
     
-    struct gpu_data_s
-    {
-        value_t* input = nullptr;
-        value_t* output = nullptr;
-        index_t* indices = nullptr;
-    } gpu_named_data;
-
   private:
     void initInputsCpu() override 
     {
