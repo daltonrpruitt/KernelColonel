@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug tests",
+            "type": "cuda-gdb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/tests/tests",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/tests",
+        },
+        {
             "name": "CUDA C++: Debug spmv",
             "type": "cuda-gdb",
             "request": "launch",
@@ -22,17 +30,6 @@
                 }
             ]
 
-        },
-        {
-            "name": "Debug tests",
-            "type": "cuda-gdb",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/tests/tests",
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/tests",
-            // "environment": [],
-            // "args": [""],
-            // "console": "integratedTerminal", 
         },
         {
             "name": "Python: Current File",
