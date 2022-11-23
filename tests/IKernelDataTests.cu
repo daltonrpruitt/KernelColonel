@@ -23,7 +23,6 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1>
 
     
     KernelData_Test(unsigned long long n) : super(n) {}
-    ~KernelData_Test() = default;
 
     void set_extra_params(int i)
     {
