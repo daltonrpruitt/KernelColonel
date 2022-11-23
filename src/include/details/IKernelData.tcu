@@ -114,6 +114,7 @@ void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::unini
     }
     freeGpuData();
     freeCpuData();
+    gpu_named_data = gpu_data_s_t();
     state = DataState::UNINIT;
 }
     
