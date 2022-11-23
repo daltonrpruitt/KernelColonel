@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.cu": "cpp",
+        "*.cu": "cuda-cpp",
+        "*.tcu": "cuda-cpp",
         "cwchar": "cpp",
         "iostream": "cpp",
         "array": "cpp",
