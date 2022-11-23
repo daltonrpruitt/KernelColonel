@@ -75,9 +75,11 @@ int main(int argc, char** argv) {
 
     GpuDeviceContext dev_ctx;
     if(!dev_ctx.init()) return -1;
-    unsigned long long min_array_size = dev_ctx.props_.l2CacheSize / sizeof(vt) * 40 / dev_ctx.props_.multiProcessorCount;
-    min_array_size = pow(2, ceil(log2(min_array_size)));
-    unsigned long long N = min_array_size * dev_ctx.props_.multiProcessorCount;
+    // unsigned long long min_array_size = dev_ctx.props_.l2CacheSize / sizeof(vt) * 40 / dev_ctx.props_.multiProcessorCount;
+    // min_array_size = pow(2, ceil(log2(min_array_size)));
+    // unsigned long long N = min_array_size * dev_ctx.props_.multiProcessorCount;
+    unsigned long long N = 33554432;
+
 
 #ifdef DEBUG
     int max_shd_mem_per_block = dev_ctx.props_.sharedMemPerBlock;
@@ -102,7 +104,7 @@ int main(int argc, char** argv) {
     bs_vec.push_back(min_block_size);
     // bs_vec.push_back(128);
     // bs_vec.push_back(1024);
-    bool span_occupancies = true;
+    bool span_occupancies = false;
     if(span_occupancies && !span_occupancies) return -1;
 
     Output output_dir;
