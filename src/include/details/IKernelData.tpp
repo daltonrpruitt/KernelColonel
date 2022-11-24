@@ -5,7 +5,7 @@
  * 
  */
 
-#include "IKernelData.cuh"
+#include "IKernelData.hpp"
 
 #include <utils/local_cuda_utils.h>
 

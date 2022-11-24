@@ -12,8 +12,8 @@ add_subdirectory(sandbox)
 set(${PROJECT_NAME}_CUDA_ARCHS  native )
 
 set(KC_SOURCES 
-    ${CMAKE_SOURCE_DIR}/src/include/IKernelData.cuh
-    ${CMAKE_SOURCE_DIR}/src/include/details/IKernelData.tcu
+    ${CMAKE_SOURCE_DIR}/src/include/IKernelData.hpp
+    ${CMAKE_SOURCE_DIR}/src/include/details/IKernelData.tpp
     )
 
 add_library(kernel_colonel ${KC_SOURCES})
