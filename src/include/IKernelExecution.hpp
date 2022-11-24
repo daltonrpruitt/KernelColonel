@@ -1,6 +1,6 @@
 #pragma once 
 /**
- \* @file IKernelExecution.cuh
+ \* @file IKernelExecution.hpp
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Provides a wrapper surrounding the data inputs/outputs and indices 
  *          GPU kernel execution (in IKernelContext)

@@ -1,6 +1,6 @@
 #pragma once
 /**
- * @file IKernelData.tcu
+ \* @file IKernelData.tpp
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Implements IKernelData
  * 
