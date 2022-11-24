@@ -7,8 +7,6 @@ project(microbenchmarks LANGUAGES CUDA CXX)
 
 include(FindCUDAToolkit)
 
-add_subdirectory(sandbox)
-
 set(${PROJECT_NAME}_CUDA_ARCHS  native )
 
 
