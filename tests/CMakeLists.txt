@@ -18,7 +18,7 @@ set(TEST_BINARY tests)
 
 file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cuh *.cpp *.cc *.cu)
 
-message("TEST_SOURCES = ${SOURCES}")
+message("TEST_SOURCES = ${TEST_SOURCES}")
 
 add_executable(${TEST_BINARY} ${TEST_SOURCES})
 set_property(TARGET ${TEST_BINARY} PROPERTY CUDA_ARCHITECTURES ${${PROJECT_NAME}_CUDA_ARCHS})
