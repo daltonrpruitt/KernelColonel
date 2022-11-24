@@ -11,18 +11,14 @@ add_subdirectory(sandbox)
 
 set(${PROJECT_NAME}_CUDA_ARCHS  native )
 
-set(KC_SOURCES 
-    ${CMAKE_SOURCE_DIR}/src/include/IKernelData.hpp
-    ${CMAKE_SOURCE_DIR}/src/include/details/IKernelData.tpp
-    )
 
-add_library(kernel_colonel ${KC_SOURCES})
-target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
-set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
+add_library(kernel_colonel INTERFACE )
+target_include_directories(kernel_colonel INTERFACE ${CMAKE_SOURCE_DIR}/src/include)
+# set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
 set_property(TARGET kernel_colonel PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS})
-target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
+# target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
 
 if(false)
 add_executable(main src/main.cu)
