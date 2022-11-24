@@ -9,8 +9,6 @@
 
 #include <vector>
 #include <string>
-#include <algorithm>
-#include <exception>
 
 namespace KernelColonel {
 
