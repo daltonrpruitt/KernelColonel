@@ -15,6 +15,7 @@ struct gpu_data_s
     index_t* indices = nullptr;
 };
 
+/*
 template<typename value_t, typename index_t> 
 class IKernelExecution_Test : public IIKernelExecution<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
 {
@@ -155,68 +156,4 @@ TEST(IIKernelExecutionTests, Uninitialize) {
     EXPECT_EQ(data.gpu_named_data.indices, nullptr);
 }
 
-TEST(IIKernelExecutionTests, ReinitializeWithSameDevice) {
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
-    size_t data_size = 4;
-    IKernelExecution_t data(data_size);
-    
-    ASSERT_TRUE(data.init(0));
-    ASSERT_TRUE(data.init(0));
-    data.uninit();
-    ASSERT_TRUE(data.init(0));
-}
-
-TEST(IIKernelExecutionTests, ReinitializeWithDifferentDevice) {
-    int count;
-    cudaGetDevice(&count);
-    if(count == 1) {
-        GTEST_SKIP();
-    }
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
-    size_t data_size = 4;
-    IKernelExecution_t data(data_size);
-    
-    ASSERT_TRUE(data.init(0));
-    ASSERT_TRUE(data.init(0));
-    ASSERT_FALSE(data.init(1));
-    data.uninit();
-    ASSERT_TRUE(data.init(0));
-}
-
-TEST(IIKernelExecutionTests, Destruct) {
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
-    size_t data_size = 4;
-    IKernelExecution_t* data_ptr = new IKernelExecution_t(data_size);
-    
-    ASSERT_TRUE(data_ptr->init(0));
-    ASSERT_NO_THROW( { delete data_ptr; } );
-}
-
-template<typename gpu_data_t>
-__global__
-void copy_kernel(unsigned long long size, gpu_data_t data_struct) {
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if(idx >= size) return;
-    auto input = data_struct.input;
-    auto output = data_struct.output;
-    output[idx] = input[idx];
-}
-
-TEST(IIKernelExecutionTests, PassToKernel) {
-    using namespace ::testing;
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
-    size_t data_size = 4;
-    IKernelExecution_t data(data_size);
-    
-    const auto& cpu_data_vector = data.get_cpu_data_vector();
-    ASSERT_TRUE(data.init(0));
-    std::vector<float> v(data_size, 0);
-    ASSERT_THAT(cpu_data_vector[1], Pointwise(FloatEq(), v));
-
-    copy_kernel<decltype(data.gpu_named_data)><<<1,4>>>(data_size, data.gpu_named_data);
-    data.copyOutputToDevice();
-    
-    v.clear();
-    for(int i=0; i < data_size; ++i) v.push_back(i);
-    ASSERT_THAT(cpu_data_vector[1], Pointwise(FloatEq(), v));
-}
+*/
