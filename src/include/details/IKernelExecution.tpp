@@ -8,7 +8,7 @@
 
 #include "IKernelExecution.hpp"
 
-#include <utils/local_cuda_utils.h>
+#include <utils/local_cuda_utils.hpp>
 
 #include <algorithm>
 #include <string>
