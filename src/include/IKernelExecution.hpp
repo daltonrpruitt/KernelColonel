@@ -13,7 +13,9 @@
 namespace KernelColonel {
 
 /**
- * @brief Container for CPU/GPU data for different situations; used for reducing `cudaMemCpy()` calls
+ * @brief Container for GPU kernel execution configuration
+ * 
+ * TODO: Determine if should have be templated on all 
  * 
  * Necessary because different kernel contexts may use the same input data, but will the data
  * will be removed and re-computed and copied between separate kernel context instance executions.
