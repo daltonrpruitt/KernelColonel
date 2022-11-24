@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/include",
                 "/usr/include/linux",
                 "/usr/local/cuda-11.8/include"
             ],
@@ -17,7 +17,7 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-                    "${workspaceFolder}/src",
+                    "${workspaceFolder}/src/include",
                     "/usr/include/linux",
                     "/usr/local/cuda-11.8/include"
                 ],
