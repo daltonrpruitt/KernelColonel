@@ -10,8 +10,9 @@
 
 #include <utils/local_cuda_utils.h>
 
-#include <vector>
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
