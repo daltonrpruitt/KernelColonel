@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file IKernelData.tcu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
