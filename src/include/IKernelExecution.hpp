@@ -1,6 +1,6 @@
 #pragma once 
 /**
- * @file IKernelData.cuh
+ \* @file IKernelExecution.cuh
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Provides a wrapper surrounding the data inputs/outputs and indices 
  *          GPU kernel execution (in IKernelContext)
@@ -27,10 +27,10 @@ template<typename value_t,
          unsigned num_out_data, 
          unsigned int num_indices, 
          typename gpu_data_s_t>
-class IKernelData { 
+class IKernelExecution { 
   public:
-    IKernelData(unsigned long long n);
-    ~IKernelData();
+    IKernelExecution(unsigned long long n);
+    ~IKernelExecution();
 
     enum struct DataState { PREINIT = 0, INIT, UNINIT };
 
@@ -109,4 +109,4 @@ protected:
 
 } // namespace KernelColonel
 
-#include "details/IKernelData.tpp"
+#include "details/IKernelExecution.tpp"

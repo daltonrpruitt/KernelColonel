@@ -4,7 +4,7 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#include "IKernelData.hpp"
+#include "IKernelExecution.hpp"
 using namespace KernelColonel;
 
 template<typename value_t, typename index_t> 
@@ -16,12 +16,12 @@ struct gpu_data_s
 };
 
 template<typename value_t, typename index_t> 
-class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
+class IKernelExecution_Test : public IIKernelExecution<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
 {
   public:
     using vt_ = value_t;
     using it_ = index_t;
-    using super = IKernelData<vt_, it_, 1, 1, 1, gpu_data_s<vt_,it_>>;
+    using super = IIKernelExecution<vt_, it_, 1, 1, 1, gpu_data_s<vt_,it_>>;
     using super::N;
     using super::host_data;
     using super::host_indices;
@@ -30,7 +30,7 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1, gpu_data_s
     using super::gpu_named_data;
 
     
-    KernelData_Test(unsigned long long n) : super(n) {}
+    IKernelExecution_Test(unsigned long long n) : super(n) {}
 
     void set_extra_params(int i)
     {
@@ -70,9 +70,9 @@ class KernelData_Test : public IKernelData<value_t, index_t, 1, 1, 1, gpu_data_s
     int local_i = 0;
 };
 
-TEST(IKernelDataTests, Construct) {
-    using KernelData_t = KernelData_Test<float, int>;
-    KernelData_t data(4);
+TEST(IIKernelExecutionTests, Construct) {
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
+    IKernelExecution_t data(4);
     const auto& cpu_data_vector = data.get_cpu_data_vector();
     const auto& cpu_indices_vector = data.get_cpu_indices_vector();
     const auto& gpu_data_ptrs_vector = data.get_gpu_data_ptrs_vector();
@@ -97,10 +97,10 @@ TEST(IKernelDataTests, Construct) {
     EXPECT_EQ(data.gpu_named_data.indices, nullptr);
 }
 
-TEST(IKernelDataTests, Initialize) {
-    using KernelData_t = KernelData_Test<float, int>;
+TEST(IIKernelExecutionTests, Initialize) {
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
-    KernelData_t data(data_size);
+    IKernelExecution_t data(data_size);
     
     ASSERT_TRUE(data.init(0));
 
@@ -125,10 +125,10 @@ TEST(IKernelDataTests, Initialize) {
     EXPECT_EQ(data.gpu_named_data.indices, gpu_indices_ptrs_vector[0]);
 }
 
-TEST(IKernelDataTests, Uninitialize) {
-    using KernelData_t = KernelData_Test<float, int>;
+TEST(IIKernelExecutionTests, Uninitialize) {
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
-    KernelData_t data(data_size);
+    IKernelExecution_t data(data_size);
     const auto& cpu_data_vector = data.get_cpu_data_vector();
     const auto& cpu_indices_vector = data.get_cpu_indices_vector();
     const auto& gpu_data_ptrs_vector = data.get_gpu_data_ptrs_vector();
@@ -155,10 +155,10 @@ TEST(IKernelDataTests, Uninitialize) {
     EXPECT_EQ(data.gpu_named_data.indices, nullptr);
 }
 
-TEST(IKernelDataTests, ReinitializeWithSameDevice) {
-    using KernelData_t = KernelData_Test<float, int>;
+TEST(IIKernelExecutionTests, ReinitializeWithSameDevice) {
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
-    KernelData_t data(data_size);
+    IKernelExecution_t data(data_size);
     
     ASSERT_TRUE(data.init(0));
     ASSERT_TRUE(data.init(0));
@@ -166,15 +166,15 @@ TEST(IKernelDataTests, ReinitializeWithSameDevice) {
     ASSERT_TRUE(data.init(0));
 }
 
-TEST(IKernelDataTests, ReinitializeWithDifferentDevice) {
+TEST(IIKernelExecutionTests, ReinitializeWithDifferentDevice) {
     int count;
     cudaGetDevice(&count);
     if(count == 1) {
         GTEST_SKIP();
     }
-    using KernelData_t = KernelData_Test<float, int>;
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
-    KernelData_t data(data_size);
+    IKernelExecution_t data(data_size);
     
     ASSERT_TRUE(data.init(0));
     ASSERT_TRUE(data.init(0));
@@ -183,10 +183,10 @@ TEST(IKernelDataTests, ReinitializeWithDifferentDevice) {
     ASSERT_TRUE(data.init(0));
 }
 
-TEST(IKernelDataTests, Destruct) {
-    using KernelData_t = KernelData_Test<float, int>;
+TEST(IIKernelExecutionTests, Destruct) {
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
-    KernelData_t* data_ptr = new KernelData_t(data_size);
+    IKernelExecution_t* data_ptr = new IKernelExecution_t(data_size);
     
     ASSERT_TRUE(data_ptr->init(0));
     ASSERT_NO_THROW( { delete data_ptr; } );
@@ -202,11 +202,11 @@ void copy_kernel(unsigned long long size, gpu_data_t data_struct) {
     output[idx] = input[idx];
 }
 
-TEST(IKernelDataTests, PassToKernel) {
+TEST(IIKernelExecutionTests, PassToKernel) {
     using namespace ::testing;
-    using KernelData_t = KernelData_Test<float, int>;
+    using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
-    KernelData_t data(data_size);
+    IKernelExecution_t data(data_size);
     
     const auto& cpu_data_vector = data.get_cpu_data_vector();
     ASSERT_TRUE(data.init(0));
