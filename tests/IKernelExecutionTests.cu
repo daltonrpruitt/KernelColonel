@@ -26,13 +26,14 @@ struct gpu_data_s
     index_t* indices = nullptr;
 };
 
+/*
 template<typename value_t, typename index_t> 
 class IKernelExecution_Test : public IKernelExecution<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
 {
   public:
     using vt_ = value_t;
     using it_ = index_t;
-    using super = IIKernelExecution<vt_, it_, 1, 1, 1, gpu_data_s<vt_,it_>>;
+    using super = IKernelExecution<vt_, it_, 1, 1, 1, gpu_data_s<vt_,it_>>;
     using super::N;
     using super::host_data;
     using super::host_indices;
@@ -80,10 +81,11 @@ class IKernelExecution_Test : public IKernelExecution<value_t, index_t, 1, 1, 1,
 
     int local_i = 0;
 };
+*/
 
 
 
-TEST(IIKernelExecutionTests, Construct) {
+TEST(IKernelExecutionTests, Construct) {
     using IKernelExecution_t = IKernelExecution_Test<float, int>;
     IKernelExecution_t data(4);
     const auto& cpu_data_vector = data.get_cpu_data_vector();
@@ -112,7 +114,7 @@ TEST(IIKernelExecutionTests, Construct) {
 
 /*
 
-TEST(IIKernelExecutionTests, Initialize) {
+TEST(IKernelExecutionTests, Initialize) {
     using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
     IKernelExecution_t data(data_size);
@@ -140,7 +142,7 @@ TEST(IIKernelExecutionTests, Initialize) {
     EXPECT_EQ(data.gpu_named_data.indices, gpu_indices_ptrs_vector[0]);
 }
 
-TEST(IIKernelExecutionTests, Uninitialize) {
+TEST(IKernelExecutionTests, Uninitialize) {
     using IKernelExecution_t = IKernelExecution_Test<float, int>;
     size_t data_size = 4;
     IKernelExecution_t data(data_size);
