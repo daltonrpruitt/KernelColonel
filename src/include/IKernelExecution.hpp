@@ -8,7 +8,10 @@
  */
 
 #include <vector>
+#include <memory>
 #include <string>
+
+#include "IKernelData.hpp"
 
 namespace KernelColonel {
 
