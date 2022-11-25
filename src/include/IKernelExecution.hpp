@@ -26,12 +26,7 @@ namespace KernelColonel {
  * @tparam value_t Value type (data arrays)
  * @tparam it Index type (indirection arrays)
  */
-template<typename value_t, 
-         typename index_t, 
-         unsigned int num_in_data, 
-         unsigned num_out_data, 
-         unsigned int num_indices, 
-         typename gpu_data_s_t>
+template<class gpu_data_struct_t, type kernel_data_t>
 class IKernelExecution { 
   public:
     IKernelExecution(unsigned long long n);
