@@ -32,17 +32,29 @@ class IKernelExecution {
     IKernelExecution(unsigned long long n);
     ~IKernelExecution();
 
-    enum struct DataState { PREINIT = 0, INIT, UNINIT };
-
     /**
-     * @brief Setup all CPU and GPU data/index arrays
+     * @brief Run kernel on data and check result against CPU-computed result
      * 
-     * Setup on CPU side, allocate GPU memory, copy data over to GPU. 
+     * Ensure KernelData is initialized, execute kernel on GPU data, check result against "correct" values.
+     * TODO: Could have "correct" results computed locally ahead of time and stored with the data structure?
+     *        Or could just be recomputed everytime.... I think it makes more sense to store with the data structure, 
+     *        but should it be computed by the data structure??? NO, because the data structure knows nothing about 
+     *        the inputs/outputs/indices other than the type and number of each (and length). 
+     *        So, we could compute the output correctness here (in the derived class), then store with the data
+     *        structure, assume the output param is the first param of the kernel, then compute against the correct
+     *        version after execution.
      * 
-     * @return true Prematurely return if already initialized
+     * NOTE: The best practice when checking for correctness is probably to completely zero out the output before 
+     * the next execution. This function should do that after checking, but the regular execute will not, since it
+     * assumes correctness and so can avoid that overhead. 
+     * 
+     * NOTE: This does not ensure correctness of the CPU and GPU algorithms supplied by the user, only that both 
+     * algorithms compute the same result! 
+     * 
+     * @return true The output of the kernel matches the CPU-computed "correct" output 
      * @return false Failed to initialize properly (handling taken care of by owner of object)
      */
-    bool init(int dev_ctx_id);
+    bool check(std::shared_ptr<kernel_data_t> data);
 
     /**
      * @brief Free relevant structures (CPU and GPU)
