@@ -1,3 +1,14 @@
+/**
+ * @file IKernelExecutionTests.cu
+ * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
+ * @brief Set of unit/integration tests for the IKernelExecution class
+ * @version 0.1
+ * @date 2022-11-25
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -15,9 +26,8 @@ struct gpu_data_s
     index_t* indices = nullptr;
 };
 
-/*
 template<typename value_t, typename index_t> 
-class IKernelExecution_Test : public IIKernelExecution<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
+class IKernelExecution_Test : public IKernelExecution<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
 {
   public:
     using vt_ = value_t;
@@ -71,6 +81,8 @@ class IKernelExecution_Test : public IIKernelExecution<value_t, index_t, 1, 1, 1
     int local_i = 0;
 };
 
+
+
 TEST(IIKernelExecutionTests, Construct) {
     using IKernelExecution_t = IKernelExecution_Test<float, int>;
     IKernelExecution_t data(4);
@@ -97,6 +109,8 @@ TEST(IIKernelExecutionTests, Construct) {
     EXPECT_EQ(data.gpu_named_data.output, nullptr);
     EXPECT_EQ(data.gpu_named_data.indices, nullptr);
 }
+
+/*
 
 TEST(IIKernelExecutionTests, Initialize) {
     using IKernelExecution_t = IKernelExecution_Test<float, int>;
