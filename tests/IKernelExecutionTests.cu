@@ -12,11 +12,15 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <iostream>
+#include <typeinfo>
+#include <type_traits>
+
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#include "IKernelExecution.hpp"
-using namespace KernelColonel;
+// #include "IKernelExecution.hpp"
+// using namespace KernelColonel;
 
 template<typename value_t, typename index_t> 
 struct gpu_data_s
@@ -26,90 +30,91 @@ struct gpu_data_s
     index_t* indices = nullptr;
 };
 
-/*
-template<typename value_t, typename index_t> 
-class IKernelExecution_Test : public IKernelExecution<value_t, index_t, 1, 1, 1, gpu_data_s<value_t,index_t>>
+
+template<typename ...kernel_param_types>
+class IKernelExecution_Test // : public IKernelExecution<...>
 {
   public:
-    using vt_ = value_t;
-    using it_ = index_t;
-    using super = IKernelExecution<vt_, it_, 1, 1, 1, gpu_data_s<vt_,it_>>;
-    using super::N;
-    using super::host_data;
-    using super::host_indices;
-    using super::device_data_ptrs;
-    using super::device_indices_ptrs;
-    using super::gpu_named_data;
-
-    
-    IKernelExecution_Test(unsigned long long n) : super(n) {}
-
-    void set_extra_params(int i)
-    {
-        local_i = i;
-    }
-
-    const auto& get_cpu_data_vector()         { return host_data; }
-    const auto& get_cpu_indices_vector()      { return host_indices; }
-    const auto& get_gpu_data_ptrs_vector()    { return device_data_ptrs; }
-    const auto& get_gpu_indices_ptrs_vector() { return device_indices_ptrs; }
+    // using IKernelExecution_Test_t = IKernelExecution_Test<kernel_param_types...>;
+    // using super = IKernelExecution<kenrel_param_types...>
+    IKernelExecution_Test() = default; //: super(n) {}
+    ~IKernelExecution_Test() = default; //: super(n) {}
     
   private:
-    void initInputsCpu() override 
-    {
-        for(int i=0; i< N; ++i)
-        {
-            host_data[0].push_back(static_cast<value_t>(i));
-            host_data[1].push_back(static_cast<value_t>(0));
-        }
+  
+  template<typename... types, //typename... tail_types, 
+    typename = std::enable_if_t<sizeof...(types)==0, bool>>
+    void innerPrintTypes(std::ostream &os) const {}
+    
+    // template<typename last_type>
+    // inline static void innerPrintTypes(std::ostream &stream) {
+    //     stream << typeid(last_type).name();
+    //     // innerPrintTypes<tail_types...>(stream);      
+    // }
+
+    template<typename head_type, typename... tail_types>
+    void innerPrintTypes(std::ostream &os) const {
+        os << typeid(head_type).name() << ", ";
+        innerPrintTypes<tail_types...>(os);
+        // return os;
     }
 
-    void initIndicesCpu() override 
-    {
-        for(int i=0; i<N; ++i)
-        {
-            host_indices[0].push_back(static_cast<index_t>(i));
-        }        
-    }
 
-    void setGpuNamedData() override 
-    {
-        gpu_named_data.input = device_data_ptrs[0];
-        gpu_named_data.output = device_data_ptrs[1];
-        gpu_named_data.indices = device_indices_ptrs[0];
+  public: 
+    // template<typename head_type, typename... tail_types>
+    template<typename ...ts> 
+    friend std::ostream& operator<<(std::ostream& os, const IKernelExecution_Test<ts...>& exec);
+    
+    void PrintTypes() const {
+        std::stringbuf buf;
+        std::ostream s(&buf);
+        innerPrintTypes<kernel_param_types...>(s);
+        std::cout << buf.str() << std::endl;
     }
-
-    int local_i = 0;
+    
 };
-*/
+
+
+// template<typename ...kernel_param_types> 
+// std::ostream& operator<<(std::ostream& os, const IKernelExecution_Test<kernel_param_types...>& exec){
+//     exec.innerPrintTypes(os);
+//     os << std::endl;
+//     return os;
+// }
+
+template<typename... types, //typename... tail_types, 
+    typename = std::enable_if_t<sizeof...(types)==0, bool>>
+void innerPrintTypes(std::ostream &os) {}
+
+template<typename head_type, typename... tail_types, 
+    typename = std::enable_if_t<!std::is_same<head_type, void>::value, bool>>
+void innerPrintTypes(std::ostream &os) {
+    os << typeid(head_type).name() << ", ";
+    innerPrintTypes<tail_types...>(os);
+    // return os;
+}
+
+
+
+template<typename... types>
+void PrintTypes() {
+    std::stringbuf buf;
+    std::ostream stream(&buf);
+    // os << typeid(head_type).name() << ", ";
+    innerPrintTypes<types...>(stream);
+    std::cout << buf.str() << std::endl;
+}
 
 
 
 TEST(IKernelExecutionTests, Construct) {
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
-    IKernelExecution_t data(4);
-    const auto& cpu_data_vector = data.get_cpu_data_vector();
-    const auto& cpu_indices_vector = data.get_cpu_indices_vector();
-    const auto& gpu_data_ptrs_vector = data.get_gpu_data_ptrs_vector();
-    const auto& gpu_indices_ptrs_vector = data.get_gpu_indices_ptrs_vector();
-    
-    ASSERT_EQ(cpu_data_vector.size(), 2);
-    EXPECT_EQ(cpu_data_vector[0].size(), 0);
-    EXPECT_EQ(cpu_data_vector[1].size(), 0);
+    using IKernelExecution_t = IKernelExecution_Test<double, double, unsigned long long, bool, std::string>;
+    IKernelExecution_t kernel;
+    // std::cout << 
+    // PrintTypes<int, float, double>();
+    kernel.PrintTypes();
+    ASSERT_TRUE(true);
 
-    ASSERT_EQ(cpu_indices_vector.size(), 1);
-    EXPECT_EQ(cpu_indices_vector[0].size(), 0);
-
-    ASSERT_EQ(gpu_data_ptrs_vector.size(), 2);
-    EXPECT_EQ(gpu_data_ptrs_vector[0], nullptr);
-    EXPECT_EQ(gpu_data_ptrs_vector[1], nullptr);
-
-    ASSERT_EQ(gpu_indices_ptrs_vector.size(), 1);
-    EXPECT_EQ(gpu_indices_ptrs_vector[0], nullptr);
-
-    EXPECT_EQ(data.gpu_named_data.input, nullptr);
-    EXPECT_EQ(data.gpu_named_data.output, nullptr);
-    EXPECT_EQ(data.gpu_named_data.indices, nullptr);
 }
 
 /*
