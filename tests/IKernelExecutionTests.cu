@@ -13,11 +13,14 @@
 #include <gmock/gmock.h>
 
 #include <iostream>
+#include <string>
 #include <typeinfo>
 #include <type_traits>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+
+#include "utils/type_name.hpp"
 
 // #include "IKernelExecution.hpp"
 // using namespace KernelColonel;
@@ -48,10 +51,11 @@ class IKernelExecution_Test // : public IKernelExecution<...>
     
     template<typename head_type, typename... tail_types>
     void innerPrintTypes(std::ostream &os) const {
-        os << typeid(head_type).name() << ", ";
+        if(!os.tellp() == 0) 
+            os << ", ";
+        os << type_name<head_type>();
         innerPrintTypes<tail_types...>(os);
     }
-
 
   public: 
     // template<typename head_type, typename... tail_types>
@@ -62,11 +66,11 @@ class IKernelExecution_Test // : public IKernelExecution<...>
         std::stringbuf buf;
         std::ostream s(&buf);
         innerPrintTypes<kernel_param_types...>(s);
-        std::cout << buf.str() << std::endl;
+        std::cout << "type of *this = " << type_name<decltype(this)>() << std::endl; 
+        std::cout << "\ttemplated on: < " << buf.str() << " >" << std::endl;
     }
     
 };
-
 
 TEST(IKernelExecutionTests, Construct) {
     using IKernelExecution_t = IKernelExecution_Test<double, double, unsigned long long, bool, std::string>;

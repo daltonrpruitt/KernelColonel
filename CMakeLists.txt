@@ -8,6 +8,7 @@ project(microbenchmarks LANGUAGES CUDA CXX)
 include(FindCUDAToolkit)
 
 set(${PROJECT_NAME}_CUDA_ARCHS  native )
+set(GLOBAL PROPERTY CXX_STANDARD 17)
 
 
 add_library(kernel_colonel INTERFACE )
