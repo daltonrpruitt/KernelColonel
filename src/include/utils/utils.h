@@ -10,8 +10,15 @@
  */
 
 #include <time.h>
+#include <string>
+#include <iostream>
 
 double elapsed_time_ms(timespec startTime, timespec endTime){
     return (endTime.tv_sec - startTime.tv_sec) * 1000.0 +
                     (endTime.tv_nsec - startTime.tv_nsec) * 1e-6;
+}
+
+string bool_to_string(bool b){
+    // Python capitalization style
+    return b ? "True" : "False";
 }

@@ -8,7 +8,7 @@
 
 #include "IKernelData.hpp"
 
-#include <utils/local_cuda_utils.hpp>
+#include <utils/cuda_utils.hpp>
 
 #include <algorithm>
 #include <string>
