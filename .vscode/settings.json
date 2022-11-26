@@ -100,7 +100,9 @@
         "unordered_set": "cpp",
         "variant": "cpp",
         "xtree": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp"
     },
     "cSpell.words": [
         "Spmv",
