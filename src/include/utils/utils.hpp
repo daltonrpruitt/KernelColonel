@@ -18,7 +18,7 @@ double elapsed_time_ms(timespec startTime, timespec endTime){
                     (endTime.tv_nsec - startTime.tv_nsec) * 1e-6;
 }
 
-string bool_to_string(bool b){
+std::string bool_to_string(bool b){
     // Python capitalization style
     return b ? "True" : "False";
 }
