@@ -46,17 +46,10 @@ class IKernelExecution_Test // : public IKernelExecution<...>
     typename = std::enable_if_t<sizeof...(types)==0, bool>>
     void innerPrintTypes(std::ostream &os) const {}
     
-    // template<typename last_type>
-    // inline static void innerPrintTypes(std::ostream &stream) {
-    //     stream << typeid(last_type).name();
-    //     // innerPrintTypes<tail_types...>(stream);      
-    // }
-
     template<typename head_type, typename... tail_types>
     void innerPrintTypes(std::ostream &os) const {
         os << typeid(head_type).name() << ", ";
         innerPrintTypes<tail_types...>(os);
-        // return os;
     }
 
 
@@ -75,43 +68,9 @@ class IKernelExecution_Test // : public IKernelExecution<...>
 };
 
 
-// template<typename ...kernel_param_types> 
-// std::ostream& operator<<(std::ostream& os, const IKernelExecution_Test<kernel_param_types...>& exec){
-//     exec.innerPrintTypes(os);
-//     os << std::endl;
-//     return os;
-// }
-
-template<typename... types, //typename... tail_types, 
-    typename = std::enable_if_t<sizeof...(types)==0, bool>>
-void innerPrintTypes(std::ostream &os) {}
-
-template<typename head_type, typename... tail_types, 
-    typename = std::enable_if_t<!std::is_same<head_type, void>::value, bool>>
-void innerPrintTypes(std::ostream &os) {
-    os << typeid(head_type).name() << ", ";
-    innerPrintTypes<tail_types...>(os);
-    // return os;
-}
-
-
-
-template<typename... types>
-void PrintTypes() {
-    std::stringbuf buf;
-    std::ostream stream(&buf);
-    // os << typeid(head_type).name() << ", ";
-    innerPrintTypes<types...>(stream);
-    std::cout << buf.str() << std::endl;
-}
-
-
-
 TEST(IKernelExecutionTests, Construct) {
     using IKernelExecution_t = IKernelExecution_Test<double, double, unsigned long long, bool, std::string>;
     IKernelExecution_t kernel;
-    // std::cout << 
-    // PrintTypes<int, float, double>();
     kernel.PrintTypes();
     ASSERT_TRUE(true);
 
