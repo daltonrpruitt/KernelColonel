@@ -26,7 +26,7 @@ set_property(TARGET ${TEST_BINARY} PROPERTY CXX_STANDARD 17)
 
 add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
-target_link_libraries(${TEST_BINARY} PUBLIC gtest_main gmock_main kernel_colonel)
+target_link_libraries(${TEST_BINARY} PUBLIC gtest_main gmock_main kernel_colonel nvrtc cuda)
 target_include_directories(${TEST_BINARY} PUBLIC ${CMAKE_SOURCE_DIR}/headers})
 
 add_custom_target (${TEST_BINARY}.tgt
