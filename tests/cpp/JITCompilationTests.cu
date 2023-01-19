@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <string>
+#include <tuple>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
@@ -102,3 +103,5 @@ TEST(JITCompilationTest, SimpleProgram) {
  * 
  */
 
+template<int N, typename... Ts> using NthTypeOf =
+        typename std::tuple_element<N, std::tuple<Ts...>>::type;
