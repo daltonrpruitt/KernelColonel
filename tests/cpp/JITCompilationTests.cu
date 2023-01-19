@@ -105,3 +105,95 @@ TEST(JITCompilationTest, SimpleProgram) {
 
 template<int N, typename... Ts> using NthTypeOf =
         typename std::tuple_element<N, std::tuple<Ts...>>::type;
+
+template<typename ...io_types>
+class simple_kernel
+{
+    const char* program_source =
+        "my_program\n"
+        "template<typename in_t, typename out_t>\n"
+        "__global__\n"
+        "void single_thread_copy(unsigned int N, in_t* in, out_t* out) {\n"
+        "    for( int i=0; i<N-1; ++i ) {\n"
+        "        out[i] = in[i];\n" // should auto cast? 
+        "    }\n"
+        "}\n";
+    static jitify::JitCache kernel_cache;
+    bool m_compiled = false;
+    jitify::Program m_program;
+
+  public:
+    void compile() {
+        m_program = kernel_cache.program(program_source, 0);
+        m_compiled = true;
+    }
+
+    std::vector<NthTypeOf<1,io_types...>> run(int N) {
+        // unsigned int N = 5;
+        using in_t = NthTypeOf<0,io_types...>;
+        using out_t = NthTypeOf<1,io_types...>;
+
+
+        std::vector<in_t> h_input; for(int i=0; i<N; ++i) { h_input.push_back(i); }
+        std::vector<out_t> h_output(N, 0);
+        in_t* d_input;
+        out_t* d_output;
+        std::tuple<io_types...> tpl;
+
+        cudaMalloc((void**)&d_input, sizeof(in_t));
+        cudaMalloc((void**)&d_output, sizeof(out_t));
+
+        cudaMemcpy(d_input, &h_input, sizeof(in_t)*N, cudaMemcpyHostToDevice);
+        dim3 grid(1);
+        dim3 block(1);
+        using jitify::reflection::reflect_template;
+        using jitify::reflection::reflect;
+        std::cout<< reflect_template<io_types...>() << std::endl;
+
+        auto instance = m_program.kernel("single_thread_copy").instantiate();
+        auto configured_instance = instance.configure(grid, block);
+        CHECK_CUDA( configured_instance.launch(N, d_input, d_output) );
+
+        cudaMemcpy(&h_output, d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
+        cudaFree(d_input);
+        cudaFree(d_output);
+        return h_output;
+
+    }
+};
+
+TEST(JITCompilationTest, ParameterPackPassToKernel) {
+    
+    // using in_t = int;
+    // using out_t = int;
+
+    unsigned int N = 5;
+    // std::vector<in_t> h_input; for(int i=0; i<N; ++i) { h_input.push_back(i); }
+    // std::vector<out_t> h_output(N, 0);
+    // in_t* d_input;
+    // out_t* d_output;
+
+    // cudaMalloc((void**)&d_input, sizeof(in_t));
+    // cudaMalloc((void**)&d_output, sizeof(out_t));
+
+    // cudaMemcpy(d_input, &h_input, sizeof(in_t)*N, cudaMemcpyHostToDevice);
+    // dim3 grid(1);
+    // dim3 block(1);
+    // using jitify::reflection::type_of;
+    // CHECK_CUDA(program.kernel("single_thread_copy")
+    //                 .instantiate(type_of(*d_input), type_of(*d_output))
+    //                 .configure(grid, block)
+    //                 .launch(N, d_input, d_output));
+    // cudaMemcpy(&h_output, d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
+    // cudaFree(d_input);
+    // cudaFree(d_output);
+    simple_kernel<double, int> first_kernel;
+    auto h_output = first_kernel.run(N);
+
+    std::cout << h_output[0];
+    for (int i=1; i<N; ++i) { std::cout << ", " << h_output[i]; }
+    std::cout << std::endl;
+    for (int i=1; i<N; ++i) {
+        ASSERT_TRUE(std::abs(h_output[i] - i) < 1e-5);
+    }
+}
