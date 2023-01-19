@@ -94,3 +94,11 @@ TEST(JITCompilationTest, SimpleProgram) {
     std::cout << h_data << std::endl;
     ASSERT_TRUE(are_close(h_data, 125.f));
 }
+
+/**
+ * @brief What I need to test for here.
+ * 
+ * - can pass template parameter pack through to the kernel instantiation
+ * 
+ */
+
