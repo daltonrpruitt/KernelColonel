@@ -106,6 +106,8 @@ TEST(JITCompilationTest, SimpleProgram) {
 template<int N, typename... Ts> using NthTypeOf =
         typename std::tuple_element<N, std::tuple<Ts...>>::type;
 
+static jitify::JitCache kernel_cache;
+
 template<typename ...io_types>
 class simple_kernel
 {
@@ -118,7 +120,6 @@ class simple_kernel
         "        out[i] = in[i];\n" // should auto cast? 
         "    }\n"
         "}\n";
-    static jitify::JitCache kernel_cache;
     bool m_compiled = false;
     jitify::Program m_program;
 
