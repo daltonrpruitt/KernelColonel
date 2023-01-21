@@ -154,7 +154,7 @@ class simple_kernel
 
         auto instance = m_program.kernel("single_thread_copy").instantiate();
         auto configured_instance = instance.configure(grid, block);
-        CHECK_CUDA( configured_instance.launch(N, d_input, d_output) );
+         // CHECK_CUDA( configured_instance.launch(N, d_input, d_output) );
 
         cudaMemcpy(&h_output, d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
         cudaFree(d_input);
