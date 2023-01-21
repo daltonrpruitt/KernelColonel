@@ -100,7 +100,7 @@ struct SpmvKernel {
     size_t shared_memory_usage=0;
     int register_usage=-1;
     int max_blocks_simultaneous_per_sm=-1;
-    device_context* dev_ctx;
+    GpuDeviceContext* dev_ctx;
 
 
     string matrix_filename;
@@ -139,7 +139,7 @@ struct SpmvKernel {
     //     }
     // } ctx;
 
-  SpmvKernel(int bs, device_context* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
+  SpmvKernel(int bs, GpuDeviceContext* d_ctx, string mtx_filename, int shd_mem_alloc = 0) 
     : Bsz(bs), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc), matrix_filename(mtx_filename) {
         //  : super(2, 1, 2, n, bs, dev_ctx, shd_mem_alloc) {
         //this->name = "SpMV";

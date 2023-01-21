@@ -8,12 +8,12 @@
             "type": "process",
             "command": "cmake",
             "args":[
-                "-DCMAKE_BUILD_TYPE=debug",
+                "-DCMAKE_BUILD_TYPE=Debug",
                 "-B",".",
                 "-S","${workspaceFolder}",
             ],
             "options": {
-                "cwd": "${workspaceFolder}/build/debug"
+                "cwd": "${workspaceFolder}/build"
             },
 			"problemMatcher": [
 				"$gcc"
@@ -39,6 +39,51 @@
 			],
 			"group": "build"
 
+        },
+        {
+            "label": "CMake Build Debug `tests`",
+            "type": "process",
+            "command": "cmake",
+            "args":[
+                "--build",
+                ".",
+                "--target",
+                "tests.tgt"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$nvcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "CMake Clean and Build Debug `tests`",
+            "type": "process",
+            "command": "cmake",
+            "args":[
+                "--build",
+                ".",
+                "--target",
+                "tests.tgt",
+                "--clean-first"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "problemMatcher": [
+                "$gcc",
+                "$nvcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
         }
 
     ]

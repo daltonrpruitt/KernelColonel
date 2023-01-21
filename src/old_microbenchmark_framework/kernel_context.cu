@@ -54,7 +54,7 @@ void compute_kernel(unsigned long long N, kernel_ctx_t ctx) {
  */
 template<typename kernel_ctx_t>
 inline
-float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, device_context* dev_ctx, kernel_ctx_t ctx) {
+float local_execute_template(int N, int Gsz, int Bsz, int shdmem_usage, GpuDeviceContext* dev_ctx, kernel_ctx_t ctx) {
     if(dev_ctx->props_.major >= 7) {
         cudaFuncAttributes attr;
         cudaFuncGetAttributes(&attr, compute_kernel<kernel_ctx_t>);
@@ -120,130 +120,10 @@ struct KernelCPUContext {
         int total_index_reads;
         int total_writes;
 
-        device_context* dev_ctx;
+        KernelCPUContext(int bs, int shd_mem_alloc=0)
+            : N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc) {}
 
-        vector<vector<vt>> host_data{(unsigned long)num_total_data};
-        vector<vt *> device_data_ptrs{(unsigned long)num_total_data};
-
-        
-        vector<vector<it>> host_indices{(unsigned long)num_indices};
-        vector<it *> device_indices_ptrs{(unsigned long)num_indices};
-
-        /**
-         * @brief Free GPU memory
-         */
-        void free(){
-            for(vt* ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
-            for(it* ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
-        }
-        
-        /**
-         * @brief Free relevant structures (CPU and GPU)
-         */
-        void uninit() {
-            if(!initialized) {return;}
-            free();
-            for(int i=0; i<num_total_data; ++i) { 
-                vector<vt>().swap(host_data[i]); 
-            }
-            for(int i=0; i<num_indices; ++i) { 
-                vector<it>().swap(host_indices[i]); 
-            }
-            initialized = false;
-        }
-
-        /**
-         * @brief Placeholder for user-defined input data array(s) initialization
-         * 
-         * @param pass Initialization successful? 
-         */
-        virtual void init_inputs(bool& pass) {};
-
-        /**
-         * @brief Placeholder for user-defined indicies array(s) initialization
-         * 
-         * @param pass Initialization successful? 
-         */
-        virtual void init_indices(bool& pass) {};
-
-        KernelCPUContext(int in, int out, int indices, unsigned long long n, int bs, device_context* d_ctx, int shd_mem_alloc=0)
-            : num_in_data(in), num_out_data(out), num_indices(indices), 
-            num_total_data(in+out), N(n), Bsz(bs), Gsz( (n+bs-1)/bs ), dev_ctx(d_ctx), shared_memory_usage(shd_mem_alloc) {
-            }
-
-        /**
-         * @brief Setup all CPU and GPU data/index arrays
-         * 
-         * Setup on CPU side, allocate GPU memory, copy data over to GPU. 
-         * 
-         * @return true Prematurely return if already initialized
-         * @return false Failed to initialize properly (handling taken care of by owner of object)
-         */
-        bool init(){
-            if(initialized) { return true; }
-            bool pass = true;
-            if(input_size == 0) { input_size = N; }
-            if(output_size == 0) { output_size = N; }
-            if(indices_size == 0) { indices_size = N; }
-
-            compute_max_simultaneous_blocks(pass);
-            if(pass) init_inputs(pass);
-            if(pass) init_indices(pass);
-
-            if(pass){
-
-                device_data_ptrs.resize(num_total_data);
-
-                for(int i=0; i < num_in_data; ++i) {
-                    cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], input_size * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
-                    if(!pass) break;
-                }
-
-                if(pass) {
-                    for(int i=num_in_data; i < num_total_data; ++i) {
-                        cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], output_size * sizeof(vt)),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
-                        if(!pass) break;
-                    }
-                }
-                
-                if(pass) {
-                    for(int i=0; i < num_in_data; ++i) {
-                        cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), input_size * sizeof(vt), cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
-                        if(!pass) break;
-                    }
-                }
-
-                for(int i=0; i < num_indices; ++i) {
-                    cudaErrChk(cudaMalloc((void **)&device_indices_ptrs[i], indices_size * sizeof(it)),"device_indices_ptrs["+to_string(i)+"] mem allocation", pass);
-                    if(!pass) break;
-                }
-
-                if(pass) {
-                    for(int i=0; i < num_indices; ++i) {
-                        cudaErrChk(cudaMemcpy(device_indices_ptrs[i], host_indices[i].data(), indices_size * sizeof(it), cudaMemcpyHostToDevice), "copy host_indices["+to_string(i)+"] to device_indices_ptrs["+to_string(i)+"]", pass);                
-                        if(!pass) break;
-                    }
-                }
-
-                if(pass) { set_dev_ptrs(); }
-            }
-
-            if(!pass) {
-                free(); 
-                okay = false;
-                cerr<<"Error in initializing "<<this->name << "for N="<<this->N<<" Bsz="<<this->Bsz;
-                if(input_size != 0) cout << " input_sz="<<input_size;
-                if(output_size != 0) cout << " output_sz="<<output_size;
-                if(indices_size != 0) cout << " indices_sz="<<indices_size;
-                cerr << " !" << endl;
-            }
-            if(pass) initialized = true;
-            return pass;
-        }
-
-        ~KernelCPUContext(){
-            uninit();            
-        }
+        ~KernelCPUContext() = default;
 
         /**
          * @brief Set the config bool object
@@ -254,9 +134,9 @@ struct KernelCPUContext {
          * 
          * @param val Value to set the config_bool to
          */
-        virtual void set_config_bool(bool val) {
-            cerr << "set_config_bool() is undefined for this kernel!" << endl;
-        };
+        // virtual void set_config_bool(bool val) {
+        //     cerr << "set_config_bool() is undefined for this kernel!" << endl;
+        // };
 
         /**
          * @brief Base output of configuration information

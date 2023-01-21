@@ -1,12 +1,6 @@
 # KernelColonel
 A framework for testing various GPU CUDA kernels, with GPGPU computation in mind.
 
-⚠️🛑⚠️🛑⚠️🛑⚠️🛑⚠️🛑⚠️🛑 \
-Please consider this repo a work in progress!!!
-
-## Adding a new kernel
-### Step 1. Copy and modify derived class file (template.cu)
-### Step 2. Add to main.cu or different main() file
-See the current main.cu for reference on one way to specify output file names. 
-### Step 3. Compile and run
-
+🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑 \
+This repo is currently not under active development due to conflicting responsibilities and lack of external interest (or any efforts to garner interest). \
+If interested in discussing this project or other aspects of GPU programming, please open an issue and `@daltonrpruitt` to ping me (or find another way, I'm sure you're clever). 

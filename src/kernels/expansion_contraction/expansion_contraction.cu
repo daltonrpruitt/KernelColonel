@@ -75,7 +75,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
         int Gsz = super::Gsz;
         int Bsz = super::Bsz;
 
-        // Setup inputs/outputs, both data and indicies
+        // Setup inputs/outputs, both data and indices
         // Can be still in vector form, but is easier to identify explicitly with names   
         // Example
         vector<vt> & in = super::host_data[0];
@@ -109,7 +109,7 @@ struct ExpansionContractionContext : public KernelCPUContext<vt, it> {
             }
         } ctx ;
 
-        ExpansionContractionContext(int n, int bs, device_context* dev_ctx, int shd_mem_alloc=0) 
+        ExpansionContractionContext(int n, int bs, GpuDeviceContext* dev_ctx, int shd_mem_alloc=0) 
             : super(1, 1, 1, n, bs, dev_ctx, shd_mem_alloc) {
             this->name = "ExpansionContraction";
             unsigned long long total_size = 2 * N; 

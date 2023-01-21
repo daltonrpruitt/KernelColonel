@@ -48,8 +48,6 @@ struct CRSMat_gpu {
 template <typename it=int, typename vt=double, int const_valence=-1>
 class CRSMat {
     public:
-        typedef it it;
-        typedef vt vt;
         string filename; 
         int m, n, nnz;
         vt* values;
