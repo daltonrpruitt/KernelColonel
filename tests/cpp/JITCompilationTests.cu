@@ -130,6 +130,7 @@ class simple_kernel
 
     std::vector<NthTypeOf<1,io_types...>> run(int N) {
         // unsigned int N = 5;
+        if (!m_compiled) { compile(); }
         using in_t = NthTypeOf<0,io_types...>;
         using out_t = NthTypeOf<1,io_types...>;
 
