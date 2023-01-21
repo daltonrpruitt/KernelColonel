@@ -5,50 +5,52 @@ cmake_minimum_required(VERSION 3.20)
 
 project(microbenchmarks LANGUAGES CUDA CXX)
 
+set(CMAKE_BUILD_TYPE "Debug")
+
+include(FetchContent REQUIRED)
+FetchContent_Declare(
+  jitify
+  GIT_REPOSITORY https://github.com/NVIDIA/jitify
+  GIT_TAG        0d0954efc5b3efa5224589ab91c53e1de9512201
+#   CONFIGURE_COMMAND ""
+#   BUILD_COMMAND ""
+)
+FetchContent_MakeAvailable(jitify)
+message(STATUS "jitify_SOURCE_DIR=${jitify_SOURCE_DIR}")
+FetchContent_GetProperties(jitify)
+if(NOT jitify_POPULATED)
+  FetchContent_Populate(jitify)
+endif()
+
+add_library(jitify INTERFACE)
+target_include_directories(jitify INTERFACE ${jitify_SOURCE_DIR})
+
+
 include(FindCUDAToolkit)
 
-add_subdirectory(sandbox)
-
-set(${PROJECT_NAME}_CUDA_ARCHS  native ) # 52-Quadro M2000 or GTX 980M (personal laptop)
-# set(${PROJECT_NAME}_CUDA_ARCHS 80) #80-A100
-# set(${PROJECT_NAME}_CUDA_ARCHS 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
+set(${PROJECT_NAME}_CUDA_ARCHS  native )
+set(GLOBAL PROPERTY CXX_STANDARD 17)
 
 
-
-
-set(KC_SOURCES 
-    ${CMAKE_SOURCE_DIR}/src/include/IKernelData.cuh
-    ${CMAKE_SOURCE_DIR}/src/include/details/IKernelData.tcu
-    # src/cpp/IKernelExecContext.cu
-    # src/cpp/IKernelDriver.cu
-    )
-
-add_library(kernel_colonel ${KC_SOURCES})
-target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
-set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
+add_library(kernel_colonel INTERFACE )
+target_include_directories(kernel_colonel INTERFACE ${CMAKE_SOURCE_DIR}/src/include)
+target_link_libraries(kernel_colonel INTERFACE jitify)
+# set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
 set_property(TARGET kernel_colonel PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS})
-target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
+# target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
 
 if(false)
 add_executable(main src/main.cu)
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS} )
-# set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --keep -Xptxas -dlcm=cg")
-if (MSVC)
-    target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -Xcompiler "/bigobj" >)
-    # list(APPEND CUDA_NVCC_FLAGS  "--compiler-options;/bigobj")
-# else ()
-#   target_compile_options(main PRIVATE -Wa,-mbig-obj)
-endif ()
 target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                         --keep 
                         -Xptxas -dlcm=cg
                         -Xcudafe "--diag_suppress=unsigned_compare_with_zero"
 >)
 
-if (NOT MSVC)
 add_executable(spmv src/spmv.cu)
 set_property(TARGET spmv PROPERTY CXX_STANDARD 17)
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS})
@@ -62,14 +64,6 @@ target_compile_options(spmv PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                         -Xptxas -dlcm=cg
                         -Xcudafe "--diag_suppress=set_but_not_used --diag_suppress=declared_but_not_referenced"
 >)
-
-if (MSVC)
-    target_compile_options(spmv PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -Xcompiler "/bigobj" >)
-# else ()
-#   target_compile_options(spmv PRIVATE -Wa,-mbig-obj)
-endif ()
-         
-endif ()
 
 endif ()
 

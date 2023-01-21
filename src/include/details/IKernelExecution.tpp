@@ -1,16 +1,18 @@
+#pragma once
 /**
- * @file IKernelData.tcu
+ \* @file IKernelExecution.tpp
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Implements IKernelData
+ * @brief Implements IKernelExecution
  * 
  */
 
-#include "IKernelData.cuh"
+#include "IKernelExecution.hpp"
 
-#include <utils/local_cuda_utils.h>
+#include <utils/local_cuda_utils.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
@@ -20,6 +22,7 @@ namespace KernelColonel {
 using std::string;
 using std::to_string;
 using std::cout;
+using std::cerr;
 using std::endl;
 using std::vector;
 
@@ -27,15 +30,15 @@ using std::vector;
 
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::IKernelData(unsigned long long n) : N(n) {}
+IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::IKernelExecution(unsigned long long n) : N(n) {}
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::~IKernelData(){
+IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::~IKernelExecution(){
     uninit();            
     }
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(int dev_ctx_id){
+bool IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(int dev_ctx_id){
     if(state == DataState::INIT){
         if(dev_ctx_id == gpu_device_id) {
             cout <<"Tried to reinitialize "<< this->name << "with same device id=" << gpu_device_id << "; Ignored" << std::endl;
@@ -107,7 +110,7 @@ bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(
 }
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::uninit() {
+void IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::uninit() {
     if(state != DataState::INIT) {
         std::cout << "Attempted to uninit() a KernelData instance without being init()'d!" << std::endl;
         return;
@@ -119,21 +122,21 @@ void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::unini
 }
     
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyOutputToDevice(){
+void IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyOutputToDevice(){
     for(int i=num_in_data; i < num_total_data; ++i) {
         cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * value_t_size, cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]");
     }            
 }
     
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::freeGpuData(){
+void IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::freeGpuData(){
     cudaSetDevice(gpu_device_id);
     for(auto &ptr : device_data_ptrs)     { cudaFree(ptr); ptr = nullptr; }
     for(auto &ptr : device_indices_ptrs)  { cudaFree(ptr); ptr = nullptr; }
 }
         
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::freeCpuData(){
+void IKernelExecution<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::freeCpuData(){
     for(int i=0; i<num_total_data; ++i) { 
         vector<vt>().swap(host_data[i]); 
     }

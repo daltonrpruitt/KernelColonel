@@ -4,26 +4,22 @@
 #include <string>
 #include <iostream>
 
-using std::string;
-using std::cerr;
-using std::endl;
-
-void cudaErrChk(cudaError_t status, string msg, bool& pass) {
+inline void cudaErrChk(cudaError_t status, std::string msg, bool& pass) {
     if (status != cudaSuccess) {
-        cerr << "Error with " << msg << "!" << endl;
+        std::cerr << "Error with " << msg << "!" << std::endl;
         pass = false;
     }
 }
 
-void cudaErrChk(cudaError_t status, string msg) {
+inline void cudaErrChk(cudaError_t status, std::string msg) {
     if (status != cudaSuccess) {
         std::string cuda_error_string = cudaGetErrorString(status);
         throw std::runtime_error("Error with " + msg +  " : cuda err msg= '" + cuda_error_string + "'");
     }
 }
 
-void cudaPrintLastError() {
+inline void cudaPrintLastError() {
     cudaError_t status = cudaGetLastError();
     if (status != cudaSuccess)
-        cerr << "Error = " << cudaGetErrorString(status) << endl;
+        std::cerr << "Error = " << cudaGetErrorString(status) << std::endl;
 }
