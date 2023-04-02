@@ -96,6 +96,18 @@ TEST(JITCompilationTest, SimpleProgram) {
     ASSERT_TRUE(are_close(h_data, 125.f));
 }
 
+namespace std
+{
+    template<typename T>
+    std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec){
+        os << "< " << std::to_string(vec[0]);
+            for (int i=1; i<vec.size() && i < 10; ++i) { os << ", " << vec[i]; }
+        if(vec.size() > 10) { os << " ... "; }
+        os << ">" << std::endl;
+        return os;
+    }
+} // namespace std
+
 /**
  * @brief What I need to test for here.
  * 
@@ -157,6 +169,7 @@ class simple_kernel
         launcher.safe_launch(N, d_input, d_output);
 
         cudaMemcpy(&h_output[0], d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
+        std::cout << h_output;
         cudaFree(d_input);
         cudaFree(d_output);
         return h_output;
@@ -191,10 +204,8 @@ TEST(JITCompilationTest, ParameterPackPassToKernel) {
     // cudaFree(d_output);
     simple_kernel<double, int> first_kernel;
     auto h_output = first_kernel.run(N);
+    std::cout << h_output;
 
-    std::cout << h_output[0];
-    for (int i=1; i<N; ++i) { std::cout << ", " << h_output[i]; }
-    std::cout << std::endl;
     for (int i=0; i<N; ++i) {
         ASSERT_TRUE(std::abs(h_output[i] - i) < 1e-5);
     }
