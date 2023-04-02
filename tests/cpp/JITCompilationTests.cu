@@ -152,9 +152,9 @@ class simple_kernel
         using jitify::reflection::reflect;
         std::cout<< reflect_template<io_types...>() << std::endl;
 
-        auto instance = m_program.kernel("single_thread_copy").instantiate();
-        auto configured_instance = instance.configure(grid, block);
-         // CHECK_CUDA( configured_instance.launch(N, d_input, d_output) );
+        auto instance = m_program.kernel("single_thread_copy").instantiate<io_types...>();
+        auto launcher = instance.configure(grid, block);
+        launcher.safe_launch(N, d_input, d_output);
 
         cudaMemcpy(&h_output, d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
         cudaFree(d_input);
