@@ -116,7 +116,7 @@ class simple_kernel
         "template<typename in_t, typename out_t>\n"
         "__global__\n"
         "void single_thread_copy(unsigned int N, in_t* in, out_t* out) {\n"
-        "    for( int i=0; i<N-1; ++i ) {\n"
+        "    for( int i=0; i<N; ++i ) {\n"
         "        out[i] = in[i];\n" // should auto cast? 
         "    }\n"
         "}\n";
@@ -142,10 +142,10 @@ class simple_kernel
         out_t* d_output;
         std::tuple<io_types...> tpl;
 
-        cudaMalloc((void**)&d_input, sizeof(in_t));
-        cudaMalloc((void**)&d_output, sizeof(out_t));
+        cudaMalloc((void**)&d_input, sizeof(in_t)*N);
+        cudaMalloc((void**)&d_output, sizeof(out_t)*N);
 
-        cudaMemcpy(d_input, &h_input, sizeof(in_t)*N, cudaMemcpyHostToDevice);
+        cudaMemcpy(d_input, &h_input[0], sizeof(in_t)*N, cudaMemcpyHostToDevice);
         dim3 grid(1);
         dim3 block(1);
         using jitify::reflection::reflect_template;
@@ -156,7 +156,7 @@ class simple_kernel
         auto launcher = instance.configure(grid, block);
         launcher.safe_launch(N, d_input, d_output);
 
-        cudaMemcpy(&h_output, d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
+        cudaMemcpy(&h_output[0], d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
         cudaFree(d_input);
         cudaFree(d_output);
         return h_output;
@@ -195,7 +195,7 @@ TEST(JITCompilationTest, ParameterPackPassToKernel) {
     std::cout << h_output[0];
     for (int i=1; i<N; ++i) { std::cout << ", " << h_output[i]; }
     std::cout << std::endl;
-    for (int i=1; i<N; ++i) {
+    for (int i=0; i<N; ++i) {
         ASSERT_TRUE(std::abs(h_output[i] - i) < 1e-5);
     }
 }
