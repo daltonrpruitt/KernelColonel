@@ -157,6 +157,10 @@ class simple_kernel
         cudaMalloc((void**)&d_input, sizeof(in_t)*N);
         cudaMalloc((void**)&d_output, sizeof(out_t)*N);
 
+        auto cleanup = [&]() {
+            cudaFree(d_input);
+            cudaFree(d_output);
+        };
         cudaMemcpy(d_input, &h_input[0], sizeof(in_t)*N, cudaMemcpyHostToDevice);
         dim3 grid(1);
         dim3 block(1);
@@ -166,12 +170,16 @@ class simple_kernel
 
         auto instance = m_program.kernel("single_thread_copy").instantiate<io_types...>();
         auto launcher = instance.configure(grid, block);
-        launcher.safe_launch(N, d_input, d_output);
+        try {
+            launcher.safe_launch(N, d_input, d_output);
+        } catch (const std::runtime_error& e) {
+            cleanup();
+            throw(e);
+        }
 
         cudaMemcpy(&h_output[0], d_output, sizeof(out_t)*N, cudaMemcpyDeviceToHost);
         std::cout << h_output;
-        cudaFree(d_input);
-        cudaFree(d_output);
+        cleanup();
         return h_output;
 
     }
