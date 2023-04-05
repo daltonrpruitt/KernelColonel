@@ -2,6 +2,36 @@
 #include <fstream>
 #include <string>
 
+
+/**
+ * @brief current (2023-04-04) plan:
+ * - Assume a common simple kernel signature : single input, single output; both doubles
+ * - Configuration allowed is basically the launch parameters (block size/grid size/ input data setup category)
+ * - the framework then : 
+ *      1. takes some config file input
+ *      2. configures the list of kernel runs from the file and places into some sorted queue based on 
+ *              the configuration of the input data 
+ *      3. runs in the "sorted queue" are grouped into batches to be run on the GPU
+ *      4. for each batch:
+ *          1. Start by allocating the required memory on the GPU, computing the data somehow, then copying the data to the GPU
+ *          2. perform checks of each configured run
+ *                  loop over the configurations:
+ *                      execute the kernel
+ *                      copy output data back to host
+ *                      verify output data with CPU computation/comparison
+ *                  if fails any, record why (if can), throw and stop any remaining runs (need all to pass)
+ *                  This step is to confirm that every configuration is valid before getting performance data.
+ *          3. Actual performance runs:
+ *             for i in repeat_times:
+ *                  loop over the configurations:
+ *                      start timer
+ *                      execute the kernel
+ *                      stop timer
+ *                      record time result to vector of times for this configuration
+ *          4. perform statistics on recorded data vectors
+ *          5. record data out to files for post-processing
+ */
+
 class IData
 {
   public:
