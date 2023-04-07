@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "IKernelData.hpp"
+#include "data/IKernelData.hpp"
 
 namespace KernelColonel {
 

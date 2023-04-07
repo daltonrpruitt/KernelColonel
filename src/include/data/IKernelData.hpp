@@ -109,4 +109,4 @@ protected:
 
 } // namespace KernelColonel
 
-#include "details/IKernelData.tpp"
+#include "data/details/IKernelData.tpp"

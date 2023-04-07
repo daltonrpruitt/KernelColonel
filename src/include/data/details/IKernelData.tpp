@@ -6,7 +6,7 @@
  * 
  */
 
-#include "IKernelData.hpp"
+#include "data/IKernelData.hpp"
 
 #include <utils/cuda_utils.hpp>
 
@@ -35,7 +35,7 @@ IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::IKernelDat
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::~IKernelData(){
     uninit();            
-    }
+}
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(int dev_ctx_id){

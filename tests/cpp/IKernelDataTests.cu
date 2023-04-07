@@ -4,7 +4,7 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#include "IKernelData.hpp"
+#include "data/IKernelData.hpp"
 using namespace KernelColonel;
 
 template<typename value_t, typename index_t> 
