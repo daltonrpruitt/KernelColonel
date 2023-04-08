@@ -61,7 +61,7 @@ class IKernelExecution {
      */
     void uninit();
     
-    void copyOutputToDevice();
+    void copyOutputFromDeviceToHost();
 
   private: 
     /**

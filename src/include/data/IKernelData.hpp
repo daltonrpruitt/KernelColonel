@@ -49,7 +49,7 @@ class IKernelData {
      */
     void uninit();
     
-    void copyOutputToDevice();
+    void copyOutputFromDeviceToHost();
 
   private: 
     /**

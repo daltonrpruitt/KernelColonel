@@ -214,7 +214,7 @@ TEST(IKernelDataTests, PassToKernel) {
     ASSERT_THAT(cpu_data_vector[1], Pointwise(FloatEq(), v));
 
     copy_kernel<decltype(data.gpu_named_data)><<<1,4>>>(data_size, data.gpu_named_data);
-    data.copyOutputToDevice();
+    data.copyOutputFromDeviceToHost();
     
     v.clear();
     for(int i=0; i < data_size; ++i) v.push_back(i);
