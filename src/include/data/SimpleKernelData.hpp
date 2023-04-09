@@ -41,6 +41,10 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
 
     SimpleKernelData(unsigned long long n) : super(n) {}
     ~SimpleKernelData();
+
+    using void_func_t = std::function<void(void)>;
+    void setInitInputFunc(void_func_t init_inputs_) { m_init_inputs = init_inputs_};
+    void setInitIndicesFunc(void_func_t init_indices_) { m_init_indices = init_indices_ };
     
   private:
     void initInputsCpu() override;
@@ -53,6 +57,9 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
         gpu_named_data.output = device_data_ptrs[1];
         gpu_named_data.indices = device_indices_ptrs[0];
     }
+    
+    std::function<void(void)> m_init_inputs;
+    std::function<void(void)> m_init_indices;
 };
 
 } // namespace KernelColonel
