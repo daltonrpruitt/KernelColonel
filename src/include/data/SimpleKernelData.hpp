@@ -26,7 +26,7 @@ struct SimpleKernelData_gpu_data_s
 };
 
 template<typename value_t, typename index_t> 
-class ISimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKernelData_gpu_data_s<value_t,index_t>>
+class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKernelData_gpu_data_s<value_t,index_t>>
 {
   public:
     using vt_ = value_t;
@@ -39,12 +39,13 @@ class ISimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKe
     using super::device_indices_ptrs;
     using super::gpu_named_data;
 
-    ISimpleKernelData(unsigned long long n) : super(n) {}
+    SimpleKernelData(unsigned long long n) : super(n) {}
+    ~SimpleKernelData();
     
   private:
-    void initInputsCpu() override = 0;
-
-    void initIndicesCpu() override = 0;
+    void initInputsCpu() override;
+    void initIndicesCpu() override;
+    void setGpuNamedData() override;
 
     void setGpuNamedData() override 
     {
