@@ -52,6 +52,12 @@ bool are_close(T in, T out) {
 }
 
 
+jitify::JitCache& GetGlobalJitifyCache() {
+    static jitify::JitCache kernel_cache;
+    return kernel_cache;
+};
+
+
 TEST(JITCompilationTest, SimpleProgram) {
     const char* program_source =
         "my_program\n"
@@ -63,8 +69,8 @@ TEST(JITCompilationTest, SimpleProgram) {
         "        data[0] *= data0;\n"
         "    }\n"
         "}\n";
-    static jitify::JitCache kernel_cache;
-    jitify::Program program = kernel_cache.program(program_source, 0);
+    // static jitify::JitCache kernel_cache;
+    jitify::Program program = GetGlobalJitifyCache().program(program_source, 0);
     
     using T = float;
 
@@ -107,8 +113,6 @@ namespace std
 template<int N, typename... Ts> using NthTypeOf =
         typename std::tuple_element<N, std::tuple<Ts...>>::type;
 
-static jitify::JitCache kernel_cache;
-
 template<typename ...io_types>
 class simple_kernel
 {
@@ -126,7 +130,7 @@ class simple_kernel
 
   public:
     void compile() {
-        m_program = kernel_cache.program(program_source, 0);
+        m_program = GetGlobalJitifyCache().program(program_source, 0);
         m_compiled = true;
     }
 
