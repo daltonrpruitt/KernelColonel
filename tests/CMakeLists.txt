@@ -16,9 +16,20 @@ include(FindCUDA)
 
 set(TEST_BINARY tests)
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false ${CMAKE_CURRENT_SOURCE_DIR}/cpp/*.c*)
+set(TEST_SOURCES_files 
+    main.cpp
+    JITCompilationTests.cu
+    IKernelDataTests.cu
+    IKernelExecutionTests.cu
+    SimpleCopyTests.cu
+)
 
-message("TEST_SOURCES = ${TEST_SOURCES}")
+set(TEST_SOURCES "") 
+foreach(src_file ${TEST_SOURCES_files})
+    list(APPEND TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cpp/${src_file})
+endforeach()
+
+message(STATUS "TEST_SOURCES = ${TEST_SOURCES}")
 
 add_executable(${TEST_BINARY} ${TEST_SOURCES})
 set_property(TARGET ${TEST_BINARY} PROPERTY CXX_STANDARD 17)
