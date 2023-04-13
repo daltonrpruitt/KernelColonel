@@ -14,6 +14,7 @@
  */
 
 #include "data/IKernelData.hpp"
+
 namespace KernelColonel 
 {
 
@@ -38,18 +39,55 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
     using super::device_data_ptrs;
     using super::device_indices_ptrs;
     using super::gpu_named_data;
+    using init_input_func_t = std::function<std::vector<vt_>(unsigned int)>;
+    using init_indices_func_t = std::function<std::vector<it_>(unsigned int)>;
+    using check_outputs_func_t = std::function<bool(unsigned int, std::vector<vt_>, std::vector<vt_>)>;
 
     SimpleKernelData(unsigned long long n) : super(n) {}
-    ~SimpleKernelData();
+    ~SimpleKernelData() = default;
 
-    using void_func_t = std::function<void(void)>;
-    void setInitInputFunc(void_func_t init_inputs_) { m_init_inputs = init_inputs_};
-    void setInitIndicesFunc(void_func_t init_indices_) { m_init_indices = init_indices_ };
+    void setDataSizes(unsigned long long input_size_, unsigned long long output_size_, unsigned long long indices_size_)
+    {
+        super::input_size=input_size_;
+        super::output_size=output_size_;
+        super::indices_size=indices_size_;
+    }
+
+    void setInitInputsFunc(init_input_func_t init_inputs_) { m_init_inputs = init_inputs_; }
+    void setInitIndicesFunc(init_indices_func_t init_indices_) { m_init_indices = init_indices_; }
+    void setCheckOutputsFunc(check_outputs_func_t check_outputs_) { m_check_outputs = check_outputs_; }
     
   private:
-    void initInputsCpu() override;
-    void initIndicesCpu() override;
-    void setGpuNamedData() override;
+    void initInputsCpu() override
+    { 
+        if(!m_init_inputs) {
+            throw std::runtime_error("Method to initialize inputs has not been set!");
+        } else {
+            host_data[0] = m_init_inputs(N);
+            host_data[1].resize(N);
+        }
+    }
+    
+    void initIndicesCpu() override
+    { 
+        if(!m_init_indices) {
+            std::cerr << "Method to initialize indices has not been set!\n";
+            std::cerr << "\tSetting dummy indices!" << std::endl;
+            super::indices_size = 0;
+            host_indices[0] = std::vector<it_>(0, super::indices_size);
+        } else {
+            host_indices[0] = m_init_indices(N);
+        }
+    }
+    
+    void checkOutputsCpu()
+    { 
+        if(!m_check_outputs) {
+            throw std::runtime_error("Method to check outputs has not been set!");
+        } else {
+            return m_check_outputs(N, device_data_ptrs[0], device_data_ptrs[1]);
+        }
+    }
 
     void setGpuNamedData() override 
     {
@@ -58,8 +96,9 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
         gpu_named_data.indices = device_indices_ptrs[0];
     }
     
-    std::function<void(void)> m_init_inputs;
-    std::function<void(void)> m_init_indices;
+    init_input_func_t m_init_inputs;
+    init_indices_func_t m_init_indices;
+    check_outputs_func_t m_check_outputs;
 };
 
 } // namespace KernelColonel
