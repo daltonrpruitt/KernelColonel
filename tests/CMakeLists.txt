@@ -22,6 +22,10 @@ message("TEST_SOURCES = ${TEST_SOURCES}")
 
 add_executable(${TEST_BINARY} ${TEST_SOURCES})
 set_property(TARGET ${TEST_BINARY} PROPERTY CXX_STANDARD 17)
+target_compile_options(${TEST_BINARY}  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+                        --keep 
+                        -Xptxas -dlcm=cg
+>)
 
 add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
