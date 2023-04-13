@@ -45,6 +45,7 @@
 #include "jitify.hpp"
 
 #include "check_cuda.cuh"
+#include "utils/utils.hpp"
 
 template <typename T>
 bool are_close(T in, T out) {
@@ -90,18 +91,6 @@ TEST(JITCompilationTest, SimpleProgram) {
     std::cout << h_data << std::endl;
     ASSERT_TRUE(are_close(h_data, 125.f));
 }
-
-namespace std
-{
-    template<typename T>
-    std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec){
-        os << "< " << std::to_string(vec[0]);
-            for (int i=1; i<vec.size() && i < 10; ++i) { os << ", " << vec[i]; }
-        if(vec.size() > 10) { os << " ... "; }
-        os << ">" << std::endl;
-        return os;
-    }
-} // namespace std
 
 /**
  * @brief What I need to test for here.
