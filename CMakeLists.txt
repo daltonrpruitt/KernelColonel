@@ -34,10 +34,11 @@ include(FindCUDAToolkit)
 
 set(GLOBAL PROPERTY CXX_STANDARD 17)
 
+add_subdirectory(nvbench)
 
-add_library(kernel_colonel INTERFACE )
+add_library(kernel_colonel STATIC)
 target_include_directories(kernel_colonel INTERFACE ${CMAKE_SOURCE_DIR}/src/include)
-target_link_libraries(kernel_colonel INTERFACE jitify)
+target_link_libraries(kernel_colonel INTERFACE jitify nvbench::main)
 # set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
