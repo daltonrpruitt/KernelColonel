@@ -103,7 +103,8 @@
         "*.tpp": "cpp",
         "numbers": "cpp",
         "semaphore": "cpp",
-        "__config": "cpp"
+        "__config": "cpp",
+        "*.json": "jsonc"
     },
     "cSpell.words": [
         "Spmv",

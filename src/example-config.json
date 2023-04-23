@@ -1,0 +1,20 @@
+{
+	"N" : "auto", // global used scaling factor ("auto" means based off of GPU mem size)
+	"kernels" : [
+		{
+			"name" : "kernel1",
+			"input": { // required; if "auto", will be counting numbers from 0 to N-1
+				"name" : "generator1", // method to use
+				"args" : ["blockSize"/*,other things*/] // arguments to pass in, as list of provided keywords
+			},
+			"index": false, // or actual method name
+			
+			"numThreads": "auto", // based on N
+			
+			// if 2 args, are the min and max; if min/max are powers of 2, then will do all powers between them, otherwise, will just do first and second values only
+			"blockSize": [32, 1024],
+			"someOtherVar": [1024] // not sure how this would work, but could make some "register" functionality for kernel-specific variables? 
+		}
+	
+	]
+}
