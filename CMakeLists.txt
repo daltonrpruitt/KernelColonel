@@ -13,6 +13,7 @@ FetchContent_Declare(json
     GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
     GIT_TAG v3.11.2
 )
+FetchContent_MakeAvailable(json)
 
 FetchContent_Declare(
   jitify
@@ -46,6 +47,10 @@ target_link_libraries(kernel_colonel INTERFACE jitify)
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
 set_property(TARGET kernel_colonel PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS})
 # target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
+
+add_executable(kernel_colonel_exec src/cpp/main.cpp)
+target_link_libraries(kernel_colonel_exec PRIVATE nlohmann_json::nlohmann_json)
+
 
 if(false)
 add_executable(main src/main.cu)
