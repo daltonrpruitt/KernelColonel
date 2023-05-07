@@ -104,7 +104,9 @@
         "numbers": "cpp",
         "semaphore": "cpp",
         "__config": "cpp",
-        "*.json": "jsonc"
+        "*.json": "jsonc",
+        "regex": "cpp",
+        "valarray": "cpp"
     },
     "cSpell.words": [
         "Spmv",

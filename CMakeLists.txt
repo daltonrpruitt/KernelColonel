@@ -38,10 +38,16 @@ include(FindCUDAToolkit)
 set(${PROJECT_NAME}_CUDA_ARCHS  native )
 set(GLOBAL PROPERTY CXX_STANDARD 17)
 
+set(kernel_colonel_SOURCE_BASE_DIR src/cpp)
+set(kernel_colonel_SOURCES
+   ${kernel_colonel_SOURCE_BASE_DIR}/config.cpp
+)
+message(STATUS "kernel_colonel_SOURCES=${kernel_colonel_SOURCES}")
 
-add_library(kernel_colonel INTERFACE )
-target_include_directories(kernel_colonel INTERFACE ${CMAKE_SOURCE_DIR}/src/include)
+add_library(kernel_colonel STATIC ${kernel_colonel_SOURCES})
+target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
 target_link_libraries(kernel_colonel INTERFACE jitify)
+target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json )
 # set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
@@ -49,7 +55,7 @@ set_property(TARGET kernel_colonel PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME
 # target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
 
 add_executable(kernel_colonel_exec src/cpp/main.cpp)
-target_link_libraries(kernel_colonel_exec PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(kernel_colonel_exec PRIVATE kernel_colonel)
 
 
 if(false)
