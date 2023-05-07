@@ -40,7 +40,7 @@ set(GLOBAL PROPERTY CXX_STANDARD 17)
 
 set(kernel_colonel_SOURCE_BASE_DIR src/cpp)
 set(kernel_colonel_SOURCES
-   ${kernel_colonel_SOURCE_BASE_DIR}/ConfigStore.cpp
+   ${kernel_colonel_SOURCE_BASE_DIR}/config.cpp
 )
 message(STATUS "kernel_colonel_SOURCES=${kernel_colonel_SOURCES}")
 
