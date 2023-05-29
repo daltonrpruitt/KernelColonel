@@ -44,23 +44,19 @@
 #endif // VERBOSE
 #include "jitify.hpp"
 
-#define CHECK_CUDA(call)                                                  \
-  do {                                                                    \
-    if (call != CUDA_SUCCESS) {                                           \
-      const char* str;                                                    \
-      cuGetErrorName(call, &str);                                         \
-      std::cout << "(CUDA) returned " << str;                             \
-      std::cout << " (" << __FILE__ << ":" << __LINE__ << ":" << __func__ \
-                << "())" << std::endl;                                    \
-      FAIL() << "Experienced above CUDA error!";                          \
-    }                                                                     \
-  } while (0)
-
+#include "check_cuda.cuh"
+#include "utils/utils.hpp"
 
 template <typename T>
 bool are_close(T in, T out) {
   return fabs(in - out) <= 1e-5f * fabs(in);
 }
+
+
+jitify::JitCache& GetGlobalJitifyCache() {
+    static jitify::JitCache kernel_cache;
+    return kernel_cache;
+};
 
 
 TEST(JITCompilationTest, SimpleProgram) {
@@ -74,8 +70,8 @@ TEST(JITCompilationTest, SimpleProgram) {
         "        data[0] *= data0;\n"
         "    }\n"
         "}\n";
-    static jitify::JitCache kernel_cache;
-    jitify::Program program = kernel_cache.program(program_source, 0);
+    // static jitify::JitCache kernel_cache;
+    jitify::Program program = GetGlobalJitifyCache().program(program_source, 0);
     
     using T = float;
 
@@ -96,18 +92,6 @@ TEST(JITCompilationTest, SimpleProgram) {
     ASSERT_TRUE(are_close(h_data, 125.f));
 }
 
-namespace std
-{
-    template<typename T>
-    std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec){
-        os << "< " << std::to_string(vec[0]);
-            for (int i=1; i<vec.size() && i < 10; ++i) { os << ", " << vec[i]; }
-        if(vec.size() > 10) { os << " ... "; }
-        os << ">" << std::endl;
-        return os;
-    }
-} // namespace std
-
 /**
  * @brief What I need to test for here.
  * 
@@ -117,8 +101,6 @@ namespace std
 
 template<int N, typename... Ts> using NthTypeOf =
         typename std::tuple_element<N, std::tuple<Ts...>>::type;
-
-static jitify::JitCache kernel_cache;
 
 template<typename ...io_types>
 class simple_kernel
@@ -137,7 +119,7 @@ class simple_kernel
 
   public:
     void compile() {
-        m_program = kernel_cache.program(program_source, 0);
+        m_program = GetGlobalJitifyCache().program(program_source, 0);
         m_compiled = true;
     }
 

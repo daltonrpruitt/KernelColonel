@@ -38,3 +38,15 @@ static inline void replaceAll(std::string& str, const std::string& from, const s
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
 }
+
+namespace std
+{
+    template<typename T>
+    std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec){
+        os << "< " << std::to_string(vec[0]);
+            for (int i=1; i<vec.size() && i < 10; ++i) { os << ", " << vec[i]; }
+        if(vec.size() > 10) { os << " ... "; }
+        os << ">" << std::endl;
+        return os;
+    }
+} // namespace std

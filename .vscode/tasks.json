@@ -48,7 +48,8 @@
                 "--build",
                 ".",
                 "--target",
-                "tests.tgt"
+                "tests.tgt",
+                "-j4"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
