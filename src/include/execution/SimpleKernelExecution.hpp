@@ -1,9 +1,8 @@
 #pragma once 
 /**
- \* @file IKernelExecution.hpp
+ \* @file SimpleKernelExecution.hpp
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Provides a wrapper surrounding the data inputs/outputs and indices 
- *          GPU kernel execution (in IKernelContext)
+ * @brief Specialization of IKernelExecution that uses SimpleKernelData
  * 
  */
 
@@ -11,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "data/IKernelData.hpp"
+#include "data/SimpleKernelData.hpp"
 
 namespace KernelColonel {
 
@@ -26,48 +25,13 @@ namespace KernelColonel {
  * @tparam value_t Value type (data arrays)
  * @tparam it Index type (indirection arrays)
  */
-template<type kernel_data_t>
-class IKernelExecution { 
+template<typename value_t, typename index_t>
+class SimpleKernelExecution : public IKernelExecution<SimpleKernelData<value_t, index_t>>
+{ 
   public:
-    IKernelExecution(unsigned long long n);
-    ~IKernelExecution();
+    SimpleKernelExecution(unsigned long long n);
+    ~SimpleKernelExecution();
 
-    /**
-     * @brief Run kernel on data and check result against CPU-computed result
-     * 
-     * Ensure KernelData is initialized, execute kernel on GPU data, check result against "correct" values.
-     * TODO: Could have "correct" results computed locally ahead of time and stored with the data structure?
-     *        Or could just be recomputed everytime.... I think it makes more sense to store with the data structure, 
-     *        but should it be computed by the data structure??? NO, because the data structure knows nothing about 
-     *        the inputs/outputs/indices other than the type and number of each (and length). 
-     *        So, we could compute the output correctness here (in the derived class), then store with the data
-     *        structure, assume the output param is the first param of the kernel, then compute against the correct
-     *        version after execution.
-     * 
-     * NOTE: The best practice when checking for correctness is probably to completely zero out the output before 
-     * the next execution. This function should do that after checking, but the regular execute will not, since it
-     * assumes correctness and so can avoid that overhead. 
-     * 
-     * NOTE: This does not ensure correctness of the CPU and GPU algorithms supplied by the user, only that both 
-     * algorithms compute the same result! 
-     * 
-     * @return true The output of the kernel matches the CPU-computed "correct" output 
-     * @return false Failed to initialize properly (handling taken care of by owner of object)
-     */
-    bool check(std::shared_ptr<kernel_data_t> data);
-
-    /**
-     * @brief Execute a run once and give the GPU execution time
-     * 
-     * @return double Execution time of a single run (GPU time only) 
-     */
-    double time_single_execution();
-
-  private: 
-    std::string name;
-protected:
 };
 
 } // namespace KernelColonel
-
-#include "details/IKernelExecution.tpp"
