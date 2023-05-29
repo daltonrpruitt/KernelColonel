@@ -49,7 +49,7 @@ class IKernelData {
      */
     void uninit();
     
-    void copyOutputToDevice();
+    void copyOutputFromDeviceToHost();
 
   private: 
     /**
@@ -109,4 +109,4 @@ protected:
 
 } // namespace KernelColonel
 
-#include "details/IKernelData.tpp"
+#include "data/details/IKernelData.tpp"

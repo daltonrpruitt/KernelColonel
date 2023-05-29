@@ -16,18 +16,32 @@ include(FindCUDA)
 
 set(TEST_BINARY tests)
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false ${CMAKE_CURRENT_SOURCE_DIR}/cpp/*.c*)
+set(TEST_SOURCES_files 
+    main.cpp
+    JITCompilationTests.cu
+    IKernelDataTests.cu
+    IKernelExecutionTests.cu
+    SimpleCopyTests.cu
+)
 
-message("TEST_SOURCES = ${TEST_SOURCES}")
+set(TEST_SOURCES "") 
+foreach(src_file ${TEST_SOURCES_files})
+    list(APPEND TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cpp/${src_file})
+endforeach()
+
+message(STATUS "TEST_SOURCES = ${TEST_SOURCES}")
 
 add_executable(${TEST_BINARY} ${TEST_SOURCES})
-set_property(TARGET ${TEST_BINARY} PROPERTY CUDA_ARCHITECTURES ${${PROJECT_NAME}_CUDA_ARCHS})
 set_property(TARGET ${TEST_BINARY} PROPERTY CXX_STANDARD 17)
+target_compile_options(${TEST_BINARY}  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+                        --keep 
+                        -Xptxas -dlcm=cg
+>)
 
 add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
 target_link_libraries(${TEST_BINARY} PUBLIC gtest_main gmock_main kernel_colonel nvrtc cuda)
-target_include_directories(${TEST_BINARY} PUBLIC ${CMAKE_SOURCE_DIR}/headers})
+target_include_directories(${TEST_BINARY} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_custom_target (${TEST_BINARY}.tgt
   DEPENDS ${TEST_BINARY}

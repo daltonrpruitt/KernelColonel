@@ -2,12 +2,23 @@
 
 cmake_minimum_required(VERSION 3.20)
 
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    SET(CMAKE_CUDA_ARCHITECTURES native)
+endif()
+message(STATUS "CMAKE_CUDA_ARCHITECTURES=${CMAKE_CUDA_ARCHITECTURES}")
 
 project(microbenchmarks LANGUAGES CUDA CXX)
 
 set(CMAKE_BUILD_TYPE "Debug")
 
 include(FetchContent REQUIRED)
+
+FetchContent_Declare(json
+    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+    GIT_TAG v3.11.2
+)
+FetchContent_MakeAvailable(json)
+
 FetchContent_Declare(
   jitify
   GIT_REPOSITORY https://github.com/NVIDIA/jitify
@@ -28,23 +39,30 @@ target_include_directories(jitify INTERFACE ${jitify_SOURCE_DIR})
 
 include(FindCUDAToolkit)
 
-set(${PROJECT_NAME}_CUDA_ARCHS  native )
 set(GLOBAL PROPERTY CXX_STANDARD 17)
 
+set(kernel_colonel_SOURCE_BASE_DIR src/cpp)
+set(kernel_colonel_SOURCES
+   ${kernel_colonel_SOURCE_BASE_DIR}/config.cpp
+)
+message(STATUS "kernel_colonel_SOURCES=${kernel_colonel_SOURCES}")
 
-add_library(kernel_colonel INTERFACE )
-target_include_directories(kernel_colonel INTERFACE ${CMAKE_SOURCE_DIR}/src/include)
+add_library(kernel_colonel STATIC ${kernel_colonel_SOURCES})
+target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
 target_link_libraries(kernel_colonel INTERFACE jitify)
+target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json )
 # set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
-set_property(TARGET kernel_colonel PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS})
 # target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
+
+add_executable(kernel_colonel_exec src/cpp/main.cpp)
+target_link_libraries(kernel_colonel_exec PRIVATE kernel_colonel)
+
 
 if(false)
 add_executable(main src/main.cu)
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
-set_property(TARGET main PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS} )
 target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                         --keep 
                         -Xptxas -dlcm=cg
@@ -53,7 +71,6 @@ target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
 
 add_executable(spmv src/spmv.cu)
 set_property(TARGET spmv PROPERTY CXX_STANDARD 17)
-set_property(TARGET main PROPERTY CUDA_ARCHITECTURES  ${${PROJECT_NAME}_CUDA_ARCHS})
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES 80) #80-A100
 # set_property(TARGET spmv PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --maxrregcount=255") #  -dlcm=cg  --expt-relaxed-constexpr

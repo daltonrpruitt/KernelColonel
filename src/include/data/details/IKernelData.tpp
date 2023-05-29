@@ -6,7 +6,7 @@
  * 
  */
 
-#include "IKernelData.hpp"
+#include "data/IKernelData.hpp"
 
 #include <utils/cuda_utils.hpp>
 
@@ -35,7 +35,7 @@ IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::IKernelDat
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::~IKernelData(){
     uninit();            
-    }
+}
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(int dev_ctx_id){
@@ -122,7 +122,7 @@ void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::unini
 }
     
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyOutputToDevice(){
+void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyOutputFromDeviceToHost(){
     for(int i=num_in_data; i < num_total_data; ++i) {
         cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * value_t_size, cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]");
     }            

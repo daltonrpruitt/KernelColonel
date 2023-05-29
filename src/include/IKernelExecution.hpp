@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "IKernelData.hpp"
+#include "data/IKernelData.hpp"
 
 namespace KernelColonel {
 
@@ -61,7 +61,7 @@ class IKernelExecution {
      */
     void uninit();
     
-    void copyOutputToDevice();
+    void copyOutputFromDeviceToHost();
 
   private: 
     /**
