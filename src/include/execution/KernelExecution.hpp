@@ -1,6 +1,6 @@
 #pragma once 
 /**
- \* @file IKernelExecution.hpp
+ \* @file KernelExecution.hpp
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
  * @brief Provides a wrapper surrounding the data inputs/outputs and indices 
  *          GPU kernel execution (in IKernelContext)
@@ -26,11 +26,14 @@ namespace KernelColonel {
  * @tparam value_t Value type (data arrays)
  * @tparam it Index type (indirection arrays)
  */
-template<type kernel_data_t>
-class IKernelExecution { 
+template<typename kernel_data_t>
+class KernelExecution { 
   public:
-    IKernelExecution(unsigned long long n);
-    ~IKernelExecution();
+    using check_callback_t = std::function<bool(kernel_data_t)>;
+
+    KernelExecution(/* jitify stuff, */
+        check_callback_t check_callback_);
+    ~KernelExecution();
 
     /**
      * @brief Run kernel on data and check result against CPU-computed result
@@ -61,13 +64,14 @@ class IKernelExecution {
      * 
      * @return double Execution time of a single run (GPU time only) 
      */
-    double time_single_execution();
+    double time_single_execution(std::shared_ptr<kernel_data_t> data);
 
   private: 
     std::string name;
-protected:
+    check_callback_t check_callback;
+
 };
 
 } // namespace KernelColonel
 
-#include "details/IKernelExecution.tpp"
+#include "details/KernelExecution.tpp"

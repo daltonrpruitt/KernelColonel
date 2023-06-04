@@ -12,6 +12,7 @@
  *  `simeple_reorganization_structure.cu` the week of 2023-04-03.
  * 
  */
+#pragma once
 
 #include "data/IKernelData.hpp"
 
@@ -26,7 +27,7 @@ struct SimpleKernelData_gpu_data_s
     index_t* indices = nullptr;
 };
 
-template<typename value_t, typename index_t> 
+template<typename value_t = double, typename index_t = unsigned long> 
 class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKernelData_gpu_data_s<value_t,index_t>>
 {
   public:
@@ -41,7 +42,7 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
     using super::gpu_named_data;
     using init_input_func_t = std::function<std::vector<vt_>(unsigned int)>;
     using init_indices_func_t = std::function<std::vector<it_>(unsigned int)>;
-    using check_outputs_func_t = std::function<bool(unsigned int, std::vector<vt_>, std::vector<vt_>)>;
+    using check_outputs_func_t = std::function<bool(unsigned long long, vt_*, vt_*)>;
 
     SimpleKernelData(unsigned long long n) : super(n) {}
     ~SimpleKernelData() = default;
@@ -80,7 +81,7 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
         }
     }
     
-    void checkOutputsCpu()
+    bool checkOutputsCpu()
     { 
         if(!m_check_outputs) {
             throw std::runtime_error("Method to check outputs has not been set!");

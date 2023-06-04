@@ -127,7 +127,19 @@ void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyO
         cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * value_t_size, cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]");
     }            
 }
-    
+
+template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
+const std::vector<std::vector<vt>>& IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::getHostData(){
+    return host_data;
+}
+
+template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
+const std::vector<std::vector<it>>& IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::getHostIndicies(){
+    return host_indices;
+}
+
+
+
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::freeGpuData(){
     cudaSetDevice(gpu_device_id);

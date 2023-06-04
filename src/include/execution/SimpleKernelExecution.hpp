@@ -25,13 +25,30 @@ namespace KernelColonel {
  * @tparam value_t Value type (data arrays)
  * @tparam it Index type (indirection arrays)
  */
-template<typename value_t, typename index_t>
-class SimpleKernelExecution : public IKernelExecution<SimpleKernelData<value_t, index_t>>
-{ 
+template<typename value_t = double, typename index_t = unsigned long>
+class SimpleKernelExecution
+{
   public:
-    SimpleKernelExecution(unsigned long long n);
+    using kernel_data_t = SimpleKernelData<value_t, index_t>;
+    using simple_check_callback_t = std::function<bool(const std::vector<value_t>&, 
+                                                       const std::vector<value_t>&, 
+                                                       const std::vector<index_t>&)>;
+
+    SimpleKernelExecution(const std::string &name_, 
+                          /* jitify stuff, */
+                          simple_check_callback_t simple_check_callback_);
     ~SimpleKernelExecution();
+
+    bool check(std::shared_ptr<kernel_data_t> data);
+
+    double time_single_execution(std::shared_ptr<kernel_data_t> data);
+
+  private:
+    std::string name;
+    simple_check_callback_t simple_check_callback;
 
 };
 
 } // namespace KernelColonel
+
+#include <execution/details/SimpleKernelExecution.tpp>

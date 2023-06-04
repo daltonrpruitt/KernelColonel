@@ -51,6 +51,9 @@ class IKernelData {
     
     void copyOutputFromDeviceToHost();
 
+    const std::vector<std::vector<value_t>>& getHostData();
+    const std::vector<std::vector<index_t>>& getHostIndicies();
+
   private: 
     /**
      * @brief Placeholder for user-defined input data array(s) initialization

@@ -20,6 +20,7 @@ set(TEST_SOURCES_files
     main.cpp
     JITCompilationTests.cu
     IKernelDataTests.cu
+    SimpleKernelExecutionTests.cu
     IKernelExecutionTests.cu
     SimpleCopyTests.cu
 )
