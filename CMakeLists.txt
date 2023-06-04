@@ -38,20 +38,23 @@ target_include_directories(jitify INTERFACE ${jitify_SOURCE_DIR})
 
 
 include(FindCUDAToolkit)
+include(FindCUDA)
 
 set(GLOBAL PROPERTY CXX_STANDARD 17)
 
 set(kernel_colonel_SOURCE_BASE_DIR src/cpp)
 set(kernel_colonel_SOURCES
    ${kernel_colonel_SOURCE_BASE_DIR}/config.cpp
+   ${kernel_colonel_SOURCE_BASE_DIR}/execution/JitifyCache.cu
 )
 message(STATUS "kernel_colonel_SOURCES=${kernel_colonel_SOURCES}")
 
 add_library(kernel_colonel STATIC ${kernel_colonel_SOURCES})
 target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
 target_link_libraries(kernel_colonel INTERFACE jitify)
-target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json )
-# set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
+target_include_directories(kernel_colonel PRIVATE ${jitify_SOURCE_DIR} ${CUDA_LIBRARIES})
+target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json nvrtc cuda)
+set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
 # target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
