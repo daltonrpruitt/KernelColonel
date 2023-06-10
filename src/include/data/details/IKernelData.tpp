@@ -122,6 +122,13 @@ void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::unini
 }
     
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
+unsigned long long IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::getSize()
+{
+    return N;
+}
+
+
+template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
 void IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::copyOutputFromDeviceToHost(){
     for(int i=num_in_data; i < num_total_data; ++i) {
         cudaErrChk(cudaMemcpy(host_data[i].data(), device_data_ptrs[i], output_size * value_t_size, cudaMemcpyDeviceToHost),"copying device_data_ptrs["+to_string(i)+"] to host_data["+to_string(i)+"]");
@@ -138,6 +145,20 @@ const std::vector<std::vector<it>>& IKernelData<vt,it,num_in_data,num_out_data,n
     return host_indices;
 }
 
+template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
+const gpu_data_s_t& IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::getNamedDeviceData(){
+    return gpu_named_data;
+}
+
+template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
+const std::vector<vt *>& IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::getDeviceDataPointers(){
+    return device_data_ptrs;
+}
+
+template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
+const std::vector<it *>& IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::getDeviceIndiciesPointers(){
+    return device_indices_ptrs;
+}
 
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>

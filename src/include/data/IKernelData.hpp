@@ -48,11 +48,17 @@ class IKernelData {
      * @brief Free relevant structures (CPU and GPU)
      */
     void uninit();
+
+    unsigned long long getSize();
     
     void copyOutputFromDeviceToHost();
 
     const std::vector<std::vector<value_t>>& getHostData();
     const std::vector<std::vector<index_t>>& getHostIndicies();
+
+    const gpu_data_s_t& getNamedDeviceData();
+    const std::vector<value_t *>& getDeviceDataPointers();
+    const std::vector<index_t *>& getDeviceIndiciesPointers();
 
   private: 
     /**
