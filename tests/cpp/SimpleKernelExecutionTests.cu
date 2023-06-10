@@ -19,12 +19,45 @@
 // #include <cuda.h>
 // #include <cuda_runtime_api.h>
 
-#include "utils/type_name.hpp"
 
 #include "execution/SimpleKernelExecution.hpp"
 #include "data/SimpleKernelData.hpp"
+#include "execution/JitifyCache.cuh"
+#include <execution/kc_jitify.hpp>
+
+#include "utils/utils.hpp"
 
 namespace kc = KernelColonel;
+
+template<typename vt = double>
+std::vector<vt> whole_numbers(unsigned int length)
+{
+    std::vector<vt> out;
+    for(unsigned int i=0; i < length; i++)
+        out.push_back(static_cast<vt>(i));
+    return out;
+}
+
+std::string copy_kernel_program_name  { "simple_copy_kernel" };
+const std::string simple_copy_kernel_source_string =
+    std::string("simple_copy_kernel") + 
+    std::string(R"(
+    template<typename value_t, typename index_t> 
+    struct SimpleKernelData_gpu_data_s
+    {
+        value_t* input = nullptr;
+        value_t* output = nullptr;
+        index_t* indices = nullptr;
+    };
+
+    template<typename vt, typename it>
+    __global__
+    void simple_copy_kernel(unsigned int N, SimpleKernelData_gpu_data_s<vt,it> gpu_data) {
+        for( int i=0; i<N; ++i ) {
+            gpu_data.output[i] = gpu_data.input[i];
+            if(i<10) printf("At i=%d input[i]=%d, output[i]=%d\n",i, gpu_data.input[i], gpu_data.output[i]);
+        }
+    })");
 
 class SimpleKernelExecutionTests : public ::testing::Test // : public IKernelExecution<...>
 {
@@ -36,15 +69,23 @@ public:
 
     void SetUp()
     {
-        data_ptr = std::make_shared<kc::SimpleKernelData<>>(1000);
+
+        data_ptr = std::make_shared<kc::SimpleKernelData<>>(data_size);
+        data_ptr->setInitInputsFunc(whole_numbers<>);
+        // data_ptr->init(0);
+        program = kc::globalJitifyCache().program(simple_copy_kernel_source_string);
+
     }
 
     void TearDown()
     {
+        data_ptr.reset();
     }
 
 protected:
+    unsigned long long data_size = 5;
     std::shared_ptr<kc::SimpleKernelData<>> data_ptr;
+    jitify::Program program; 
 };
 
 TEST_F(SimpleKernelExecutionTests, Construct)
@@ -53,8 +94,7 @@ TEST_F(SimpleKernelExecutionTests, Construct)
     {
         return true;
     };
-    std::string test_name{"Test Execution"};
-    kc::SimpleKernelExecution<> exec(test_name, check_lambda);
+    EXPECT_NO_THROW( { kc::SimpleKernelExecution<> exec(copy_kernel_program_name, program, check_lambda); } );
 }
 
 TEST_F(SimpleKernelExecutionTests, ExecuteOnData)
@@ -65,13 +105,20 @@ TEST_F(SimpleKernelExecutionTests, ExecuteOnData)
             return false;
         for (int i = 0; i < input.size(); i++)
             if (input[i] != output[i])
+            {
+                std::cout << "data differs at i="<<i<<"with in[i]="<<input[i] << " and out[i]=" <<output[i] << std::endl;
                 return false;
+            }
 
         return true;
     };
-    std::string test_name{"Test Execution"};
-    kc::SimpleKernelExecution<> exec(test_name, check_lambda);
+    kc::SimpleKernelExecution<> exec(copy_kernel_program_name, program, check_lambda);
 
+    dim3 grid(1);
+    dim3 block(1);
+
+    auto time = exec.time_single_execution(data_ptr, grid, block);
     ASSERT_TRUE(exec.check(data_ptr));
+    std::cout << "Executing " << copy_kernel_program_name << " with grid=" << grid << " and block="<<block << " took " << time << "ms" << std::endl;
 }
 

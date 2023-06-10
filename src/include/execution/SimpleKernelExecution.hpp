@@ -12,6 +12,8 @@
 
 #include "data/SimpleKernelData.hpp"
 
+#include <execution/kc_jitify.hpp>
+
 namespace KernelColonel {
 
 /**
@@ -34,18 +36,19 @@ class SimpleKernelExecution
                                                        const std::vector<value_t>&, 
                                                        const std::vector<index_t>&)>;
 
-    SimpleKernelExecution(const std::string &name_, 
-                          /* jitify stuff, */
+    SimpleKernelExecution(const std::string &kernel_name_, 
+                          const jitify::Program &program_,
                           simple_check_callback_t simple_check_callback_);
     ~SimpleKernelExecution();
 
     bool check(std::shared_ptr<kernel_data_t> data);
 
-    double time_single_execution(std::shared_ptr<kernel_data_t> data);
+    double time_single_execution(std::shared_ptr<kernel_data_t> data, dim3 grid, dim3 block);
 
   private:
-    std::string name;
-    simple_check_callback_t simple_check_callback;
+    std::string m_kernel_name;
+    const jitify::Program &m_program;
+    simple_check_callback_t m_simple_check_callback;
 
 };
 

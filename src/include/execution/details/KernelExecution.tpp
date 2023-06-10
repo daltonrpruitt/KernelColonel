@@ -36,6 +36,7 @@ namespace KernelColonel {
     template <typename kernel_data_t>
     bool KernelExecution<kernel_data_t>::check(std::shared_ptr<kernel_data_t> data)
     {
+        data->copyOutputFromDeviceToHost();
         return check_callback(data);
     }
 
