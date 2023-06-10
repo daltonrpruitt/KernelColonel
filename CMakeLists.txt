@@ -14,7 +14,10 @@ set(CMAKE_BUILD_TYPE "Debug")
 include(FetchContent REQUIRED)
 
 FetchContent_Declare(json
-    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+    # GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE  
     GIT_TAG v3.11.2
 )
 FetchContent_MakeAvailable(json)
