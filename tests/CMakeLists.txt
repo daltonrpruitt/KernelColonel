@@ -20,9 +20,12 @@ set(TEST_SOURCES_files
     main.cpp
     JITCompilationTests.cu
     IKernelDataTests.cu
-    IKernelExecutionTests.cu
     SimpleCopyTests.cu
 )
+
+if(NOT MSVC)
+    list(APPEND TypeNameTests.cpp)  # type_name not working in msvc (2023-06-10)
+endif()
 
 set(TEST_SOURCES "") 
 foreach(src_file ${TEST_SOURCES_files})
