@@ -14,12 +14,14 @@
 #include <string>
 #include <iostream>
 
-double elapsed_time_ms(timespec startTime, timespec endTime){
+#include <vector_types.h> // for dim3
+
+inline double elapsed_time_ms(timespec startTime, timespec endTime){
     return (endTime.tv_sec - startTime.tv_sec) * 1000.0 +
                     (endTime.tv_nsec - startTime.tv_nsec) * 1e-6;
 }
 
-std::string bool_to_string(bool b){
+inline std::string bool_to_string(bool b){
     // Python capitalization style
     return b ? "True" : "False";
 }
@@ -43,10 +45,20 @@ namespace std
 {
     template<typename T>
     std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec){
-        os << "< " << std::to_string(vec[0]);
+        os << "< " << vec[0];
             for (int i=1; i<vec.size() && i < 10; ++i) { os << ", " << vec[i]; }
         if(vec.size() > 10) { os << " ... "; }
         os << ">" << std::endl;
         return os;
     }
+
+    inline ostream& operator<<(std::ostream& stream, dim3 d) {
+        if (d.y == 1 && d.z == 1) {
+            stream << d.x;
+        } else {
+            stream << "(" << d.x << "," << d.y << "," << d.z << ")";
+        }
+        return stream;
+    }
+
 } // namespace std
