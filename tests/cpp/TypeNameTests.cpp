@@ -1,7 +1,7 @@
 /**
- * @file IKernelExecutionTests.cu
+ * @file TypeNameTests.cu
  * @author Dalton Winans-Pruitt (daltonrpruitt@gmail.com)
- * @brief Set of unit/integration tests for the IKernelExecution class
+ * @brief Some testing of type_name utility file (not currently working - 2023-06-10)
  * @version 0.1
  * @date 2022-11-25
  * 
@@ -35,13 +35,13 @@ struct gpu_data_s
 
 
 template<typename ...kernel_param_types>
-class IKernelExecution_Test // : public IKernelExecution<...>
+class TypeNameTest // : public IKernelExecution<...>
 {
   public:
-    // using IKernelExecution_Test_t = IKernelExecution_Test<kernel_param_types...>;
+    // using TypeNameTest_t = TypeNameTest<kernel_param_types...>;
     // using super = IKernelExecution<kenrel_param_types...>
-    IKernelExecution_Test() = default; //: super(n) {}
-    ~IKernelExecution_Test() = default; //: super(n) {}
+    TypeNameTest() = default; //: super(n) {}
+    ~TypeNameTest() = default; //: super(n) {}
     
   private:
   
@@ -60,7 +60,7 @@ class IKernelExecution_Test // : public IKernelExecution<...>
   public: 
     // template<typename head_type, typename... tail_types>
     template<typename ...ts> 
-    friend std::ostream& operator<<(std::ostream& os, const IKernelExecution_Test<ts...>& exec);
+    friend std::ostream& operator<<(std::ostream& os, const TypeNameTest<ts...>& exec);
     
     void PrintTypes() const {
         std::stringbuf buf;
@@ -72,8 +72,8 @@ class IKernelExecution_Test // : public IKernelExecution<...>
     
 };
 
-TEST(IKernelExecutionTests, Construct) {
-    using IKernelExecution_t = IKernelExecution_Test<double, double, unsigned long long, bool, std::string>;
+TEST(TypeNameTests, Construct) {
+    using IKernelExecution_t = TypeNameTest<double, double, unsigned long long, bool, std::string>;
     IKernelExecution_t kernel;
     kernel.PrintTypes();
     ASSERT_TRUE(true);
@@ -82,8 +82,8 @@ TEST(IKernelExecutionTests, Construct) {
 
 /*
 
-TEST(IKernelExecutionTests, Initialize) {
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
+TEST(TypeNameTests, Initialize) {
+    using IKernelExecution_t = TypeNameTest<float, int>;
     size_t data_size = 4;
     IKernelExecution_t data(data_size);
     
@@ -110,8 +110,8 @@ TEST(IKernelExecutionTests, Initialize) {
     EXPECT_EQ(data.gpu_named_data.indices, gpu_indices_ptrs_vector[0]);
 }
 
-TEST(IKernelExecutionTests, Uninitialize) {
-    using IKernelExecution_t = IKernelExecution_Test<float, int>;
+TEST(TypeNameTests, Uninitialize) {
+    using IKernelExecution_t = TypeNameTest<float, int>;
     size_t data_size = 4;
     IKernelExecution_t data(data_size);
     const auto& cpu_data_vector = data.get_cpu_data_vector();

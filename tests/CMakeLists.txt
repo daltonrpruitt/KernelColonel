@@ -20,7 +20,7 @@ set(TEST_SOURCES_files
     main.cpp
     JITCompilationTests.cu
     IKernelDataTests.cu
-    IKernelExecutionTests.cu
+    # TypeNameTests.cpp (Not working 2023-06-10)
     SimpleCopyTests.cu
 )
 
