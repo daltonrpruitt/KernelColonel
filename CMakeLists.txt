@@ -38,7 +38,11 @@ endif()
 
 add_library(jitify INTERFACE)
 target_include_directories(jitify INTERFACE ${jitify_SOURCE_DIR})
-
+if(MSVC)
+    target_compile_definitions(jitify INTERFACE _MSC_VER=${MSVC_VERSION})
+    message(STATUS "MSVC_VERSION=${MSVC_VERSION}")
+    target_link_libraries(jitify INTERFACE dbghelp.dll)
+endif()
 
 include(FindCUDAToolkit)
 
