@@ -14,7 +14,10 @@ set(CMAKE_BUILD_TYPE "Debug")
 include(FetchContent REQUIRED)
 
 FetchContent_Declare(json
-    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+    # GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE  
     GIT_TAG v3.11.2
 )
 FetchContent_MakeAvailable(json)
@@ -35,7 +38,11 @@ endif()
 
 add_library(jitify INTERFACE)
 target_include_directories(jitify INTERFACE ${jitify_SOURCE_DIR})
-
+if(MSVC)
+    target_compile_definitions(jitify INTERFACE _MSC_VER=${MSVC_VERSION})
+    message(STATUS "MSVC_VERSION=${MSVC_VERSION}")
+    target_link_libraries(jitify INTERFACE dbghelp.dll)
+endif()
 
 include(FindCUDAToolkit)
 include(FindCUDA)
