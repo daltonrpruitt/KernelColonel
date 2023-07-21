@@ -73,7 +73,7 @@ class SimpleKernelData : public IKernelData<value_t, index_t, 1, 1, 1, SimpleKer
     { 
         if(!m_init_indices) {
             std::cerr << "Method to initialize indices has not been set!\n";
-            std::cerr << "\tSetting dummy indices!" << std::endl;
+            std::cerr << "\tSetting all indices to 0!" << std::endl;
             super::indices_size = 0;
             host_indices[0] = std::vector<it_>(0, super::indices_size);
         } else {
