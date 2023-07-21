@@ -6,11 +6,15 @@
     "configurations": [
         {
             "name": "Debug tests",
-            "type": "cuda-gdb",
+            "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/tests",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/tests",
+            "windows": {
+                "program": "${workspaceFolder}\\build\\tests\\Debug\\tests.exe",
+                "cwd": "${workspaceFolder}\\build\\tests\\Debug",
+            }
         },
         {
             "name": "CUDA C++: Debug spmv",
