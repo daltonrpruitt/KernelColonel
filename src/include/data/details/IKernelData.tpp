@@ -61,13 +61,16 @@ bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(
     // init inputs/indices gpu...
     if(pass){
         cudaErrChk(cudaSetDevice(gpu_device_id), "setting device " + std::to_string(gpu_device_id));
+        std::cout << "Setting device ID to " + std::to_string(gpu_device_id) << std::endl;
         for(int i=0; i < num_in_data; ++i) {
+            std::cout << "Allocating GPU memory for device_data_ptrs[" + to_string(i) + "]" << std::endl;
             cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], input_size * value_t_size),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
             if(!pass) break;
         }
 
         if(pass) {
             for(int i=num_in_data; i < num_total_data; ++i) {
+                std::cout << "Allocating GPU memory for device_data_ptrs[" + to_string(i) + "]" << std::endl;
                 cudaErrChk(cudaMalloc((void **)&device_data_ptrs[i], output_size * value_t_size),"device_data_ptrs["+to_string(i)+"] mem allocation", pass);
                 if(!pass) break;
             }
@@ -75,12 +78,14 @@ bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(
         
         if(pass) {
             for(int i=0; i < num_in_data; ++i) {
+                std::cout << "Copying host_data[" + to_string(i) + "] to device_data_ptrs[" + to_string(i) + "]" << std::endl;
                 cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), input_size * value_t_size, cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
                 if(!pass) break;
             }
         }
 
         for(int i=0; i < num_indices; ++i) {
+            std::cout << "Allocating GPU memory for device_indices_ptrs[" + to_string(i) + "]" << std::endl;
             cudaErrChk(cudaMalloc((void **)&device_indices_ptrs[i], indices_size * index_t_size),"device_indices_ptrs["+to_string(i)+"] mem allocation", pass);
             if(!pass) break;
         }
