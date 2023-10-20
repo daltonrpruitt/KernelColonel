@@ -21,6 +21,7 @@ set(TEST_SOURCES_files
     JITCompilationTests.cu
     IKernelDataTests.cu
     SimpleKernelExecutionTests.cu
+    SimpleKernelFileExecutionTests.cu
     SimpleCopyTests.cu
 )
 
@@ -49,6 +50,8 @@ add_test(NAME ${TEST_BINARY} COMMAND ${TEST_BINARY})
 
 target_link_libraries(${TEST_BINARY} PUBLIC gtest_main gmock_main kernel_colonel nvrtc cuda)
 target_include_directories(${TEST_BINARY} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(${TEST_BINARY} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../src")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR/../src = ${CMAKE_CURRENT_SOURCE_DIR}/../src")
 
 add_custom_target (${TEST_BINARY}.tgt
   DEPENDS ${TEST_BINARY}
