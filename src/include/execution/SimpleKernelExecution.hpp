@@ -36,6 +36,15 @@ class SimpleKernelExecution
                                                        const std::vector<value_t>&, 
                                                        const std::vector<index_t>&)>;
 
+    /**
+     * @brief Basic constructor of SimpleKernelExecution
+     * 
+     * @param kernel_name_ String representing the kernel name in the jitify program passed in.
+     * @param program_ jitify::program containing the kernel we want; reference for now = not owned, 
+     *              so owner of this SimpleKernelExecution object (i.e. the driver) needs to ensure the 
+     *              program's lifetime is longer than this object's lifetime.
+     * @param simple_check_callback_ Function (can be lambda) used to check the output of a kernel for correctness.
+     */
     SimpleKernelExecution(const std::string &kernel_name_, 
                           const jitify::Program &program_,
                           simple_check_callback_t simple_check_callback_);
