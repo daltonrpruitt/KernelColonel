@@ -48,7 +48,7 @@ namespace std
         os << "< " << vec[0];
             for (int i=1; i<vec.size() && i < 10; ++i) { os << ", " << vec[i]; }
         if(vec.size() > 10) { os << " ... "; }
-        os << ">" << std::endl;
+        os << " >" << std::endl;
         return os;
     }
 
