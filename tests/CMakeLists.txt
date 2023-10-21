@@ -23,6 +23,7 @@ set(TEST_SOURCES_files
     SimpleKernelExecutionTests.cu
     SimpleKernelFileExecutionTests.cu
     SimpleCopyTests.cu
+    KernelRunSetTests.cu
 )
 
 if(NOT MSVC)
