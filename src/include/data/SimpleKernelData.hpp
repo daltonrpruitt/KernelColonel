@@ -16,6 +16,8 @@
 
 #include "data/IKernelData.hpp"
 
+#include <functional>
+
 namespace KernelColonel 
 {
 
