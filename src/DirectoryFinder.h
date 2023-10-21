@@ -11,6 +11,7 @@
  * 4. Keeps this directory for when later csv files are output 
  * 
  */
+#pragma once
 
 #include <stdlib.h>
 #include <errno.h>
