@@ -38,13 +38,13 @@ IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::~IKernelDa
 }
 
 template<typename vt, typename it, unsigned int num_in_data, unsigned int num_out_data, unsigned int num_indices, typename gpu_data_s_t>
-bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(int dev_ctx_id){
-    if(state == DataState::INIT){
+bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(int dev_ctx_id, bool ignore_reinit){
+    if(state == DataState::INIT && !ignore_reinit){
         if(dev_ctx_id == gpu_device_id) {
-            cout <<"Tried to reinitialize "<< this->name << "with same device id=" << gpu_device_id << "; Ignored" << std::endl;
+            cout <<"Tried to reinitialize '"<< this->name << "' with same device id=" << gpu_device_id << "; Ignored" << std::endl;
             return true;
         } else {
-            cerr<<"Tried to reinitialize "<< this->name << "with current device id=" << gpu_device_id <<" and new device ID="<< dev_ctx_id << "; Not allowed!" << std::endl;
+            cerr<<"Tried to reinitialize '"<< this->name << "' with current device id=" << gpu_device_id <<" and new device ID="<< dev_ctx_id << "; Not allowed!" << std::endl;
             return false;
         }
     }

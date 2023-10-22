@@ -42,7 +42,7 @@ class IKernelData {
      * @return true Prematurely return if already initialized
      * @return false Failed to initialize properly (handling taken care of by owner of object)
      */
-    bool init(int dev_ctx_id);
+    bool init(int dev_ctx_id, bool ignore_reinit = true);
 
     /**
      * @brief Free relevant structures (CPU and GPU)
