@@ -27,24 +27,34 @@ SimpleKernelRunSet<value_t, index_t>::SimpleKernelRunSet(std::shared_ptr<executi
       m_data(data), 
       m_grid_size(grid_size), 
       m_block_size(block_size), 
-      m_num_runs(num_runs)
+      m_num_runs(num_runs), 
+      m_checked(false)
     {}
 
 template<typename value_t, typename index_t>
 bool SimpleKernelRunSet<value_t, index_t>::check()
 {
+    if(m_checked)
+    {
+        return m_checked;
+    }
+    
     m_execution_ctx->time_single_execution(m_data, m_grid_size, m_block_size);
-    return m_execution_ctx->check(m_data);
+    if(m_execution_ctx->check(m_data))
+    {
+        m_checked = true;
+    }
+    return m_checked;
 }
 
 template<typename value_t, typename index_t>
-double SimpleKernelRunSet<value_t, index_t>::run()
+double SimpleKernelRunSet<value_t, index_t>::run_single()
 {
     return m_execution_ctx->time_single_execution(m_data, m_grid_size, m_block_size);
 }
 
 template<typename value_t, typename index_t>
-bool SimpleKernelRunSet<value_t, index_t>::check_and_run()
+bool SimpleKernelRunSet<value_t, index_t>::run_all()
 {
     if(m_run_timings.size() != 0)
     {
@@ -52,14 +62,9 @@ bool SimpleKernelRunSet<value_t, index_t>::check_and_run()
         return false;
     }
 
-    if(!check()) 
-    {
-        return false;
-    }
-
     for(unsigned int i=0; i < m_num_runs; ++i)
     {
-        auto time = run();
+        auto time = run_single();
         if(time < 0)
         {
             std::cerr << "SimpleKernelRunSet '" << m_name << "' : Failed run #" << i <<" !" << std::endl;
@@ -67,6 +72,17 @@ bool SimpleKernelRunSet<value_t, index_t>::check_and_run()
         }
         m_run_timings.push_back(time);
     }
+    return true;
+}
+
+template<typename value_t, typename index_t>
+bool SimpleKernelRunSet<value_t, index_t>::check_and_run_all()
+{
+    if(!m_checked && !check()) 
+    {
+        return false;
+    }
+    run_all();
     return true;
 }
 

@@ -29,12 +29,14 @@ class SimpleKernelRunSet
                         dim3 block_size = 1,
                         unsigned int num_runs = 25);
     bool check();
-    double run();
-    bool check_and_run();
+    double run_single();
+    bool run_all();
+    bool check_and_run_all();
 
     std::vector<double> get_run_timings() { return m_run_timings; }
 
 private:
+
     std::string m_name;
     std::shared_ptr<execution_context_t> m_execution_ctx;
     std::shared_ptr<kernel_data_t> m_data;
@@ -42,6 +44,7 @@ private:
     dim3 m_block_size;
     unsigned int m_num_runs;
     std::vector<double> m_run_timings;
+    bool m_checked;
 };
 
 } // namespace KernelColonel

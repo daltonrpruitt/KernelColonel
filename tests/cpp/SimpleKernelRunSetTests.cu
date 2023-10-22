@@ -109,9 +109,9 @@ TEST_F(SimpleKernelRunSetTests, RunMultipleTimes)
     unsigned int times_run = 5;
     kc::SimpleKernelRunSet<> run_set(exec_ptr, data_ptr, grid, block, times_run);
 
-    ASSERT_TRUE(run_set.check_and_run());
+    ASSERT_TRUE(run_set.check_and_run_all());
     auto times = run_set.get_run_timings();
     ASSERT_EQ(times.size(), times_run);
 
-    std::cout << "Executing " << "simple_copy_kernel" << " with grid=" << grid << " and block="<<block << " for " << times_run << "times took the following ms timings: " << times << std::endl;
+    std::cout << "Executing " << "simple_copy_kernel" << " with grid=" << grid << " and block=" << block << " for " << times_run << " times took the following ms timings: " << times << std::endl;
 }
