@@ -33,6 +33,8 @@ class SimpleKernelRunSet
     bool run_all();
     bool check_and_run_all();
 
+    bool check_data_pointer_is_same(std::shared_ptr<kernel_data_t> data);
+
     std::vector<double> get_run_timings() { return m_run_timings; }
 
 private:

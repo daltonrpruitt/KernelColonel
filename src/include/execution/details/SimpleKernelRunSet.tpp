@@ -38,7 +38,7 @@ bool SimpleKernelRunSet<value_t, index_t>::check()
     {
         return m_checked;
     }
-    
+
     m_execution_ctx->time_single_execution(m_data, m_grid_size, m_block_size);
     if(m_execution_ctx->check(m_data))
     {
@@ -84,6 +84,12 @@ bool SimpleKernelRunSet<value_t, index_t>::check_and_run_all()
     }
     run_all();
     return true;
+}
+
+template<typename value_t, typename index_t>
+bool SimpleKernelRunSet<value_t, index_t>::check_data_pointer_is_same(std::shared_ptr<kernel_data_t> data)
+{
+    return m_data == data;
 }
 
 } // namespace KernelColonel
