@@ -47,7 +47,7 @@ endif()
 include(FindCUDAToolkit)
 include(FindCUDA)
 
-set(GLOBAL PROPERTY CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(kernel_colonel_SOURCE_BASE_DIR src/cpp)
 set(kernel_colonel_SOURCES
@@ -63,7 +63,7 @@ target_include_directories(kernel_colonel PRIVATE ${jitify_SOURCE_DIR} ${CUDA_LI
 target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json nvrtc cuda)
 set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
-set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
+# set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)
 # target_link_libraries(kernel_colonel PRIVATE ${CUDA_LIBRARIES})
 
 add_executable(kernel_colonel_exec src/cpp/main.cpp)
@@ -72,7 +72,7 @@ target_link_libraries(kernel_colonel_exec PRIVATE kernel_colonel)
 
 if(false)
 add_executable(main src/main.cu)
-set_property(TARGET main PROPERTY CXX_STANDARD 17)
+# set_property(TARGET main PROPERTY CXX_STANDARD 17)
 target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                         --keep 
                         -Xptxas -dlcm=cg
@@ -80,7 +80,7 @@ target_compile_options(main PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
 >)
 
 add_executable(spmv src/spmv.cu)
-set_property(TARGET spmv PROPERTY CXX_STANDARD 17)
+# set_property(TARGET spmv PROPERTY CXX_STANDARD 17)
 set_property(TARGET main PROPERTY CUDA_ARCHITECTURES 80) #80-A100
 # set_property(TARGET spmv PROPERTY CUDA_ARCHITECTURES 35 52 72 80) #35-K20m, 52-Quadro M2000, 72-V100, 80-A100  
 # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --maxrregcount=255") #  -dlcm=cg  --expt-relaxed-constexpr

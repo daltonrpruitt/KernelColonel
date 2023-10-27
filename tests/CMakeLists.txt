@@ -38,7 +38,7 @@ endforeach()
 message(STATUS "TEST_SOURCES = ${TEST_SOURCES}")
 
 add_executable(${TEST_BINARY} ${TEST_SOURCES})
-set_property(TARGET ${TEST_BINARY} PROPERTY CXX_STANDARD 17)
+# set_property(TARGET ${TEST_BINARY} PROPERTY CXX_STANDARD 17)
 set(CUDA_COMPILE_OPTIONS "-Xptxas;-dlcm=cg")
 if(NOT MSVC)
     list(APPEND CUDA_COMPILE_OPTIONS "--keep")  # error with keeping generated source on msvc (2023-07-20)
