@@ -17,6 +17,13 @@
 namespace KernelColonel
 {
 
+/**
+ * @brief SimpleKernelBatch serves as a collection of RunSets that all use the same data as input, 
+ *  therefore limiting re-allocation of GPU memory
+ * 
+ * @tparam value_t Type of input/output data
+ * @tparam index_t Type of index data
+ */
 template <typename value_t = double, typename index_t = unsigned long>
 class SimpleKernelBatch
 {
