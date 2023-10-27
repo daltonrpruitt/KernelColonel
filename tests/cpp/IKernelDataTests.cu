@@ -168,7 +168,7 @@ TEST(IKernelDataTests, ReinitializeWithSameDevice) {
 
 TEST(IKernelDataTests, ReinitializeWithDifferentDevice) {
     int count;
-    cudaGetDevice(&count);
+    cudaGetDeviceCount(&count);
     if(count == 1) {
         GTEST_SKIP();
     }
