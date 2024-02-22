@@ -1,0 +1,9 @@
+{
+    "simple_copy1": {
+        "kernel": "simple_copy",
+        "input_type": "sequential",
+        "input_size": 128,
+        "block_size": 64,
+        "grid_size": "auto"
+    }
+}

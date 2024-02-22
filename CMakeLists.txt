@@ -104,3 +104,10 @@ target_compile_options(spmv PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
 endif ()
 
 add_subdirectory(tests)
+
+add_custom_target (run_sample_config
+  DEPENDS kernel_colonel_exec
+  COMMAND $<TARGET_FILE:kernel_colonel_exec> ${CMAKE_CURRENT_SOURCE_DIR}/examples/example_config.json
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
