@@ -46,7 +46,7 @@ private:
 
 public:
     DirectoryError(std::string msg) : message(msg) {}
-    const char * what () const {
+    const char * what () const noexcept {
         return message.c_str();
     }
 };
