@@ -170,7 +170,7 @@ TEST(IKernelDataTests, ReinitializeWithDifferentDevice) {
     int count;
     cudaGetDeviceCount(&count);
     if(count == 1) {
-        GTEST_SKIP();
+        GTEST_SKIP() << "Only 1 GPU device!";
     }
     using KernelData_t = KernelData_Test<float, int>;
     size_t data_size = 4;
