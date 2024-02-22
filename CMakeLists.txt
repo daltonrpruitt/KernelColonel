@@ -22,6 +22,15 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
+set(nlohmann_json_VERSION v3.11.2)
+FetchContent_Declare(json_schema_validator
+    GIT_REPOSITORY https://github.com/pboettch/json-schema-validator
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE  
+    GIT_TAG 349cba9f7e3cb423bbc1811bdd9f6770f520b468 # 2.3.0
+)
+FetchContent_MakeAvailable(json_schema_validator)
+
 FetchContent_Declare(
   jitify
   GIT_REPOSITORY https://github.com/NVIDIA/jitify
@@ -60,7 +69,7 @@ add_library(kernel_colonel STATIC ${kernel_colonel_SOURCES})
 target_include_directories(kernel_colonel PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
 target_link_libraries(kernel_colonel INTERFACE jitify)
 target_include_directories(kernel_colonel PRIVATE ${jitify_SOURCE_DIR} ${CUDA_LIBRARIES})
-target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json nvrtc cuda)
+target_link_libraries(kernel_colonel PUBLIC nlohmann_json::nlohmann_json nlohmann_json_schema_validator nvrtc cuda)
 set_target_properties(kernel_colonel PROPERTIES LINKER_LANGUAGE CUDA)
 
 # set_property(TARGET kernel_colonel PROPERTY CXX_STANDARD 17)

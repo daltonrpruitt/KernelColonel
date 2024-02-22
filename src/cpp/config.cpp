@@ -1,46 +1,32 @@
 #include <config.hpp>
 
-namespace KernelColonel
+using nlohmann::json;
+// using nlohmann::json_schema::json_validator;
+
+namespace KernelColonel::config 
 {
 
-    namespace config
-    {
-
-        nlohmann::json config = nlohmann::json::parse(R"(
+nlohmann::json jsonFromFile(const std::filesystem::path &filePath)
 {
-"Config Name":"default"
+    std::ifstream file(filePath);
+    // TODO: expect file to exist !!!
+    auto json = nlohmann::json::parse(file, nullptr, true, true);
+    return json;
 }
-)", 
-                                                      nullptr, true, true);
 
-        void fromFile(const std::filesystem::path &filePath)
-        {
-            std::ifstream file(filePath);
-            auto new_config = nlohmann::json::parse(file, nullptr, true, true);
-            if (!new_config.count(required_fields::config_name)) 
-            {
-                std::cout << "Missing field in " << filePath << " : '" << required_fields::config_name << "'" << std::endl;
-            }
 
-            if (config.is_null())
-            {
-                config = new_config;
-            }
-            else
-            {
-                config.insert(new_config.begin(), new_config.end());
-            }
-        }
-        namespace required_fields
-        {
-            std::string config_name = "Config Name";
-        } // namespace required_fields
+InputDataSchemaValidator::InputDataSchemaValidator(std::string name, std::string schema)
+{
+    // validator.set_root_schema(schema);
+}
 
-        namespace optional_fields
-        {
-            std::string log_level = "Log Level";
-        } // namespace required_fields
+bool InputDataSchemaValidator::isValid(nlohmann::json json)
+{
+    // validator.validate()
+    return false;
+}
 
-    } // namespace config
 
-} // namespace KernelColonel
+
+
+} // namespace KernelColonel::config

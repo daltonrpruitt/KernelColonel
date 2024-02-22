@@ -5,20 +5,31 @@
 #include <filesystem>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <nlohmann/json-schema.hpp>
 
 namespace KernelColonel::config
 {
-    extern nlohmann::json config;
-    void fromFile(const std::filesystem::path &filePath);
 
-    namespace required_fields
-    {
-        extern std::string config_name;
-    } // namespace required_fields
+    nlohmann::json jsonFromFile(const std::filesystem::path &filePath);
 
-    namespace optional_fields
+    class InputDataSchemaValidatorsCollection
     {
-        extern std::string log_level;
-    } // namespace required_fields
+    public:
+        InputDataSchemaValidatorsCollection(std::string name, std::string schema);
+        // void validate();
+
+    private:
+        // nlohmann::json_validator validator;
+    };
+
+    class InputDataSchemaValidator
+    {
+    public:
+        InputDataSchemaValidator(std::string name, std::string schema);
+        bool isValid(nlohmann::json json);
+
+    private:
+        // nlohmann::json_validator validator;
+    };
 
 } // namespace KernelColonel::config
