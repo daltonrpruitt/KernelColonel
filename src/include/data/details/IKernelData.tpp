@@ -77,6 +77,7 @@ bool IKernelData<vt,it,num_in_data,num_out_data,num_indices,gpu_data_s_t>::init(
             for(int i=0; i < num_in_data; ++i) {
                 cudaErrChk(cudaMemcpy(device_data_ptrs[i], host_data[i].data(), input_size * value_t_size, cudaMemcpyHostToDevice), "copy host_data["+to_string(i)+"] to device_data_ptrs["+to_string(i)+"]", pass);                
                 if(!pass) break;
+                std::cout << "Copied host to device data for data[" << i <<"]" << std::endl;
             }
         }
 

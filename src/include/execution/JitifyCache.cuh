@@ -8,4 +8,5 @@
 namespace KernelColonel
 {
     jitify::JitCache &globalJitifyCache();
+    // jitify::Program &getProgramFromJitifyCache(const std::string &program_name, const char* program_source);
 } // namespace KernelColonel
