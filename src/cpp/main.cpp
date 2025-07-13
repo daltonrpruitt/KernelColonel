@@ -15,7 +15,8 @@ int main(int argc, char **argv) {
 
         // TODO: validate all config items
 
-        std::vector<KernelColonel::SimpleKernelRunSet<>> run_sets;
+        std::vector<KernelColonel::SimpleKernelRunSet> run_sets;
+        std::map<KernelColonel::SimpleKernelData> input_data_instances;
 
         // process config items in loop
         for(const auto& entry : config)
@@ -30,7 +31,7 @@ int main(int argc, char **argv) {
             {
                 std::cout << "grid_size is auto : ==> grid_size=" << auto_grid_size << std::endl;
             }
-
+            // run_sets.append(KernelColonel::SimpleRu)
             // need global list of registered data generation functions?
 
             // if input configuration not present in "global" inputs list, 

@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.cppm": "cpp",
         "*.cu": "cuda-cpp",
         "*.tcu": "cuda-cpp",
         "cwchar": "cpp",
@@ -106,7 +107,11 @@
         "__config": "cpp",
         "*.json": "jsonc",
         "regex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "charconv": "cpp",
+        "csignal": "cpp",
+        "format": "cpp",
+        "span": "cpp"
     },
     "cSpell.words": [
         "Spmv",

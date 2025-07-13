@@ -17,6 +17,15 @@
             }
         },
         {
+            "name": "Ctest",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "ctest",
+            "args": ["-C", "Debug"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/tests/exec_tests"
+        },
+        {
             "name": "CUDA C++: Debug spmv",
             "type": "cuda-gdb",
             "request": "launch",
